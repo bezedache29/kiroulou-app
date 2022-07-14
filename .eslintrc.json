@@ -38,6 +38,12 @@
                 "namedComponents": "arrow-function",
                 "unnamedComponents": "arrow-function"
             }
-        ]
+        ],
+        // "react/prop-types": ["error", { "ignore": ["navigation"] }],
+        "global-require": 0,
+        "react/jsx-props-no-spreading": "off",
+        "react/prop-types": "off",
+        "react/no-unescaped-entities": 0, // error  HTML entities must be escaped
+        "no-use-before-define": ["error", { "functions": true, "classes": true, "variables": false }] // Permet de déclarer styles a la fin d'une fonction
     }
 }
