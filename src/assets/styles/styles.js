@@ -18,8 +18,11 @@ export const infoColor = '#318ce7'
 
 // TEXT
 export const defaultTitle = {
-  fontSize: 35,
+  fontSize: 65,
+  fontFamily: 'Chewy-Regular',
 }
 export const defaultText = {
-  fontSize: 16,
+  fontSize: 18,
+  fontFamily: 'Amaranth-Regular',
+  paddingHorizontal: 10,
 }
