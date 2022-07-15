@@ -13,6 +13,7 @@ import { AppContext } from './src/components/Context'
 import useMyTheme from './src/hooks/useMyTheme'
 import useMyContext from './src/hooks/useMyContext'
 import SplashScreen from './src/screens/SplashScreen'
+import CustomStatusBar from './src/components/CustomStatusBar'
 
 const AppStack = createNativeStackNavigator()
 
@@ -27,6 +28,7 @@ const App = () => {
   return (
     <PaperProvider theme={theme}>
       <AppContext.Provider value={appContext}>
+        <CustomStatusBar isDarkTheme={isDarkTheme} />
         <NavigationContainer theme={theme}>
           <AppStack.Navigator
             screenOptions={{
