@@ -22,6 +22,10 @@ const RegisterScreen = ({ navigation }) => {
         onPress={() => navigation.navigate('Login')}
       />
       <Button title="Change Theme" onPress={toggleTheme} />
+      <Button
+        title="Go to onboarding"
+        onPress={() => navigation.navigate('Onboarding')}
+      />
     </View>
   )
 }
