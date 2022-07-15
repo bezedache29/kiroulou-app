@@ -12,6 +12,8 @@ import {
   pinkColor,
   primaryColor,
   defaultText,
+  defaultTitle,
+  whiteColor,
 } from '../assets/styles/styles'
 
 /**
@@ -58,7 +60,7 @@ const OnboardingScreen = ({ navigation }) => {
           backgroundColor: primaryColor,
           image: <Image source={require('../assets/onboarding.jpg')} />,
           title: (
-            <Text style={{ fontSize: 35, color: '#FEFEFE' }}>KiRoulOu</Text>
+            <Text style={[defaultTitle, { color: whiteColor }]}>KiRoulOu</Text>
           ),
           subtitle: (
             <Text style={defaultText}>
