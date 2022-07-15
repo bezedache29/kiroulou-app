@@ -14,6 +14,9 @@ import {
   defaultText,
   defaultTitle,
   whiteColor,
+  defaultSubTitle,
+  mt10,
+  darkColor,
 } from '../assets/styles/styles'
 
 /**
@@ -21,7 +24,7 @@ import {
  */
 const NextComponent = ({ ...props }) => (
   <TouchableOpacity {...props} style={{ marginHorizontal: 10 }}>
-    <Text style={styles.text}>Suivant</Text>
+    <Text style={[defaultText, { color: darkColor }]}>Suivant</Text>
   </TouchableOpacity>
 )
 
@@ -30,7 +33,7 @@ const NextComponent = ({ ...props }) => (
  */
 const DoneComponent = ({ ...props }) => (
   <TouchableOpacity {...props} style={{ marginHorizontal: 10 }}>
-    <Text style={styles.text}>Fin</Text>
+    <Text style={[defaultText, { color: darkColor }]}>Fin</Text>
   </TouchableOpacity>
 )
 
@@ -55,6 +58,7 @@ const OnboardingScreen = ({ navigation }) => {
       NextButtonComponent={NextComponent}
       DoneButtonComponent={DoneComponent}
       DotComponent={DotsComponent}
+      controlStatusBar={false}
       pages={[
         {
           backgroundColor: primaryColor,
@@ -64,22 +68,38 @@ const OnboardingScreen = ({ navigation }) => {
           ),
           subtitle: (
             <Text style={defaultText}>
-              Une application qui permet de trouver une randonnée référencé par
-              les clubs et associations
+              Permet de trouver une randonnée référencée par les clubs et
+              associations
             </Text>
           ),
         },
         {
           backgroundColor: pinkColor,
           image: <Image source={require('../assets/onboarding.jpg')} />,
-          title: 'Onboarding 2',
-          subtitle: 'Done with React Native Onboarding Swiper',
+          title: (
+            <Text style={[defaultSubTitle, { color: whiteColor }]}>
+              Simple et rapide !
+            </Text>
+          ),
+          subtitle: (
+            <Text style={[defaultText, mt10]}>
+              Recherchez une randonnée en quelques clics.
+            </Text>
+          ),
         },
         {
           backgroundColor: blueColor,
           image: <Image source={require('../assets/onboarding.jpg')} />,
-          title: 'Onboarding 3',
-          subtitle: 'Done with React Native Onboarding Swiper',
+          title: (
+            <Text style={[defaultSubTitle, { color: whiteColor }]}>
+              Hype & Share !
+            </Text>
+          ),
+          subtitle: (
+            <Text style={[defaultText, mt10]}>
+              Suivez les avancées des randonnées et partagez les.
+            </Text>
+          ),
         },
       ]}
     />
@@ -87,10 +107,6 @@ const OnboardingScreen = ({ navigation }) => {
 }
 
 const styles = StyleSheet.create({
-  text: {
-    fontSize: 16,
-    color: '#000000',
-  },
   dot: {
     width: 6,
     height: 6,
