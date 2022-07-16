@@ -9,7 +9,13 @@ import {
   DefaultTheme as PaperDefaultTheme,
   DarkTheme as PaperDarkTheme,
 } from 'react-native-paper'
-import { darkColor, whiteColor } from '../assets/styles/styles'
+import {
+  darkColor,
+  darkPrimaryColor,
+  grayColor,
+  primaryColor,
+  whiteColor,
+} from '../assets/styles/styles'
 
 const useMyTheme = () => {
   const CustomDefaultTheme = {
@@ -20,6 +26,9 @@ const useMyTheme = () => {
       ...PaperDefaultTheme.colors,
       background: whiteColor,
       text: darkColor,
+      icon: darkPrimaryColor,
+      link: darkPrimaryColor,
+      border: grayColor,
     },
   }
 
@@ -31,6 +40,9 @@ const useMyTheme = () => {
       ...PaperDarkTheme.colors,
       background: darkColor,
       text: whiteColor,
+      icon: darkPrimaryColor,
+      link: primaryColor,
+      border: whiteColor,
     },
   }
 
