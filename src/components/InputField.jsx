@@ -6,6 +6,7 @@ import {
   StyleSheet,
 } from 'react-native'
 import React from 'react'
+import { darkPrimaryColor, minText } from '../assets/styles/styles'
 
 const InputField = ({
   label,
@@ -34,7 +35,7 @@ const InputField = ({
       />
     )}
     <TouchableOpacity onPress={fieldButtonFunction}>
-      <Text style={styles.btn}>{fieldButtonLabel}</Text>
+      <Text style={[styles.link, minText]}>{fieldButtonLabel}</Text>
     </TouchableOpacity>
   </View>
 )
@@ -52,9 +53,8 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 0,
   },
-  btn: {
-    color: '#AD40AF',
-    fontWeight: '700',
+  link: {
+    color: darkPrimaryColor,
   },
 })
 

@@ -14,6 +14,7 @@ import useMyTheme from './src/hooks/useMyTheme'
 import useMyContext from './src/hooks/useMyContext'
 import SplashScreen from './src/screens/SplashScreen'
 import CustomStatusBar from './src/components/CustomStatusBar'
+import ForgotPasswordScreen from './src/screens/auth/ForgotPasswordScreen'
 
 const AppStack = createNativeStackNavigator()
 
@@ -40,6 +41,10 @@ const App = () => {
             <AppStack.Screen name="Register" component={RegisterScreen} />
             <AppStack.Screen name="Home" component={HomeScreen} />
             <AppStack.Screen name="Login" component={LoginScreen} />
+            <AppStack.Screen
+              name="ForgotPassword"
+              component={ForgotPasswordScreen}
+            />
           </AppStack.Navigator>
         </NavigationContainer>
       </AppContext.Provider>

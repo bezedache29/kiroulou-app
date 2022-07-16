@@ -39,6 +39,10 @@ export const authTitle = {
 export const minText = {
   fontFamily: 'Amaranth-Regular',
 }
+export const labelNavigation = {
+  fontFamily: 'Amaranth-Bold',
+  fontSize: 22,
+}
 
 // MARGINS
 export const mt5 = {
@@ -53,8 +57,14 @@ export const ml5 = {
 export const mt10 = {
   marginTop: 10,
 }
+export const mt50 = {
+  marginTop: 50,
+}
 export const mb30 = {
   marginBottom: 30,
+}
+export const marginVertical50 = {
+  marginVertical: 50,
 }
 
 // PADDINGS
