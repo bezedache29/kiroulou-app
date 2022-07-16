@@ -1,0 +1,9 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+	<title>strava-svg</title>
+	<style>
+		.s0 { fill: #f9b797 } 
+		.s1 { fill: #f05222 } 
+	</style>
+	<path id="Layer" class="s0" d="m23.3 18.4h4.1l-6.9 13.6-6.9-13.6h4.1l2.8 5.5"/>
+	<path id="Layer" class="s1" d="m10.2 18.4h-5.6l9.3-18.4 9.4 18.4h-5.6l-3.8-7.4"/>
+</svg>

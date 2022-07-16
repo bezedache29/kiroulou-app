@@ -24,7 +24,9 @@ import {
  */
 const NextComponent = ({ ...props }) => (
   <TouchableOpacity {...props} style={{ marginHorizontal: 10 }}>
-    <Text style={[defaultText, { color: darkColor }]}>Suivant</Text>
+    <Text style={[defaultText, { color: darkColor, paddingHorizontal: 10 }]}>
+      Suivant
+    </Text>
   </TouchableOpacity>
 )
 
@@ -33,7 +35,9 @@ const NextComponent = ({ ...props }) => (
  */
 const DoneComponent = ({ ...props }) => (
   <TouchableOpacity {...props} style={{ marginHorizontal: 10 }}>
-    <Text style={[defaultText, { color: darkColor }]}>Fin</Text>
+    <Text style={[defaultText, { color: darkColor, paddingHorizontal: 10 }]}>
+      Fin
+    </Text>
   </TouchableOpacity>
 )
 
@@ -67,7 +71,7 @@ const OnboardingScreen = ({ navigation }) => {
             <Text style={[defaultTitle, { color: whiteColor }]}>KiRoulOu</Text>
           ),
           subtitle: (
-            <Text style={defaultText}>
+            <Text style={[defaultText, { paddingHorizontal: 10 }]}>
               Permet de trouver une randonnée référencée par les clubs et
               associations
             </Text>
@@ -82,7 +86,7 @@ const OnboardingScreen = ({ navigation }) => {
             </Text>
           ),
           subtitle: (
-            <Text style={[defaultText, mt10]}>
+            <Text style={[defaultText, mt10, { paddingHorizontal: 10 }]}>
               Recherchez une randonnée en quelques clics.
             </Text>
           ),
@@ -96,7 +100,7 @@ const OnboardingScreen = ({ navigation }) => {
             </Text>
           ),
           subtitle: (
-            <Text style={[defaultText, mt10]}>
+            <Text style={[defaultText, mt10, { paddingHorizontal: 10 }]}>
               Suivez les avancées des randonnées et partagez les.
             </Text>
           ),

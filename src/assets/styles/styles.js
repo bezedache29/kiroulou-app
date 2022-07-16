@@ -2,6 +2,7 @@
 export const primaryColor = '#a7ce9d'
 // export const primaryColor = '#9acd8d'
 export const secondaryColor = '#ddecd9'
+export const darkPrimaryColor = '#7cb66d'
 
 export const darkColor = '#221326'
 export const whiteColor = '#fefefe'
@@ -11,6 +12,7 @@ export const ivoryColor = '#ffffd4'
 export const eggplantColor = '#370028'
 export const pinkColor = '#d58490'
 export const blueColor = '#77b5fe'
+export const grayColor = '#ddd'
 
 export const dangerColor = '#ff0921'
 export const warningColor = '#f0d500'
@@ -29,13 +31,41 @@ export const defaultSubTitle = {
 export const defaultText = {
   fontSize: 18,
   fontFamily: 'Amaranth-Regular',
-  paddingHorizontal: 10,
+}
+export const authTitle = {
+  fontSize: 28,
+  fontFamily: 'Amaranth-Bold',
+}
+export const minText = {
+  fontFamily: 'Amaranth-Regular',
 }
 
 // MARGINS
 export const mt5 = {
   marginTop: 5,
 }
+export const mr5 = {
+  marginRight: 5,
+}
 export const mt10 = {
   marginTop: 10,
+}
+export const mb30 = {
+  marginBottom: 30,
+}
+
+// PADDINGS
+export const ph25 = {
+  paddingHorizontal: 25,
+}
+
+// SECTIONS
+export const defaultContainer = {
+  flex: 1,
+  justifyContent: 'center',
+}
+
+// DIVERS
+export const textAlignCenter = {
+  textAlign: 'center',
 }
