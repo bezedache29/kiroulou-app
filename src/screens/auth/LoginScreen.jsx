@@ -92,6 +92,10 @@ const LoginScreen = ({ navigation }) => {
             }
             inputType="password"
             color={colors.text}
+            fieldButtonLabel="Oublié ?"
+            fieldButtonFunction={() => {
+              navigation.navigate('ForgotPassword')
+            }}
           />
 
           <AuthButton label="Je me connecte" onPress={() => {}} />
