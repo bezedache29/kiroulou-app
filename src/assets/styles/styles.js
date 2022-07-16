@@ -47,6 +47,9 @@ export const mt5 = {
 export const mr5 = {
   marginRight: 5,
 }
+export const ml5 = {
+  marginLeft: 5,
+}
 export const mt10 = {
   marginTop: 10,
 }

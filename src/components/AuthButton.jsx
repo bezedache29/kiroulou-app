@@ -1,4 +1,4 @@
-import { StyleSheet, Text } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
 import LinearGradient from 'react-native-linear-gradient'
 import {
@@ -9,13 +9,14 @@ import {
 } from '../assets/styles/styles'
 
 const AuthButton = ({ label, onPress }) => (
-  <LinearGradient
-    colors={[primaryColor, darkPrimaryColor]}
-    style={styles.btn}
-    onPress={onPress}
-  >
-    <Text style={[authTitle, styles.textBtn]}>{label}</Text>
-  </LinearGradient>
+  <TouchableOpacity onPress={onPress}>
+    <LinearGradient
+      colors={[primaryColor, darkPrimaryColor]}
+      style={styles.btn}
+    >
+      <Text style={[authTitle, styles.textBtn]}>{label}</Text>
+    </LinearGradient>
+  </TouchableOpacity>
 )
 
 const styles = StyleSheet.create({

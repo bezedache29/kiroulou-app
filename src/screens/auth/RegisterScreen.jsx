@@ -21,6 +21,7 @@ import {
   defaultText,
   mb30,
   minText,
+  ml5,
   mr5,
   ph25,
   textAlignCenter,
@@ -44,7 +45,17 @@ const RegisterScreen = ({ navigation }) => {
       <ScrollView showsVerticalScrollIndicator={false} style={ph25}>
         <View style={{ flex: 1 }}>
           <View style={{ alignItems: 'center' }}>
-            <RegisterSVG width={350} height={290} />
+            <View
+              style={{
+                borderRadius: 8,
+                overflow: 'hidden',
+                width: 350,
+                height: 250,
+                marginVertical: 20,
+              }}
+            >
+              <RegisterSVG width={350} height={290} />
+            </View>
           </View>
 
           <Text style={[authTitle, mb30, { color: colors.text }]}>
@@ -76,7 +87,7 @@ const RegisterScreen = ({ navigation }) => {
           <Text
             style={[minText, textAlignCenter, mb30, { color: colors.text }]}
           >
-            Ou, s'enregistrer avec une adresse mail ...
+            Ou, s'enregistrer avec une adresse e-mail ...
           </Text>
 
           <InputField
@@ -122,20 +133,12 @@ const RegisterScreen = ({ navigation }) => {
 
           <AuthButton label="Créer mon compte" onPress={() => {}} />
 
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              marginBottom: 30,
-            }}
-          >
+          <View style={styles.footer}>
             <Text style={[defaultText, { color: colors.text }]}>
               Déjà enregistré ?
             </Text>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Text
-                style={[defaultText, { color: colors.link, marginLeft: 5 }]}
-              >
+            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+              <Text style={[defaultText, ml5, { color: colors.link }]}>
                 Se connecter
               </Text>
             </TouchableOpacity>
@@ -150,6 +153,11 @@ const styles = StyleSheet.create({
   btnsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginBottom: 30,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
     marginBottom: 30,
   },
 })
