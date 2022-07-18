@@ -90,6 +90,9 @@ export const mt30 = {
 export const mt50 = {
   marginTop: 50,
 }
+export const mb10 = {
+  marginBottom: 10,
+}
 export const mb30 = {
   marginBottom: 30,
 }
@@ -115,6 +118,9 @@ export const px20 = {
 }
 export const pb20 = {
   paddingBottom: 20,
+}
+export const p20 = {
+  padding: 20,
 }
 
 // SECTIONS
