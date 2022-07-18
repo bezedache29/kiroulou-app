@@ -28,6 +28,10 @@ export const defaultSubTitle = {
   fontSize: 45,
   fontFamily: 'Amaranth-Bold',
 }
+export const TitleH3 = {
+  fontSize: 30,
+  fontFamily: 'Amaranth-Bold',
+}
 export const defaultText = {
   fontSize: 18,
   fontFamily: 'Amaranth-Regular',
@@ -57,6 +61,9 @@ export const ml5 = {
 export const mt10 = {
   marginTop: 10,
 }
+export const mt20 = {
+  marginTop: 20,
+}
 export const mt50 = {
   marginTop: 50,
 }
@@ -65,6 +72,15 @@ export const mb30 = {
 }
 export const marginVertical50 = {
   marginVertical: 50,
+}
+export const my30 = {
+  marginVertical: 30,
+}
+export const my50 = {
+  marginVertical: 50,
+}
+export const marginVertical10 = {
+  marginVertical: 10,
 }
 
 // PADDINGS

@@ -12,6 +12,7 @@ import {
 import {
   darkColor,
   darkPrimaryColor,
+  eggplantColor,
   grayColor,
   primaryColor,
   whiteColor,
@@ -29,6 +30,7 @@ const useMyTheme = () => {
       icon: darkPrimaryColor,
       link: darkPrimaryColor,
       border: grayColor,
+      backgroundColorBtn: whiteColor,
     },
   }
 
@@ -43,6 +45,7 @@ const useMyTheme = () => {
       icon: darkPrimaryColor,
       link: primaryColor,
       border: whiteColor,
+      backgroundColorBtn: eggplantColor,
     },
   }
 

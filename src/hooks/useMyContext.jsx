@@ -4,7 +4,7 @@
 import { useMemo, useState } from 'react'
 
 const useMyContext = () => {
-  const [isDarkTheme, setIsDarkTheme] = useState(true)
+  const [isDarkTheme, setIsDarkTheme] = useState(false)
 
   const appContext = useMemo(() => ({
     toggleTheme: () => {

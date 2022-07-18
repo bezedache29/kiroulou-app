@@ -30,7 +30,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
       {/* Label Navigation */}
       <CustomLabelNavigation
         label="Mot de passe oublié ?"
-        textColor={colors.text}
+        colors={colors}
         onPress={() => {
           navigation.reset({
             index: 0,

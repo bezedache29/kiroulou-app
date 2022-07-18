@@ -3,12 +3,12 @@ import React from 'react'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { labelNavigation } from '../assets/styles/styles'
 
-const CustomLabelNavigation = ({ label, textColor, onPress }) => (
-  <View style={styles.container}>
+const CustomLabelNavigation = ({ label, colors, onPress }) => (
+  <View style={[styles.container, { borderColor: colors.border }]}>
     <TouchableOpacity style={styles.icon} onPress={onPress}>
-      <MaterialIcons name="arrow-back" size={24} color={textColor} />
+      <MaterialIcons name="arrow-back" size={24} color={colors.text} />
     </TouchableOpacity>
-    <Text style={[styles.text, labelNavigation, { color: textColor }]}>
+    <Text style={[styles.text, labelNavigation, { color: colors.text }]}>
       {label}
     </Text>
   </View>
