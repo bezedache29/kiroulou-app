@@ -27,7 +27,7 @@ const TermsAndConditionsTemplate = ({ navigation, title, children, route }) => {
       <CustomLabelNavigation
         label="Conditions générales"
         colors={colors}
-        onPress={() => navigation.goBack()}
+        onPress={() => navigation.navigate('LegalInfo')}
       />
 
       <ScrollView>
@@ -35,7 +35,9 @@ const TermsAndConditionsTemplate = ({ navigation, title, children, route }) => {
 
         <CustomButtonInfo
           title="Conditions de service"
-          onPress={() => {}}
+          onPress={() => {
+            navigation.navigate('TermsAndConditions')
+          }}
           colors={colors}
           route={route === 'service' ? route : ''}
         />
@@ -44,7 +46,9 @@ const TermsAndConditionsTemplate = ({ navigation, title, children, route }) => {
 
         <CustomButtonInfo
           title="Politique en matière de cookies"
-          onPress={() => {}}
+          onPress={() => {
+            navigation.navigate('CookiePolicy')
+          }}
           colors={colors}
           route={route === 'cookies' ? route : ''}
         />
