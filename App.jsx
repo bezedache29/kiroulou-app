@@ -3,18 +3,19 @@ import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { Provider as PaperProvider } from 'react-native-paper'
 
+import useMyTheme from './src/hooks/useMyTheme'
+import useMyContext from './src/hooks/useMyContext'
+
+import { AppContext } from './src/components/Context'
+
 import OnboardingScreen from './src/screens/OnboardingScreen'
 import HomeScreen from './src/screens/HomeScreen'
 import LoginScreen from './src/screens/auth/LoginScreen'
 import RegisterScreen from './src/screens/auth/RegisterScreen'
-
-import { AppContext } from './src/components/Context'
-
-import useMyTheme from './src/hooks/useMyTheme'
-import useMyContext from './src/hooks/useMyContext'
 import SplashScreen from './src/screens/SplashScreen'
 import CustomStatusBar from './src/components/CustomStatusBar'
 import ForgotPasswordScreen from './src/screens/auth/ForgotPasswordScreen'
+import LegalInfo from './src/screens/legals/LegalInfo'
 
 const AppStack = createNativeStackNavigator()
 
@@ -36,6 +37,7 @@ const App = () => {
               headerShown: false,
             }}
           >
+            <AppStack.Screen name="LegalInfo" component={LegalInfo} />
             <AppStack.Screen name="Splash" component={SplashScreen} />
             <AppStack.Screen name="Onboarding" component={OnboardingScreen} />
             <AppStack.Screen name="Register" component={RegisterScreen} />
