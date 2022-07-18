@@ -107,8 +107,14 @@ export const my10 = {
 }
 
 // PADDINGS
-export const ph25 = {
+export const px25 = {
   paddingHorizontal: 25,
+}
+export const px20 = {
+  paddingHorizontal: 20,
+}
+export const pb20 = {
+  paddingBottom: 20,
 }
 
 // SECTIONS

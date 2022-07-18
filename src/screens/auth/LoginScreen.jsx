@@ -23,7 +23,7 @@ import {
   minText,
   ml5,
   mr5,
-  ph25,
+  px25,
   textAlignCenter,
 } from '../../assets/styles/styles'
 
@@ -42,7 +42,7 @@ const LoginScreen = ({ navigation }) => {
     <SafeAreaView
       style={[defaultContainer, { backgroundColor: colors.background }]}
     >
-      <ScrollView showsVerticalScrollIndicator={false} style={ph25}>
+      <ScrollView showsVerticalScrollIndicator={false} style={px25}>
         <View style={{ flex: 1 }}>
           <View style={{ alignItems: 'center' }}>
             <View

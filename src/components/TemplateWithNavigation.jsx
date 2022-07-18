@@ -1,19 +1,22 @@
-import { SafeAreaView } from 'react-native'
+import { SafeAreaView, ScrollView } from 'react-native'
 import React from 'react'
 
 import { useTheme } from 'react-native-paper'
 import CustomLabelNavigation from './CustomLabelNavigation'
+import { pb20 } from '../assets/styles/styles'
 
 const TemplateWithNavigation = ({ navigationNavigate, label, children }) => {
   const { colors } = useTheme()
   return (
-    <SafeAreaView style={[{ backgroundColor: colors.background, flex: 1 }]}>
+    <SafeAreaView
+      style={[pb20, { backgroundColor: colors.background, flex: 1 }]}
+    >
       <CustomLabelNavigation
         label={label}
         colors={colors}
         onPress={navigationNavigate}
       />
-      {children}
+      <ScrollView>{children}</ScrollView>
     </SafeAreaView>
   )
 }
