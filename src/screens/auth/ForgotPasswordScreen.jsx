@@ -10,8 +10,8 @@ import { useTheme } from 'react-native-paper'
 import {
   defaultContainer,
   defaultText,
-  marginVertical50,
   mt50,
+  my50,
   ph25,
 } from '../../assets/styles/styles'
 
@@ -60,7 +60,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
           animation="fadeInUpBig"
           style={{ flex: 3, backgroundColor: colors.background }}
         >
-          <Text style={[defaultText, marginVertical50, { color: colors.text }]}>
+          <Text style={[defaultText, my50, { color: colors.text }]}>
             Envoyez-moi un e-mail avec un lien pour redéfinir mon mot de passe.
           </Text>
 
