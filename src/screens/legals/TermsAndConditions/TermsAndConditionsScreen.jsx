@@ -3,10 +3,10 @@ import React from 'react'
 
 import { useTheme } from 'react-native-paper'
 
-import { defaultText } from '../../assets/styles/styles'
+import { defaultText } from '../../../assets/styles/styles'
 
-import CustomLI from '../../components/TermsAndConditions/CustomLI'
-import TermsAndConditionsTemplate from './TermsAndConditions/TermsAndConditionsTemplate'
+import CustomLI from '../../../components/TermsAndConditions/CustomLI'
+import TermsAndConditionsTemplate from './TermsAndConditionsTemplate'
 
 const TermsAndConditionsScreen = ({ navigation }) => {
   const { colors } = useTheme()
@@ -34,7 +34,9 @@ const TermsAndConditionsScreen = ({ navigation }) => {
       <CustomLI
         colors={colors}
         link="Vous pouvez annuler votre abonnement ou supprimer votre compte à tout moment."
-        onPress={() => {}}
+        onPress={() => {
+          navigation.navigate('Cancellation')
+        }}
       />
 
       <CustomLI

@@ -12,7 +12,7 @@ import {
   defaultText,
   mt50,
   my50,
-  ph25,
+  px25,
 } from '../../assets/styles/styles'
 
 import ForgotPwdSVG from '../../assets/images/svg/auth/pwd-forgot.svg'
@@ -39,7 +39,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
         }}
       />
 
-      <ScrollView showsVerticalScrollIndicator={false} style={ph25}>
+      <ScrollView showsVerticalScrollIndicator={false} style={px25}>
         <View style={{ flex: 1 }}>
           <View style={{ alignItems: 'center' }}>
             <View
