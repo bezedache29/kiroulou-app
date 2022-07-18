@@ -21,6 +21,7 @@ import LegalInfoScreen from './src/screens/legals/LegalInfoScreen'
 import TermsAndConditionsScreen from './src/screens/legals/TermsAndConditions/TermsAndConditionsScreen'
 import CancellationScreen from './src/screens/legals/TermsAndConditions/TermsOfService/CancellationScreen'
 import ConductScreen from './src/screens/legals/TermsAndConditions/TermsOfService/ConductScreen'
+import TerminationScreen from './src/screens/legals/TermsAndConditions/TermsOfService/TerminationScreen'
 
 const AppStack = createNativeStackNavigator()
 
@@ -49,6 +50,7 @@ const App = () => {
             <AppStack.Screen name="Home" component={HomeScreen} />
             <AppStack.Screen name="Login" component={LoginScreen} />
             <AppStack.Screen name="Conduct" component={ConductScreen} />
+            <AppStack.Screen name="Termination" component={TerminationScreen} />
             <AppStack.Screen
               name="Cancellation"
               component={CancellationScreen}
