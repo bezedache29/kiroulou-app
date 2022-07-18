@@ -57,11 +57,13 @@ const TermsAndConditionsTemplate = ({ navigation, title, children, route }) => {
 
         <CustomButtonInfo
           title="Fondaments juridiques"
-          onPress={() => {}}
+          onPress={() => {
+            navigation.navigate('LegalFoundation')
+          }}
           colors={colors}
           route={route === 'legal' ? route : ''}
         />
-        <Animatable.View animation="fadeInUpBig" style={[my30, mx20]}>
+        <Animatable.View animation="fadeInLeftBig" style={[my30, mx20]}>
           <Text style={[TitleH4, { color: colors.text }]}>{title}</Text>
           <View style={mt10}>{children}</View>
         </Animatable.View>

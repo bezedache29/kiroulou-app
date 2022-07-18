@@ -16,7 +16,7 @@ import {
 import CustomLabelNavigation from '../../components/CustomLabelNavigation'
 import CustomButtonInfo from '../../components/CustomButtonInfo'
 
-const LegalInfo = ({ navigation }) => {
+const LegalInfoScreen = ({ navigation }) => {
   const { colors } = useTheme()
 
   return (
@@ -99,4 +99,4 @@ const LegalInfo = ({ navigation }) => {
   )
 }
 
-export default LegalInfo
+export default LegalInfoScreen

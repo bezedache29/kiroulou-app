@@ -8,7 +8,7 @@ import { defaultText } from '../../assets/styles/styles'
 import CustomLI from '../../components/TermsAndConditions/CustomLI'
 import TermsAndConditionsTemplate from './TermsAndConditions/TermsAndConditionsTemplate'
 
-const TermsAndConditions = ({ navigation }) => {
+const TermsAndConditionsScreen = ({ navigation }) => {
   const { colors } = useTheme()
 
   return (
@@ -58,4 +58,4 @@ const TermsAndConditions = ({ navigation }) => {
   )
 }
 
-export default TermsAndConditions
+export default TermsAndConditionsScreen
