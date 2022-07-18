@@ -17,6 +17,7 @@ import CustomStatusBar from './src/components/CustomStatusBar'
 import ForgotPasswordScreen from './src/screens/auth/ForgotPasswordScreen'
 import LegalInfo from './src/screens/legals/LegalInfo'
 import TermsAndConditions from './src/screens/legals/TermsAndConditions'
+import CookiePolicy from './src/screens/legals/CookiePolicy'
 
 const AppStack = createNativeStackNavigator()
 
@@ -44,6 +45,7 @@ const App = () => {
             <AppStack.Screen name="Register" component={RegisterScreen} />
             <AppStack.Screen name="Home" component={HomeScreen} />
             <AppStack.Screen name="Login" component={LoginScreen} />
+            <AppStack.Screen name="CookiePolicy" component={CookiePolicy} />
             <AppStack.Screen
               name="TermsAndConditions"
               component={TermsAndConditions}

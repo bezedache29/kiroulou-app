@@ -42,6 +42,14 @@ export const defaultText = {
   fontSize: 18,
   fontFamily: 'Amaranth-Regular',
 }
+export const defaultTextBold = {
+  fontSize: 18,
+  fontFamily: 'Amaranth-Bold',
+}
+export const littleTitle = {
+  fontSize: 20,
+  fontFamily: 'Amaranth-Bold',
+}
 export const authTitle = {
   fontSize: 28,
   fontFamily: 'Amaranth-Bold',
