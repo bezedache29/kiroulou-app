@@ -58,7 +58,9 @@ const TermsAndConditionsScreen = ({ navigation }) => {
       <CustomLI
         colors={colors}
         link="Il existe des façons faciles de nous contacter si vous avez des questions ou pour obtenir de l’aide."
-        onPress={() => {}}
+        onPress={() => {
+          navigation.navigate('SupportAndQuestions')
+        }}
       />
     </TermsAndConditionsTemplate>
   )
