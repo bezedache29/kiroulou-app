@@ -7,7 +7,7 @@ import { defaultText, mt20 } from '../../assets/styles/styles'
 import TermsAndConditionsTemplate from './TermsAndConditions/TermsAndConditionsTemplate'
 import CustomRadioButton from '../../components/CustomRadioButton'
 
-const CookiePolicy = ({ navigation }) => {
+const CookiePolicyScreen = ({ navigation }) => {
   const { colors } = useTheme()
 
   const [cookies, setCookies] = useState(true)
@@ -71,4 +71,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default CookiePolicy
+export default CookiePolicyScreen

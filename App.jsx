@@ -15,9 +15,10 @@ import RegisterScreen from './src/screens/auth/RegisterScreen'
 import SplashScreen from './src/screens/SplashScreen'
 import CustomStatusBar from './src/components/CustomStatusBar'
 import ForgotPasswordScreen from './src/screens/auth/ForgotPasswordScreen'
-import LegalInfo from './src/screens/legals/LegalInfo'
-import TermsAndConditions from './src/screens/legals/TermsAndConditions'
-import CookiePolicy from './src/screens/legals/CookiePolicy'
+import LegalFoundationsScreen from './src/screens/legals/LegalFoundationsScreen'
+import CookiePolicyScreen from './src/screens/legals/CookiePolicyScreen'
+import LegalInfoScreen from './src/screens/legals/LegalInfoScreen'
+import TermsAndConditionsScreen from './src/screens/legals/TermsAndConditionsScreen'
 
 const AppStack = createNativeStackNavigator()
 
@@ -39,16 +40,23 @@ const App = () => {
               headerShown: false,
             }}
           >
-            <AppStack.Screen name="LegalInfo" component={LegalInfo} />
+            <AppStack.Screen name="LegalInfo" component={LegalInfoScreen} />
             <AppStack.Screen name="Splash" component={SplashScreen} />
             <AppStack.Screen name="Onboarding" component={OnboardingScreen} />
             <AppStack.Screen name="Register" component={RegisterScreen} />
             <AppStack.Screen name="Home" component={HomeScreen} />
             <AppStack.Screen name="Login" component={LoginScreen} />
-            <AppStack.Screen name="CookiePolicy" component={CookiePolicy} />
+            <AppStack.Screen
+              name="CookiePolicy"
+              component={CookiePolicyScreen}
+            />
+            <AppStack.Screen
+              name="LegalFoundation"
+              component={LegalFoundationsScreen}
+            />
             <AppStack.Screen
               name="TermsAndConditions"
-              component={TermsAndConditions}
+              component={TermsAndConditionsScreen}
             />
             <AppStack.Screen
               name="ForgotPassword"
