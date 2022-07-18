@@ -20,6 +20,7 @@ import CookiePolicyScreen from './src/screens/legals/CookiePolicyScreen'
 import LegalInfoScreen from './src/screens/legals/LegalInfoScreen'
 import TermsAndConditionsScreen from './src/screens/legals/TermsAndConditions/TermsAndConditionsScreen'
 import CancellationScreen from './src/screens/legals/TermsAndConditions/TermsOfService/CancellationScreen'
+import ConductScreen from './src/screens/legals/TermsAndConditions/TermsOfService/ConductScreen'
 
 const AppStack = createNativeStackNavigator()
 
@@ -47,6 +48,7 @@ const App = () => {
             <AppStack.Screen name="Register" component={RegisterScreen} />
             <AppStack.Screen name="Home" component={HomeScreen} />
             <AppStack.Screen name="Login" component={LoginScreen} />
+            <AppStack.Screen name="Conduct" component={ConductScreen} />
             <AppStack.Screen
               name="Cancellation"
               component={CancellationScreen}
