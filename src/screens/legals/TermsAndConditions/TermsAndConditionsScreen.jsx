@@ -50,7 +50,9 @@ const TermsAndConditionsScreen = ({ navigation }) => {
       <CustomLI
         colors={colors}
         link="Nous pouvons supprimer votre compte si vous agissez de manière inappropriée."
-        onPress={() => {}}
+        onPress={() => {
+          navigation.navigate('Termination')
+        }}
       />
 
       <CustomLI
