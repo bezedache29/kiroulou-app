@@ -6,9 +6,9 @@ import { useTheme } from 'react-native-paper'
 import {
   defaultContainer,
   defaultText,
-  marginVertical10,
   mb30,
   mt20,
+  my10,
   my30,
   TitleH3,
 } from '../../assets/styles/styles'
@@ -35,11 +35,13 @@ const LegalInfo = ({ navigation }) => {
 
           <CustomButtonInfo
             title="Conditions générales"
-            onPress={() => {}}
+            onPress={() => {
+              navigation.navigate('TermsAndConditions')
+            }}
             colors={colors}
           />
 
-          <View style={marginVertical10} />
+          <View style={my10} />
 
           <CustomButtonInfo
             title="Politique de confidentialité"

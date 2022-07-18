@@ -10,6 +10,8 @@ import {
   DarkTheme as PaperDarkTheme,
 } from 'react-native-paper'
 import {
+  beigeColor,
+  blackColor,
   darkColor,
   darkPrimaryColor,
   eggplantColor,
@@ -27,10 +29,13 @@ const useMyTheme = () => {
       ...PaperDefaultTheme.colors,
       background: whiteColor,
       text: darkColor,
+      textSecondary: blackColor,
       icon: darkPrimaryColor,
       link: darkPrimaryColor,
       border: grayColor,
       backgroundColorBtn: whiteColor,
+      backgroundColorBtnActive: beigeColor,
+      textBtnActive: darkColor,
     },
   }
 
@@ -42,10 +47,13 @@ const useMyTheme = () => {
       ...PaperDarkTheme.colors,
       background: darkColor,
       text: whiteColor,
+      textSecondary: whiteColor,
       icon: darkPrimaryColor,
       link: primaryColor,
       border: whiteColor,
       backgroundColorBtn: eggplantColor,
+      backgroundColorBtnActive: beigeColor,
+      textBtnActive: darkColor,
     },
   }
 

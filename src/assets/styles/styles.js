@@ -12,6 +12,8 @@ export const ivoryColor = '#ffffd4'
 export const eggplantColor = '#370028'
 export const pinkColor = '#d58490'
 export const blueColor = '#77b5fe'
+// export const blackColor = '#1c1c1c'
+export const blackColor = '#606060'
 export const grayColor = '#ddd'
 
 export const dangerColor = '#ff0921'
@@ -32,6 +34,10 @@ export const TitleH3 = {
   fontSize: 30,
   fontFamily: 'Amaranth-Bold',
 }
+export const TitleH4 = {
+  fontSize: 22,
+  fontFamily: 'Amaranth-Bold',
+}
 export const defaultText = {
   fontSize: 18,
   fontFamily: 'Amaranth-Regular',
@@ -46,6 +52,12 @@ export const minText = {
 export const labelNavigation = {
   fontFamily: 'Amaranth-Bold',
   fontSize: 22,
+}
+export const defaultLink = {
+  textDecorationLine: 'underline',
+  textDecorationColor: darkPrimaryColor,
+  fontSize: 18,
+  fontFamily: 'Amaranth-Regular',
 }
 
 // MARGINS
@@ -64,22 +76,25 @@ export const mt10 = {
 export const mt20 = {
   marginTop: 20,
 }
+export const mt30 = {
+  marginTop: 30,
+}
 export const mt50 = {
   marginTop: 50,
 }
 export const mb30 = {
   marginBottom: 30,
 }
-export const marginVertical50 = {
+export const my50 = {
   marginVertical: 50,
+}
+export const mx20 = {
+  marginHorizontal: 20,
 }
 export const my30 = {
   marginVertical: 30,
 }
-export const my50 = {
-  marginVertical: 50,
-}
-export const marginVertical10 = {
+export const my10 = {
   marginVertical: 10,
 }
 
