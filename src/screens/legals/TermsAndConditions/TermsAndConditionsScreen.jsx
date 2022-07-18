@@ -42,7 +42,9 @@ const TermsAndConditionsScreen = ({ navigation }) => {
       <CustomLI
         colors={colors}
         link="Nous attendons de vous que vous agissiez avec respect et nous annulerons votre compte si vous agissez de manière inappropriée."
-        onPress={() => {}}
+        onPress={() => {
+          navigation.navigate('Conduct')
+        }}
       />
 
       <CustomLI
