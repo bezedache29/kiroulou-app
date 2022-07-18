@@ -28,7 +28,9 @@ const TermsAndConditionsScreen = ({ navigation }) => {
         colors={colors}
         text="La protection de votre vie privée est d’une importance critique à nos yeux. Découvrez comment nous recueillons et utilisons vos informations personnelles dans notre"
         link="Politique de confidentialité"
-        onPress={() => {}}
+        onPress={() => {
+          navigation.navigate('Privacy')
+        }}
       />
 
       <CustomLI

@@ -22,7 +22,9 @@ const LegalFoundationsScreen = ({ navigation }) => {
         notre manière de recueillir, d’utiliser, de partager et de protéger vos
         informations dans notre{' '}
         <CustomLink
-          onPress={() => {}}
+          onPress={() => {
+            navigation.navigate('Privacy')
+          }}
           label="Politique de confidentailité."
           colors={colors}
         />

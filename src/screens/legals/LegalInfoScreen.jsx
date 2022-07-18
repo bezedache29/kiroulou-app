@@ -45,7 +45,9 @@ const LegalInfoScreen = ({ navigation }) => {
 
           <CustomButtonInfo
             title="Politique de confidentialité"
-            onPress={() => {}}
+            onPress={() => {
+              navigation.navigate('Privacy')
+            }}
             colors={colors}
           />
         </View>
