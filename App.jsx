@@ -45,12 +45,12 @@ const App = () => {
               headerShown: false,
             }}
           >
-            <AppStack.Screen name="LegalInfo" component={LegalNoticeScreen} />
             <AppStack.Screen name="Splash" component={SplashScreen} />
             <AppStack.Screen name="Onboarding" component={OnboardingScreen} />
             <AppStack.Screen name="Register" component={RegisterScreen} />
-            <AppStack.Screen name="Home" component={HomeScreen} />
             <AppStack.Screen name="Login" component={LoginScreen} />
+            <AppStack.Screen name="LegalNotice" component={LegalNoticeScreen} />
+            <AppStack.Screen name="Home" component={HomeScreen} />
             <AppStack.Screen name="Conduct" component={ConductScreen} />
             <AppStack.Screen name="Termination" component={TerminationScreen} />
             <AppStack.Screen name="Privacy" component={PrivacyScreen} />

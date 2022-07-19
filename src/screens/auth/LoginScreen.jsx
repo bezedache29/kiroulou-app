@@ -77,7 +77,7 @@ const LoginScreen = ({ navigation }) => {
               />
             }
             keyboardType="email-address"
-            color={colors.text}
+            colors={colors}
           />
 
           <InputField
@@ -91,7 +91,7 @@ const LoginScreen = ({ navigation }) => {
               />
             }
             inputType="password"
-            color={colors.text}
+            colors={colors}
             fieldButtonLabel="Oublié ?"
             fieldButtonFunction={() => {
               navigation.navigate('ForgotPassword')
