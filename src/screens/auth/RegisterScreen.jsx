@@ -7,6 +7,7 @@ import {
   StyleSheet,
 } from 'react-native'
 import React, { useState } from 'react'
+import Modal from 'react-native-modal'
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -17,17 +18,22 @@ import { useTheme } from 'react-native-paper'
 import { Formik } from 'formik'
 import * as yup from 'yup'
 
+import LinearGradient from 'react-native-linear-gradient'
 import {
   authTitle,
   dangerColor,
+  darkPrimaryColor,
   defaultContainer,
   defaultText,
   mb30,
   minText,
   ml5,
   mr5,
+  primaryColor,
   px25,
   textAlignCenter,
+  TitleH3,
+  whiteColor,
 } from '../../assets/styles/styles'
 
 import RegisterSVG from '../../assets/images/svg/auth/register.svg'
@@ -38,6 +44,7 @@ import StravaSVG from '../../assets/images/svg/auth/icons/strava.svg'
 import InputField from '../../components/InputField'
 import AuthButton from '../../components/AuthButton'
 import CustomSocialButton from '../../components/CustomSocialButton'
+import CustomLink from '../../components/CustomLink'
 
 const registerSchema = yup.object().shape({
   email: yup
@@ -66,8 +73,10 @@ const RegisterScreen = ({ navigation }) => {
   const { colors } = useTheme()
 
   const [emailError, setEmailError] = useState(false)
+  const [showModal, setShowModal] = useState(false)
+  const [formData, setFormData] = useState()
 
-  const submitForm = (values) => {
+  const submitForm = (values, resetForm) => {
     setEmailError(false)
     // Check en DB si le mail n'existe pas deja
     // Si oui
@@ -77,7 +86,19 @@ const RegisterScreen = ({ navigation }) => {
       email: values.email,
       password: values.password,
     }
-    console.log(data)
+    setShowModal(true)
+    setFormData(data)
+    resetForm()
+  }
+
+  /**
+   * Envoie les datas du formulaire a l'api pour créer le user
+   */
+  const createAccount = () => {
+    setShowModal(false)
+    console.log(formData)
+    setFormData({})
+    // navigation.navigate('Login')
   }
 
   return (
@@ -87,15 +108,7 @@ const RegisterScreen = ({ navigation }) => {
       <ScrollView showsVerticalScrollIndicator={false} style={px25}>
         <View style={{ flex: 1 }}>
           <View style={{ alignItems: 'center' }}>
-            <View
-              style={{
-                borderRadius: 8,
-                overflow: 'hidden',
-                width: 350,
-                height: 250,
-                marginVertical: 20,
-              }}
-            >
+            <View style={styles.containerSVG}>
               <RegisterSVG width={350} height={290} />
             </View>
           </View>
@@ -133,7 +146,9 @@ const RegisterScreen = ({ navigation }) => {
           <Formik
             validationSchema={registerSchema}
             initialValues={{ email: '', password: '', passwordConfirm: '' }}
-            onSubmit={submitForm}
+            onSubmit={(values, { resetForm }) => {
+              submitForm(values, resetForm)
+            }}
           >
             {({
               handleChange,
@@ -230,11 +245,92 @@ const RegisterScreen = ({ navigation }) => {
           </View>
         </Animatable.View>
       </ScrollView>
+
+      {/* Modal pour acccepter les mentions légales */}
+      <Modal
+        isVisible={showModal}
+        animationIn="slideInUp"
+        onBackButtonPress={() => {
+          setShowModal(false)
+        }}
+      >
+        <View
+          style={{
+            padding: 20,
+            backgroundColor: colors.background,
+            borderRadius: 8,
+            borderWidth: 1,
+            borderColor: colors.border,
+            shadowColor: darkPrimaryColor,
+            shadowOffset: {
+              width: 0,
+              height: 2,
+            },
+            shadowOpacity: 0.8,
+            shadowRadius: 4,
+            elevation: 15,
+          }}
+        >
+          <Text
+            style={[TitleH3, textAlignCenter, mb30, { color: colors.text }]}
+          >
+            Créer mon compte
+          </Text>
+          <Text style={[defaultText, mb30, { color: colors.text }]}>
+            Afin de pouvoir vous inscrire il vous faut lire et accepter les{' '}
+            <CustomLink
+              onPress={() => {
+                navigation.navigate('LegalNotice')
+              }}
+              label="mentions légales"
+              colors={colors}
+            />{' '}
+            de l'application mobile.
+          </Text>
+
+          <TouchableOpacity onPress={createAccount}>
+            <LinearGradient
+              colors={[primaryColor, darkPrimaryColor]}
+              style={{
+                width: '100%',
+                height: 50,
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: 10,
+                marginVertical: 20,
+              }}
+            >
+              <Text style={[defaultText, { color: whiteColor }]}>
+                J'ai lu et j'accepte des mentions légales
+              </Text>
+            </LinearGradient>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => setShowModal(false)}>
+            <Text
+              style={[
+                defaultText,
+                textAlignCenter,
+                { textDecorationLine: 'underline', color: colors.link },
+              ]}
+            >
+              Je n'accepte pas les mentions légales
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
+  containerSVG: {
+    borderRadius: 8,
+    overflow: 'hidden',
+    width: 350,
+    height: 250,
+    marginVertical: 20,
+  },
   btnsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
