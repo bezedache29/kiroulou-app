@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -14,9 +14,12 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import * as Animatable from 'react-native-animatable'
 
 import { useTheme } from 'react-native-paper'
+import { Formik } from 'formik'
+import * as yup from 'yup'
 
 import {
   authTitle,
+  dangerColor,
   defaultContainer,
   defaultText,
   mb30,
@@ -35,8 +38,50 @@ import InputField from '../../components/InputField'
 import AuthButton from '../../components/AuthButton'
 import CustomSocialButton from '../../components/CustomSocialButton'
 
+const loginSchema = yup.object().shape({
+  email: yup
+    .string()
+    .email("L'email doit être un email valide")
+    .min(5, 'trop petit')
+    .max(40, 'trop long!')
+    .required("L'email est obligatoire"),
+  password: yup
+    .string()
+    .min(6, 'trop petit')
+    .max(30, 'trop long!')
+    .required('Le mot de passe est obligatoire'),
+})
+
 const LoginScreen = ({ navigation }) => {
   const { colors } = useTheme()
+
+  const [error, setError] = useState(false)
+
+  /**
+   * A la soumission du formulaire si la validation est bonne :
+   * Request API et suivant la réponse :
+   * A - Stock un jwt et redirect HomeScreen
+   * B - Erreur
+   * Reset les values des inputs
+   */
+  const submitForm = (values, resetForm) => {
+    setError(false)
+    const data = {
+      email: values.email,
+      password: values.password,
+    }
+    console.log(data)
+    // Request API des datas
+    // Retour erreur ?
+    // setError(response.message)
+    // Sinon
+    resetForm()
+    // JWT dans le localstorage
+    // navigation.reset({
+    //   index: 0,
+    //   routes: [{ name: 'HomeScreen' }],
+    // })
+  }
 
   return (
     <SafeAreaView
@@ -67,38 +112,79 @@ const LoginScreen = ({ navigation }) => {
           animation="fadeInUpBig"
           style={{ flex: 3, backgroundColor: colors.background }}
         >
-          <InputField
-            label="Adresse e-mail"
-            icon={
-              <MaterialIcons
-                name="alternate-email"
-                size={20}
-                color={colors.icon}
-              />
-            }
-            keyboardType="email-address"
-            colors={colors}
-          />
-
-          <InputField
-            label="Mot de passe"
-            icon={
-              <Ionicons
-                name="ios-lock-closed-outline"
-                size={20}
-                color={colors.icon}
-                style={mr5}
-              />
-            }
-            inputType="password"
-            colors={colors}
-            fieldButtonLabel="Oublié ?"
-            fieldButtonFunction={() => {
-              navigation.navigate('ForgotPassword')
+          {/* Début Formulaire de connexion */}
+          <Formik
+            validationSchema={loginSchema}
+            initialValues={{ email: '', password: '', passwordConfirm: '' }}
+            onSubmit={(values, { resetForm }) => {
+              submitForm(values, resetForm)
             }}
-          />
+          >
+            {({
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              values,
+              errors,
+              touched,
+            }) => (
+              <>
+                <InputField
+                  label="Adresse e-mail"
+                  icon={
+                    <MaterialIcons
+                      name="alternate-email"
+                      size={20}
+                      color={
+                        touched.email && errors.email
+                          ? dangerColor
+                          : colors.icon
+                      }
+                    />
+                  }
+                  keyboardType="email-address"
+                  name="email"
+                  colors={colors}
+                  otherError={error}
+                  error={touched.email && errors.email}
+                  onChange={handleChange('email')}
+                  onBlur={handleBlur('email')}
+                  value={values.email}
+                />
 
-          <AuthButton label="Je me connecte" onPress={() => {}} />
+                <InputField
+                  label="Mot de passe"
+                  icon={
+                    <Ionicons
+                      name="ios-lock-closed-outline"
+                      size={20}
+                      color={
+                        touched.password && errors.password
+                          ? dangerColor
+                          : colors.icon
+                      }
+                      style={mr5}
+                    />
+                  }
+                  inputType="password"
+                  colors={colors}
+                  otherError={error}
+                  fieldButtonLabel="Oublié ?"
+                  fieldButtonFunction={() => {
+                    navigation.navigate('ForgotPassword')
+                  }}
+                  error={touched.password && errors.password}
+                  name="password"
+                  onChange={handleChange('password')}
+                  onBlur={handleBlur('password')}
+                  value={values.password}
+                />
+
+                <AuthButton label="Je me connecte" onPress={handleSubmit} />
+              </>
+            )}
+          </Formik>
+          {/* Fin Formulaire de connexion */}
 
           <Text
             style={[minText, textAlignCenter, mb30, { color: colors.text }]}
@@ -106,6 +192,7 @@ const LoginScreen = ({ navigation }) => {
             Ou, se connecter avec une adresse e-mail ...
           </Text>
 
+          {/* Début Icones pour connexion réseaux sociaux */}
           <View style={styles.btnsContainer}>
             {/* Bouton Google */}
             <CustomSocialButton onPress={() => {}} color={colors.border}>
@@ -122,6 +209,7 @@ const LoginScreen = ({ navigation }) => {
               <StravaSVG height={24} width={24} />
             </CustomSocialButton>
           </View>
+          {/* Fin Icones pour connexion réseaux sociaux */}
 
           <View style={styles.footer}>
             <Text style={[defaultText, { color: colors.text }]}>

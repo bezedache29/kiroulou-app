@@ -175,7 +175,7 @@ const RegisterScreen = ({ navigation }) => {
                   keyboardType="email-address"
                   colors={colors}
                   otherError={emailError}
-                  error={touched.email && errors.email}
+                  error={(touched.email && errors.email) || emailError}
                   name="email"
                   onChange={handleChange('email')}
                   onBlur={handleBlur('email')}
