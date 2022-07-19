@@ -55,51 +55,6 @@ const LegalNoticeScreen = ({ navigation }) => {
           />
         </View>
 
-        {/* <View style={[my30, { marginTop: 30, paddingHorizontal: 20, flex: 3 }]}>
-          <Text style={[defaultText, my30, { color: colors.text }]}>
-            L'application mobile KiRoulOu est éditée par :
-          </Text>
-
-          <Text style={[TitleH3, mb30, { color: colors.text }]}>
-            EIRL Bezedache
-          </Text>
-
-          <Text
-            style={[
-              defaultText,
-              {
-                textDecorationLine: 'underline',
-                textDecorationColor: colors.text,
-                color: colors.text,
-              },
-            ]}
-          >
-            Siège social :
-          </Text>
-          <Text style={[defaultText, { color: colors.text }]}>
-            5 hent kerliver
-          </Text>
-          <Text style={[defaultText, mb30, { color: colors.text }]}>
-            29890 Kerlouan
-          </Text>
-
-          <Text
-            style={[
-              defaultText,
-              {
-                textDecorationLine: 'underline',
-                textDecorationColor: colors.text,
-                color: colors.text,
-              },
-            ]}
-          >
-            Directeur de publication :
-          </Text>
-          <Text style={[defaultText, { color: colors.text }]}>
-            Monsieur Christophe Salou
-          </Text>
-        </View> */}
-
         <View style={[my30, { marginTop: 30, paddingHorizontal: 20, flex: 3 }]}>
           <Text style={[TitleH3, mb30, { color: colors.text }]}>
             Mentions légales
