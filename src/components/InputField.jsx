@@ -6,7 +6,7 @@ import {
   StyleSheet,
 } from 'react-native'
 import React from 'react'
-import { darkPrimaryColor, minText } from '../assets/styles/styles'
+import { dangerColor, darkPrimaryColor, minText } from '../assets/styles/styles'
 
 const InputField = ({
   label,
@@ -15,41 +15,63 @@ const InputField = ({
   keyboardType,
   fieldButtonLabel,
   fieldButtonFunction,
-  color,
+  colors,
+  error,
+  otherError,
+  onChange,
+  name,
+  value,
+  onBlur,
 }) => (
-  <View style={styles.container}>
-    {icon}
-    {inputType === 'password' ? (
+  <>
+    <View
+      style={[
+        styles.container,
+        {
+          borderBottomColor: error || otherError ? dangerColor : colors.border,
+        },
+      ]}
+    >
+      {icon}
       <TextInput
+        name={name}
+        value={value}
         placeholder={label}
-        placeholderTextColor={color}
-        style={[styles.textInput, { color }]}
+        placeholderTextColor={colors.text}
+        style={[
+          styles.textInput,
+          {
+            color: error || otherError ? dangerColor : colors.text,
+            borerColor: error || otherError ? dangerColor : colors.text,
+          },
+        ]}
+        onChangeText={onChange}
+        onBlur={onBlur}
         keyboardType={keyboardType}
-        secureTextEntry
+        secureTextEntry={inputType === 'password'}
       />
-    ) : (
-      <TextInput
-        placeholder={label}
-        placeholderTextColor={color}
-        style={[styles.textInput, { color }]}
-      />
-    )}
-    <TouchableOpacity onPress={fieldButtonFunction}>
-      <Text style={[styles.link, minText]}>{fieldButtonLabel}</Text>
-    </TouchableOpacity>
-  </View>
+      <TouchableOpacity onPress={fieldButtonFunction}>
+        <Text style={[styles.link, minText]}>{fieldButtonLabel}</Text>
+      </TouchableOpacity>
+    </View>
+    {error && <Text style={{ color: dangerColor }}>{error}</Text>}
+    {otherError && <Text style={{ color: dangerColor }}>{otherError}</Text>}
+  </>
 )
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    borderBottomColor: '#ccc',
     borderBottomWidth: 1,
     paddingBottom: 8,
-    marginBottom: 25,
+    marginTop: 25,
     alignItems: 'center',
   },
   textInput: {
+    flex: 1,
+    paddingVertical: 0,
+  },
+  textInputError: {
     flex: 1,
     paddingVertical: 0,
   },
