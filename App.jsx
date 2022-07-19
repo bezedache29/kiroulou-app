@@ -17,13 +17,13 @@ import CustomStatusBar from './src/components/CustomStatusBar'
 import ForgotPasswordScreen from './src/screens/auth/ForgotPasswordScreen'
 import LegalFoundationsScreen from './src/screens/legals/LegalFoundationsScreen'
 import CookiePolicyScreen from './src/screens/legals/CookiePolicyScreen'
-import LegalInfoScreen from './src/screens/legals/LegalInfoScreen'
 import TermsAndConditionsScreen from './src/screens/legals/TermsAndConditions/TermsAndConditionsScreen'
 import CancellationScreen from './src/screens/legals/TermsAndConditions/TermsOfService/CancellationScreen'
 import ConductScreen from './src/screens/legals/TermsAndConditions/TermsOfService/ConductScreen'
 import TerminationScreen from './src/screens/legals/TermsAndConditions/TermsOfService/TerminationScreen'
 import SupportAndQuestionsScreen from './src/screens/legals/TermsAndConditions/TermsOfService/SupportAndQuestionsScreen'
 import PrivacyScreen from './src/screens/legals/PrivacyScreen'
+import LegalNoticeScreen from './src/screens/legals/LegalNoticeScreen'
 
 const AppStack = createNativeStackNavigator()
 
@@ -45,9 +45,9 @@ const App = () => {
               headerShown: false,
             }}
           >
+            <AppStack.Screen name="LegalInfo" component={LegalNoticeScreen} />
             <AppStack.Screen name="Splash" component={SplashScreen} />
             <AppStack.Screen name="Onboarding" component={OnboardingScreen} />
-            <AppStack.Screen name="LegalInfo" component={LegalInfoScreen} />
             <AppStack.Screen name="Register" component={RegisterScreen} />
             <AppStack.Screen name="Home" component={HomeScreen} />
             <AppStack.Screen name="Login" component={LoginScreen} />
