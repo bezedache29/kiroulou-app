@@ -45,9 +45,9 @@ const App = () => {
               headerShown: false,
             }}
           >
-            <AppStack.Screen name="LegalInfo" component={LegalInfoScreen} />
             <AppStack.Screen name="Splash" component={SplashScreen} />
             <AppStack.Screen name="Onboarding" component={OnboardingScreen} />
+            <AppStack.Screen name="LegalInfo" component={LegalInfoScreen} />
             <AppStack.Screen name="Register" component={RegisterScreen} />
             <AppStack.Screen name="Home" component={HomeScreen} />
             <AppStack.Screen name="Login" component={LoginScreen} />
