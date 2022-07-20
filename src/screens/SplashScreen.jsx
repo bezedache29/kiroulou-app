@@ -1,9 +1,14 @@
 import { View, Text } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
+
 import AsyncStorage from '@react-native-async-storage/async-storage'
+
+import { AppContext } from '../context/Context'
 
 const SplashScreen = ({ navigation }) => {
   const [isFirstLaunch, setIsFirstLaunch] = useState(null)
+
+  const { toggleTheme } = useContext(AppContext)
 
   /**
    * Permet de check si le user a dejà ouvert l'application et donc de skip ou non le Onboarding
@@ -29,6 +34,12 @@ const SplashScreen = ({ navigation }) => {
     // AsyncStorage.removeItem('alreadyLaunched').then(() => {
     //   setIsFirstLaunch(true)
     // })
+
+    AsyncStorage.getItem('darkmode').then((value) => {
+      if (value) {
+        toggleTheme()
+      }
+    })
   }, [])
 
   if (isFirstLaunch == null) {
