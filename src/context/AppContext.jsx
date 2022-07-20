@@ -4,7 +4,7 @@
 import { useMemo, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-const useMyContext = () => {
+const useAppContext = () => {
   const [isDarkTheme, setIsDarkTheme] = useState(false)
 
   const appContext = useMemo(() => ({
@@ -24,4 +24,4 @@ const useMyContext = () => {
   }
 }
 
-export default useMyContext
+export default useAppContext
