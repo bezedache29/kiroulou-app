@@ -17,6 +17,7 @@ import {
   eggplantColor,
   grayColor,
   primaryColor,
+  secondaryColor,
   whiteColor,
 } from '../assets/styles/styles'
 
@@ -28,6 +29,7 @@ const useMyTheme = () => {
       ...NavigationDefaultTheme.colors,
       ...PaperDefaultTheme.colors,
       background: whiteColor,
+      backgroundNav: secondaryColor,
       text: darkColor,
       textSecondary: blackColor,
       icon: darkPrimaryColor,
@@ -36,6 +38,9 @@ const useMyTheme = () => {
       backgroundColorBtn: whiteColor,
       backgroundColorBtnActive: beigeColor,
       textBtnActive: darkColor,
+      activeLink: darkPrimaryColor,
+      inactiveLink: darkColor,
+      tabBar: secondaryColor,
     },
   }
 
@@ -46,6 +51,7 @@ const useMyTheme = () => {
       ...NavigationDarkTheme.colors,
       ...PaperDarkTheme.colors,
       background: darkColor,
+      backgroundNav: darkColor,
       text: whiteColor,
       textSecondary: whiteColor,
       icon: darkPrimaryColor,
@@ -54,6 +60,9 @@ const useMyTheme = () => {
       backgroundColorBtn: eggplantColor,
       backgroundColorBtnActive: beigeColor,
       textBtnActive: darkColor,
+      activeLink: darkPrimaryColor,
+      inactiveLink: grayColor,
+      tabBar: secondaryColor,
     },
   }
 

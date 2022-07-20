@@ -77,10 +77,10 @@ const LoginScreen = ({ navigation }) => {
     // Sinon
     resetForm()
     // JWT dans le localstorage
-    // navigation.reset({
-    //   index: 0,
-    //   routes: [{ name: 'HomeScreen' }],
-    // })
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Drawer' }],
+    })
   }
 
   return (

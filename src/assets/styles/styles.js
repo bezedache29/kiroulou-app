@@ -14,7 +14,7 @@ export const pinkColor = '#d58490'
 export const blueColor = '#77b5fe'
 // export const blackColor = '#1c1c1c'
 export const blackColor = '#606060'
-export const grayColor = '#ddd'
+export const grayColor = '#748c94'
 
 export const dangerColor = '#ff0921'
 export const warningColor = '#f0d500'
@@ -122,6 +122,12 @@ export const pb20 = {
 export const p20 = {
   padding: 20,
 }
+export const py10 = {
+  paddingVertical: 10,
+}
+export const py15 = {
+  paddingVertical: 15,
+}
 
 // SECTIONS
 export const defaultContainer = {
@@ -132,4 +138,13 @@ export const defaultContainer = {
 // DIVERS
 export const textAlignCenter = {
   textAlign: 'center',
+}
+export const shadow = {
+  shadowOffset: {
+    width: 0,
+    height: 10,
+  },
+  shadowOpacity: 0.2,
+  shadowRadius: 3.5,
+  elevation: 5,
 }
