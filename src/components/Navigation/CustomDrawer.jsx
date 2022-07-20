@@ -5,15 +5,16 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
+  Switch,
 } from 'react-native'
-import React from 'react'
+import React, { useContext } from 'react'
 
 import {
   DrawerContentScrollView,
   DrawerItemList,
 } from '@react-navigation/drawer'
 
-import { useTheme } from 'react-native-paper'
+import { Drawer, TouchableRipple, useTheme } from 'react-native-paper'
 
 import Ionicons from 'react-native-vector-icons/Ionicons'
 
@@ -22,6 +23,7 @@ import {
   darkColor,
   defaultText,
   defaultTextBold,
+  mt20,
   p20,
   px20,
   py10,
@@ -29,10 +31,14 @@ import {
   whiteColor,
 } from '../../assets/styles/styles'
 
+import { AppContext } from '../../context/Context'
+
 const imageBackground = require('../../assets/images/png/navigation/drawer.png')
 
 const CustomDrawer = (props) => {
   const { colors } = useTheme()
+  const paperTheme = useTheme() // Recupère la valeur du darkmode
+  const { toggleTheme } = useContext(AppContext)
 
   return (
     <View style={{ flex: 1 }}>
@@ -76,6 +82,20 @@ const CustomDrawer = (props) => {
           }}
         >
           <DrawerItemList {...props} />
+
+          <Drawer.Section title="Préférences" style={mt20}>
+            {/* Switch dark mode */}
+            <TouchableRipple onPress={toggleTheme}>
+              <View style={styles.preferences}>
+                <Text style={[defaultText, { color: colors.text }]}>
+                  Thème Sombre
+                </Text>
+                <View pointerEvents="none">
+                  <Switch value={paperTheme.dark} />
+                </View>
+              </View>
+            </TouchableRipple>
+          </Drawer.Section>
         </View>
       </DrawerContentScrollView>
 
@@ -131,6 +151,12 @@ const styles = StyleSheet.create({
   btnFooter: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  preferences: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
   },
 })
 
