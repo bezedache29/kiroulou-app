@@ -13,7 +13,8 @@ const SplashScreen = ({ navigation }) => {
 
     if (localStorageValue && localStorageValue !== '') {
       setIsFirstLaunch(false)
-      navigation.navigate('Register')
+      // navigation.navigate('Register')
+      navigation.navigate('Drawer')
     } else {
       setIsFirstLaunch(true)
       navigation.navigate('Onboarding')
