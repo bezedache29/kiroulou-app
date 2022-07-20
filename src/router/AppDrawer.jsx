@@ -1,4 +1,5 @@
 import React from 'react'
+import { StyleSheet } from 'react-native'
 
 import { createDrawerNavigator } from '@react-navigation/drawer'
 
@@ -7,17 +8,18 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
 import { useTheme } from 'react-native-paper'
-import { StyleSheet } from 'react-native'
-import CustomDrawer from '../components/Navigation/CustomDrawer'
-
-import AppTabs from './AppTabs'
-import ClubScreen from '../screens/clubs/ClubScreen'
-import PricesScreen from '../screens/prices/PricesScreen'
 import {
   darkPrimaryColor,
   defaultText,
   whiteColor,
 } from '../assets/styles/styles'
+
+import CustomDrawer from '../components/Navigation/CustomDrawer'
+
+import AppTabs from './AppTabs'
+import ClubScreen from '../screens/clubs/ClubScreen'
+import PricesScreen from '../screens/prices/PricesScreen'
+import OnboardingScreen from '../screens/OnboardingScreen'
 
 const Drawer = createDrawerNavigator()
 
@@ -66,6 +68,20 @@ const AppDrawer = () => {
         options={{
           drawerIcon: ({ color }) => (
             <MaterialIcons name="euro" size={22} color={color} />
+          ),
+        }}
+      />
+
+      <Drawer.Screen
+        name="Guide"
+        component={OnboardingScreen}
+        options={{
+          drawerIcon: ({ color }) => (
+            <MaterialCommunityIcons
+              name="cellphone-information"
+              size={22}
+              color={color}
+            />
           ),
         }}
       />

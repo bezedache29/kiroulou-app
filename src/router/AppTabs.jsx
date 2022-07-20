@@ -32,7 +32,7 @@ const AppTabs = () => {
         tabBarShowLabel: false,
         tabBarStyle: {
           position: 'absolute',
-          bottom: 15,
+          bottom: 20,
           left: 20,
           right: 20,
           backgroundColor: secondaryColor,
