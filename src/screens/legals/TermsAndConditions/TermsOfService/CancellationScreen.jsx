@@ -45,7 +45,7 @@ const CancellationScreen = ({ navigation }) => {
           à tout moment.
         </Text>
 
-        <CustomDivider />
+        <CustomDivider addStyle={my10} />
 
         <Text
           style={[littleTitle, my10, textAlignCenter, { color: colors.text }]}

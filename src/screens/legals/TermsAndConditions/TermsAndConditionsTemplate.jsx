@@ -27,7 +27,7 @@ const TermsAndConditionsTemplate = ({ navigation, title, children, route }) => {
       <CustomLabelNavigation
         label="Conditions générales"
         colors={colors}
-        onPress={() => navigation.navigate('LegalNotice')}
+        onPress={() => navigation.goBack()}
       />
 
       <ScrollView>

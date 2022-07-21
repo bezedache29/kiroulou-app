@@ -5,25 +5,25 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
-  Switch,
 } from 'react-native'
-import React, { useContext } from 'react'
+import React from 'react'
 
 import {
   DrawerContentScrollView,
   DrawerItemList,
 } from '@react-navigation/drawer'
 
-import { Drawer, TouchableRipple, useTheme } from 'react-native-paper'
+import { useTheme } from 'react-native-paper'
 
 import Ionicons from 'react-native-vector-icons/Ionicons'
+
+import { DrawerActions, useNavigation } from '@react-navigation/native'
 
 import {
   dangerColor,
   darkColor,
   defaultText,
   defaultTextBold,
-  mt20,
   p20,
   px20,
   py10,
@@ -31,14 +31,20 @@ import {
   whiteColor,
 } from '../../assets/styles/styles'
 
-import { AppContext } from '../../context/Context'
-
 const imageBackground = require('../../assets/images/png/navigation/drawer.png')
 
 const CustomDrawer = (props) => {
   const { colors } = useTheme()
-  const paperTheme = useTheme() // Recupère la valeur du darkmode
-  const { toggleTheme } = useContext(AppContext)
+
+  const navigation = useNavigation()
+
+  /**
+   * Permet de fermer le drawer avant d'etre redirigé vers la route voulu
+   */
+  const goTo = (route) => {
+    navigation.dispatch(DrawerActions.closeDrawer())
+    navigation.navigate(route)
+  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -82,20 +88,6 @@ const CustomDrawer = (props) => {
           }}
         >
           <DrawerItemList {...props} />
-
-          <Drawer.Section title="Préférences" style={mt20}>
-            {/* Switch dark mode */}
-            <TouchableRipple onPress={toggleTheme}>
-              <View style={styles.preferences}>
-                <Text style={[defaultText, { color: colors.text }]}>
-                  Thème Sombre
-                </Text>
-                <View pointerEvents="none">
-                  <Switch value={paperTheme.dark} />
-                </View>
-              </View>
-            </TouchableRipple>
-          </Drawer.Section>
         </View>
       </DrawerContentScrollView>
 
@@ -110,7 +102,7 @@ const CustomDrawer = (props) => {
           },
         ]}
       >
-        <TouchableOpacity onPress={() => {}} style={py10}>
+        <TouchableOpacity onPress={() => goTo('Settings')} style={py10}>
           <View style={styles.btnFooter}>
             <Ionicons name="settings-outline" size={22} color={colors.text} />
             <Text style={[defaultText, { marginLeft: 5, color: colors.text }]}>
