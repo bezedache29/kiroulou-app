@@ -42,6 +42,10 @@ export const defaultText = {
   fontSize: 18,
   fontFamily: 'Amaranth-Regular',
 }
+export const textItalic = {
+  fontSize: 18,
+  fontFamily: 'Amaranth-Italic',
+}
 export const defaultTextBold = {
   fontSize: 18,
   fontFamily: 'Amaranth-Bold',
@@ -49,6 +53,10 @@ export const defaultTextBold = {
 export const littleTitle = {
   fontSize: 20,
   fontFamily: 'Amaranth-Bold',
+}
+export const littleText = {
+  fontSize: 14,
+  fontFamily: 'Amaranth-Regular',
 }
 export const authTitle = {
   fontSize: 28,
@@ -77,6 +85,21 @@ export const mr5 = {
 }
 export const ml5 = {
   marginLeft: 5,
+}
+export const ml10 = {
+  marginLeft: 10,
+}
+export const ml20 = {
+  marginLeft: 20,
+}
+export const mlAuto = {
+  marginLeft: 'auto',
+}
+export const mr10 = {
+  marginRight: 10,
+}
+export const mr20 = {
+  marginRight: 20,
 }
 export const mt10 = {
   marginTop: 10,
@@ -108,6 +131,9 @@ export const my30 = {
 export const my10 = {
   marginVertical: 10,
 }
+export const my20 = {
+  marginVertical: 20,
+}
 
 // PADDINGS
 export const px25 = {
@@ -138,6 +164,10 @@ export const defaultContainer = {
 // DIVERS
 export const textAlignCenter = {
   textAlign: 'center',
+}
+export const rowCenter = {
+  flexDirection: 'row',
+  alignItems: 'center',
 }
 export const shadow = {
   shadowOffset: {

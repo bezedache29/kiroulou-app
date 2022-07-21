@@ -3,15 +3,18 @@ import React from 'react'
 
 import { useTheme } from 'react-native-paper'
 
-const CustomDivider = () => {
+const CustomDivider = ({ addStyle }) => {
   const { colors } = useTheme()
-  return <View style={[styles.divider, { borderTopColor: colors.border }]} />
+  return (
+    <View
+      style={[styles.divider, addStyle, { borderTopColor: colors.border }]}
+    />
+  )
 }
 
 const styles = StyleSheet.create({
   divider: {
     borderTopWidth: 1,
-    marginVertical: 10,
   },
 })
 

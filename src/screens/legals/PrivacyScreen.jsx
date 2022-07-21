@@ -9,6 +9,7 @@ import {
   mb10,
   mt10,
   mt20,
+  my10,
   p20,
   textAlignCenter,
   TitleH3,
@@ -37,7 +38,7 @@ const PrivacyScreen = ({ navigation }) => {
           savoir plus et lire la politique dans son intégralité.
         </Text>
 
-        <CustomDivider />
+        <CustomDivider addStyle={my10} />
 
         <Text style={[TitleH3, textAlignCenter, mb10, { color: colors.text }]}>
           Label de confidentialité
@@ -83,7 +84,7 @@ const PrivacyScreen = ({ navigation }) => {
           colors={colors}
         />
 
-        <CustomDivider />
+        <CustomDivider addStyle={my10} />
 
         <Text style={[littleTitle, { color: colors.text }]}>Suivi</Text>
 
@@ -111,7 +112,7 @@ const PrivacyScreen = ({ navigation }) => {
           colors={colors}
         />
 
-        <CustomDivider />
+        <CustomDivider addStyle={my10} />
 
         <Text style={[littleTitle, { color: colors.text }]}>Communication</Text>
 
@@ -133,7 +134,7 @@ const PrivacyScreen = ({ navigation }) => {
           colors={colors}
         />
 
-        <CustomDivider />
+        <CustomDivider addStyle={my10} />
 
         <Text style={[TitleH3, textAlignCenter, mb10, { color: colors.text }]}>
           Politique de confidentialité
