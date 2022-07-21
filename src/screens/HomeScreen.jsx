@@ -20,6 +20,7 @@ const data = [
     id: 1,
     title: 'Mon super titre',
     club: 'Mon super club',
+    user: 'Tophe Ripley',
     description:
       'Lorem ipsum dolor sit amet. Sed voluptas consequatur non voluptatibus ratione vel ullam officia 33 vero illum. Quo dolorem consequuntur sed tempora omnis et eveniet galisum sit suscipit velit qui suscipit eveniet!',
     avatar:
@@ -29,6 +30,8 @@ const data = [
     id: 2,
     title: 'Mon super titre 2',
     trek: 'Ma super rando',
+    club: 'Le super club',
+    user: 'Tophe Ripley',
     description:
       'Lorem ipsum dolor sit amet. Sed quis obcaecati 33 atque facere vel reiciendis Quis et porro quaerat in expedita nisi vel quaerat sapiente. Et quae voluptatem qui nisi exercitationem sed omnis fugiat et maiores eaque sed rerum quibusdam ea quas incidunt cum libero rerum. A quia dicta est quas neque qui velit reiciendis qui consequatur maiores ut illo porro.',
     avatar:
@@ -38,6 +41,8 @@ const data = [
     id: 3,
     title: 'Mon super titre 3',
     trek: 'Ma super rando 2',
+    club: 'Le super club 2',
+    user: 'Simon Strueux',
     description:
       'Lorem ipsum dolor sit amet. Et dicta maxime 33 error fugiat et autem nihil id saepe molestiae. Ut animi quam ad omnis numquam id beatae Quis eum labore iure. Id voluptatibus ducimus est architecto quod eos amet dolores qui harum distinctio sed maiores ratione?',
     avatar:
@@ -140,7 +145,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    flex: 10,
+    flex: 9,
   },
   footer: {
     flex: 2,
