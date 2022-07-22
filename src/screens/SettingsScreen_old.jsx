@@ -5,25 +5,24 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Dimensions,
 } from 'react-native'
-import React, { useCallback, useContext, useRef } from 'react'
+import React, { useContext, useRef } from 'react'
 
 import { useTheme, TouchableRipple } from 'react-native-paper'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import BottomSheet from 'reanimated-bottom-sheet'
+import Animated from 'react-native-reanimated'
 
+import CustomLabelNavigation from '../components/CustomLabelNavigation'
 import {
-  cancelColor,
   darkColor,
   darkPrimaryColor,
   defaultText,
   defaultTextBold,
   littleText,
   mb10,
-  mb30,
   ml10,
   ml20,
   mlAuto,
@@ -33,109 +32,93 @@ import {
   mt20,
   my10,
   my20,
-  primaryColor,
   rowCenter,
   secondaryColor,
-  textAlignCenter,
   textItalic,
-  TitleH4,
+  whiteColor,
 } from '../assets/styles/styles'
-
-import CustomLabelNavigation from '../components/CustomLabelNavigation'
 import CustomDivider from '../components/CustomDivider'
 import LayoutSection from '../components/Settings/LayoutSection'
 import { AppContext } from '../context/Context'
-import BottomSheet from '../components/BottomSheet'
-
-const { height: SCREEN_HEIGHT } = Dimensions.get('window')
 
 const SettingsScreen = ({ navigation }) => {
   const { colors } = useTheme()
   const paperTheme = useTheme() // Recupère la valeur du darkmode
   const { toggleTheme } = useContext(AppContext)
 
+  const bs = useRef()
+  const fall = new Animated.Value(1)
+
   const sub = 'free'
   const notifications = {
     push: true,
     email: false,
   }
-  const showProfile = 'all'
 
-  // Ref pour la bottomSheet du choix de la vue de profil
-  const bottomSheetRef = useRef(null)
+  const renderInner = () => (
+    <View style={[styles.panel, { backgroundColor: secondaryColor }]}>
+      <View style={{ alignItems: 'center' }}>
+        <Text style={styles.panelTitle}>Qui peut voir mon profil ?</Text>
+        <Text style={styles.panelSubtitle}>Choisis parmi la liste</Text>
+      </View>
+      <TouchableOpacity style={styles.panelButton} onPress={() => {}}>
+        <Text style={[defaultTextBold, styles.panelButtonTitle]}>
+          Tout le monde
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.panelButton} onPress={() => {}}>
+        <Text style={[defaultTextBold, styles.panelButtonTitle]}>
+          Mes abonnées
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.panelButton} onPress={() => {}}>
+        <Text style={[defaultTextBold, styles.panelButtonTitle]}>
+          Seulement moi
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.panelButton}
+        onPress={() => bs.current.snapTo(1)}
+      >
+        <Text style={[defaultTextBold, styles.panelButtonTitle]}>Annuler</Text>
+      </TouchableOpacity>
+    </View>
+  )
 
-  // Permet d'ouvrir la bottomSheet pour choisir le type de vue de profil
-  const openBottomSheet = useCallback(() => {
-    bottomSheetRef?.current?.scrollTo(-SCREEN_HEIGHT / 1.8)
-  }, [])
-
-  const closeBottomSheet = useCallback(() => {
-    bottomSheetRef?.current?.scrollTo(0)
-  }, [])
+  const renderHeader = () => (
+    <View style={[styles.header, { backgroundColor: secondaryColor }]}>
+      <View style={styles.panelHeader}>
+        <View style={[styles.panelHandle, { backgroundColor: colors.text }]} />
+      </View>
+    </View>
+  )
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <BottomSheet
+        ref={bs}
+        snapPoints={[330, 0]}
+        initialSnap={1}
+        callbackNode={fall}
+        enabledGestureInteraction
+        renderContent={renderInner}
+        renderHeader={renderHeader}
+        enabledHeaderGestureInteraction
+        enabledContentGestureInteraction
+        enabledBottomInitialAnimation
+      />
       <CustomLabelNavigation
         label="Paramètres"
         colors={colors}
         onPress={() => navigation.goBack()}
       />
 
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        {/* BottomSheet pour choisir la vue du profile */}
-        <BottomSheet ref={bottomSheetRef}>
-          <View style={styles.panelHeader}>
-            <Text
-              style={[
-                textAlignCenter,
-                TitleH4,
-                mt10,
-                mb30,
-                { color: darkColor },
-              ]}
-            >
-              Qui peut voir mon profil ?
-            </Text>
-
-            <TouchableOpacity
-              onPress={() => {}}
-              disabled={showProfile === 'all'}
-              style={[
-                styles.panelButton,
-                {
-                  backgroundColor:
-                    showProfile === 'all' ? primaryColor : darkPrimaryColor,
-                },
-              ]}
-            >
-              <Text style={[defaultTextBold, { color: colors.reverseText }]}>
-                Tout le monde
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => {}} style={styles.panelButton}>
-              <Text style={[defaultTextBold, { color: colors.reverseText }]}>
-                Mes abonnés
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => {}} style={styles.panelButton}>
-              <Text style={[defaultTextBold, { color: colors.reverseText }]}>
-                Seulement moi
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={closeBottomSheet}
-              style={[styles.panelButton, { backgroundColor: cancelColor }]}
-            >
-              <Text style={[defaultTextBold, { color: colors.reverseText }]}>
-                Annuler
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </BottomSheet>
-
+      <Animated.View
+        style={{
+          flex: 1,
+          opacity: Animated.add(0.1, Animated.multiply(fall, 1.0)),
+        }}
+      >
         <ScrollView>
           {/* MON COMPTE */}
           <LayoutSection
@@ -171,7 +154,11 @@ const SettingsScreen = ({ navigation }) => {
             </View>
 
             {/* Deuxième option pour choisir qui peut voir le profil */}
-            <TouchableRipple onPress={openBottomSheet}>
+            <TouchableRipple
+              onPress={() => {
+                bs.current.snapTo(0)
+              }}
+            >
               <View style={[rowCenter, my20]}>
                 <Text
                   style={[ml20, defaultText, { flex: 2, color: colors.text }]}
@@ -190,6 +177,8 @@ const SettingsScreen = ({ navigation }) => {
                   ]}
                 >
                   Tout le monde
+                  {/* Mes abonnés */}
+                  {/* Seulement moi */}
                 </Text>
               </View>
             </TouchableRipple>
@@ -303,25 +292,27 @@ const SettingsScreen = ({ navigation }) => {
             </TouchableRipple>
           </LayoutSection>
         </ScrollView>
-      </GestureHandlerRootView>
 
-      {/* Numéro de version de l'application */}
-      <View style={[rowCenter, styles.footerContainer]}>
-        <Text style={[ml20, mb10, littleText, { color: colors.text, flex: 1 }]}>
-          Version
-        </Text>
-        <Text
-          style={[
-            littleText,
-            mb10,
-            mr20,
-            styles.versionNumber,
-            { color: colors.text },
-          ]}
-        >
-          v1.0.0
-        </Text>
-      </View>
+        {/* Numéro de version de l'application */}
+        <View style={[rowCenter, styles.footerContainer]}>
+          <Text
+            style={[ml20, mb10, littleText, { color: colors.text, flex: 1 }]}
+          >
+            Version
+          </Text>
+          <Text
+            style={[
+              littleText,
+              mb10,
+              mr20,
+              styles.versionNumber,
+              { color: colors.text },
+            ]}
+          >
+            v1.0.0
+          </Text>
+        </View>
+      </Animated.View>
     </View>
   )
 }
@@ -340,11 +331,55 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     flex: 1,
   },
+  commandButton: {
+    padding: 15,
+    borderRadius: 10,
+    backgroundColor: '#FF6347',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  panel: {
+    padding: 20,
+    backgroundColor: 'red',
+    paddingTop: 20,
+    // borderTopLeftRadius: 20,
+    // borderTopRightRadius: 20,
+    // shadowColor: '#000000',
+    // shadowOffset: {width: 0, height: 0},
+    // shadowRadius: 5,
+    // shadowOpacity: 0.4,
+  },
+  header: {
+    shadowColor: '#000',
+    shadowRadius: 2,
+    shadowOffset: {
+      width: 0,
+      height: -3,
+    },
+    elevation: 4,
+    paddingTop: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
   panelHeader: {
-    flex: 1,
-    backgroundColor: secondaryColor,
-    zIndex: 2,
-    paddingHorizontal: 10,
+    alignItems: 'center',
+  },
+  panelHandle: {
+    width: 40,
+    height: 8,
+    borderRadius: 4,
+    marginBottom: 10,
+  },
+  panelTitle: {
+    fontSize: 27,
+    height: 35,
+    color: darkColor,
+  },
+  panelSubtitle: {
+    fontSize: 14,
+    color: darkColor,
+    height: 30,
+    marginBottom: 10,
   },
   panelButton: {
     padding: 13,
@@ -352,6 +387,9 @@ const styles = StyleSheet.create({
     backgroundColor: darkPrimaryColor,
     alignItems: 'center',
     marginVertical: 7,
+  },
+  panelButtonTitle: {
+    color: whiteColor,
   },
 })
 
