@@ -16,6 +16,8 @@ export const blueColor = '#77b5fe'
 export const blackColor = '#606060'
 export const grayColor = '#748c94'
 
+export const cancelColor = '#FF6347'
+
 export const dangerColor = '#ff0921'
 export const warningColor = '#f0d500'
 export const successColor = '#b0f2b6'
@@ -141,6 +143,9 @@ export const px25 = {
 }
 export const px20 = {
   paddingHorizontal: 20,
+}
+export const pb10 = {
+  paddingBottom: 10,
 }
 export const pb20 = {
   paddingBottom: 20,
