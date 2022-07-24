@@ -45,6 +45,8 @@
         "react/prop-types": "off",
         "react/no-unescaped-entities": 0, // error  HTML entities must be escaped
         "no-use-before-define": ["error", { "functions": true, "classes": true, "variables": false }], // Permet de déclarer styles a la fin d'une fonction
+        "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }], // Pour utiliser les i++
+        "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
         "react/no-unstable-nested-components": [
             "off","warn","error",
             { "allowAsProps": true }
