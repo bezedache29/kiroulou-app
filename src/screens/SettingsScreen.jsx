@@ -6,8 +6,9 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
+  Animated,
 } from 'react-native'
-import React, { useCallback, useContext, useRef } from 'react'
+import React, { useCallback, useContext, useRef, useState } from 'react'
 
 import { useTheme, TouchableRipple } from 'react-native-paper'
 
@@ -21,6 +22,7 @@ import {
   darkPrimaryColor,
   defaultText,
   defaultTextBold,
+  grayColor,
   littleText,
   mb10,
   mb30,
@@ -54,6 +56,11 @@ const SettingsScreen = ({ navigation }) => {
   const paperTheme = useTheme() // Recupère la valeur du darkmode
   const { toggleTheme } = useContext(AppContext)
 
+  const animation = useRef(new Animated.Value(0)).current
+
+  // State pour changer couleur et zindex quand le bottomSheet est ouvert / fermer
+  const [overlay, setOverlay] = useState(false)
+
   const sub = 'free'
   const notifications = {
     push: true,
@@ -66,15 +73,18 @@ const SettingsScreen = ({ navigation }) => {
 
   // Permet d'ouvrir la bottomSheet pour choisir le type de vue de profil
   const openBottomSheet = useCallback(() => {
+    setOverlay(true)
     bottomSheetRef?.current?.scrollTo(-SCREEN_HEIGHT / 1.8)
   }, [])
 
+  // Permet de fermer la bottomSheet pour choisir le type de vue de profil
   const closeBottomSheet = useCallback(() => {
+    setOverlay(false)
     bottomSheetRef?.current?.scrollTo(0)
   }, [])
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background }}>
+    <View style={{ flex: 1 }}>
       <CustomLabelNavigation
         label="Paramètres"
         colors={colors}
@@ -82,6 +92,22 @@ const SettingsScreen = ({ navigation }) => {
       />
 
       <GestureHandlerRootView style={{ flex: 1 }}>
+        {/* Overlay quand on clic sur le changement de vue du profil */}
+        {/* Change la couleur de l'arriere plan et le zindex */}
+        {overlay && (
+          <Animated.View
+            style={[
+              styles.overlay,
+              {
+                backgroundColor: animation.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [grayColor, darkColor],
+                }),
+              },
+            ]}
+          />
+        )}
+
         {/* BottomSheet pour choisir la vue du profile */}
         <BottomSheet ref={bottomSheetRef}>
           <View style={styles.panelHeader}>
@@ -352,6 +378,16 @@ const styles = StyleSheet.create({
     backgroundColor: darkPrimaryColor,
     alignItems: 'center',
     marginVertical: 7,
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 1,
+    opacity: 0.2,
+    backgroundColor: 'red',
   },
 })
 
