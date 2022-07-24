@@ -30,15 +30,13 @@ const HomeScreen = ({ navigation }) => {
     const post = {
       id: faker.datatype.uuid(),
       username: faker.internet.userName(),
-      trek: isTrek
-        ? `${faker.word.adjective()} ${faker.word.adjective()} ${faker.word.adjective()}`
-        : '',
-      club: `${faker.word.adjective()} ${faker.word.adjective()} ${faker.word.adjective()}`,
+      trek: isTrek ? faker.company.companyName() : '',
+      club: faker.company.companyName(),
       email: faker.internet.email(),
       avatar: faker.image.avatar(),
       registeredAt: faker.date.past(),
       description: faker.lorem.paragraph(),
-      title: `${i} - ${faker.word.adjective()} ${faker.word.adjective()} ${faker.word.adjective()}`,
+      title: `${i} - ${faker.commerce.product()}`,
     }
     return post
   }

@@ -24,6 +24,7 @@
     "react-native-linear-gradient": "^2.6.2",
     "react-native-modal": "^13.0.1",
     "react-native-onboarding-swiper": "^1.2.0",
+    "react-native-pager-view": "^5.4.25",
     "react-native-paper": "^4.12.2",
     "react-native-reanimated": "^2.9.1",
     "react-native-responsive-screen": "^1.4.2",
@@ -32,6 +33,7 @@
     "react-native-share": "^7.6.6",
     "react-native-svg": "^12.4.0",
     "react-native-svg-transformer": "^1.0.0",
+    "react-native-tab-view": "^3.1.1",
     "react-native-vector-icons": "^9.2.0",
     "reanimated-bottom-sheet": "^1.0.0-alpha.22",
     "yup": "^0.32.11"
