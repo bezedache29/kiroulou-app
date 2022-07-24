@@ -5,68 +5,56 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
 
+import { faker } from '@faker-js/faker/locale/fr'
 import TabContainer from '../components/Navigation/TabContainer'
 import HeaderDrawer from '../components/Navigation/HeaderDrawer'
 import CustomCard from '../components/Home/Card/CustomCard'
 
 import { defaultText, mb30, TitleH3 } from '../assets/styles/styles'
 
-const data = [
-  {
-    id: 1,
-    title: 'Mon super titre',
-    club: 'Mon super club',
-    user: 'Tophe Ripley',
-    description:
-      'Lorem ipsum dolor sit amet. Sed voluptas consequatur non voluptatibus ratione vel ullam officia 33 vero illum. Quo dolorem consequuntur sed tempora omnis et eveniet galisum sit suscipit velit qui suscipit eveniet!',
-    avatar:
-      'http://lh3.ggpht.com/-OdRx9XAYxkc/TusHxirp8uI/AAAAAAAABpw/lk-2NDvmJY0/Banana%252520Alien%25255B3%25255D.jpg?imgmax=800',
-  },
-  {
-    id: 2,
-    title: 'Mon super titre 2',
-    trek: 'Ma super rando',
-    club: 'Le super club',
-    user: 'Tophe Ripley',
-    description:
-      'Lorem ipsum dolor sit amet. Sed quis obcaecati 33 atque facere vel reiciendis Quis et porro quaerat in expedita nisi vel quaerat sapiente. Et quae voluptatem qui nisi exercitationem sed omnis fugiat et maiores eaque sed rerum quibusdam ea quas incidunt cum libero rerum. A quia dicta est quas neque qui velit reiciendis qui consequatur maiores ut illo porro.',
-    avatar:
-      'https://chamonixsport.com/data/images/551c03ca2ba3d/logo-vtt%20-%20copie.jpg',
-  },
-  {
-    id: 3,
-    title: 'Mon super titre 3',
-    trek: 'Ma super rando 2',
-    club: 'Le super club 2',
-    user: 'Simon Strueux',
-    description:
-      'Lorem ipsum dolor sit amet. Et dicta maxime 33 error fugiat et autem nihil id saepe molestiae. Ut animi quam ad omnis numquam id beatae Quis eum labore iure. Id voluptatibus ducimus est architecto quod eos amet dolores qui harum distinctio sed maiores ratione?',
-    avatar:
-      'https://image.shutterstock.com/image-vector/logo-mountain-bike-free-ride-600w-743925412.jpg',
-  },
-]
-
 const HomeScreen = ({ navigation }) => {
   const { colors } = useTheme()
 
   const [isFetching, setIsFetching] = useState(false)
+  const [data, setData] = useState([])
+
+  const getRandom = (min, max) => Math.random() * (max - min) + min
+
+  // Permet de créer un post fake
+  const createFakePost = (i) => {
+    const isTrek = getRandom(1, 2) === 1
+    const post = {
+      id: faker.datatype.uuid(),
+      username: faker.internet.userName(),
+      trek: isTrek
+        ? `${faker.word.adjective()} ${faker.word.adjective()} ${faker.word.adjective()}`
+        : '',
+      club: `${faker.word.adjective()} ${faker.word.adjective()} ${faker.word.adjective()}`,
+      email: faker.internet.email(),
+      avatar: faker.image.avatar(),
+      registeredAt: faker.date.past(),
+      description: faker.lorem.paragraph(),
+      title: `${i} - ${faker.word.adjective()} ${faker.word.adjective()} ${faker.word.adjective()}`,
+    }
+    return post
+  }
+
+  /**
+   * Charge 10 posts fake
+   */
+  useEffect(() => {
+    for (let i = 0; i < 10; i++) {
+      setData((oldData) => [...oldData, createFakePost(i + 1)])
+    }
+  }, [])
 
   const onRefresh = useCallback(() => {
     setIsFetching(true)
-    // const item = {
-    //   id: 4,
-    //   title: 'Mon super titre 4',
-    //   club: 'Mon super club',
-    //   description:
-    //     'Lorem ipsum dolor sit amet. In quae deserunt est nemo magni eos modi quas. Eum illum quos quo fugit sunt aut neque consequuntur sit consequatur incidunt!',
-    //   avatar:
-    //     'https://caricom.org/wp-content/uploads/Floyd-Morris-Remake-1024x879-1.jpg',
-    // }
-    // data.splice(0, 0, item)
+    setData((oldData) => [...oldData, createFakePost(data.length + 1)])
     setTimeout(() => {
       setIsFetching(false)
     }, 2000)
