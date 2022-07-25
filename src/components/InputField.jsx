@@ -6,7 +6,12 @@ import {
   StyleSheet,
 } from 'react-native'
 import React from 'react'
-import { dangerColor, darkPrimaryColor, minText } from '../assets/styles/styles'
+import {
+  dangerColor,
+  darkPrimaryColor,
+  defaultText,
+  minText,
+} from '../assets/styles/styles'
 
 const InputField = ({
   label,
@@ -40,6 +45,7 @@ const InputField = ({
         placeholderTextColor={colors.text}
         style={[
           styles.textInput,
+          defaultText,
           {
             color: error || otherError ? dangerColor : colors.text,
             borerColor: error || otherError ? dangerColor : colors.text,

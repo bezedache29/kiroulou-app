@@ -8,7 +8,7 @@ import {
   whiteColor,
 } from '../assets/styles/styles'
 
-const AuthButton = ({ label, onPress }) => (
+const CustomBigButton = ({ label, onPress }) => (
   <TouchableOpacity onPress={onPress}>
     <LinearGradient
       colors={[primaryColor, darkPrimaryColor]}
@@ -34,4 +34,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default AuthButton
+export default CustomBigButton

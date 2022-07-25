@@ -35,7 +35,7 @@ import GoogleSVG from '../../assets/images/svg/auth/icons/google.svg'
 import FacebookSVG from '../../assets/images/svg/auth/icons/facebook.svg'
 import StravaSVG from '../../assets/images/svg/auth/icons/strava.svg'
 import InputField from '../../components/InputField'
-import AuthButton from '../../components/AuthButton'
+import CustomBigButton from '../../components/CustomBigButton'
 import CustomSocialButton from '../../components/CustomSocialButton'
 
 const loginSchema = yup.object().shape({
@@ -180,7 +180,10 @@ const LoginScreen = ({ navigation }) => {
                   value={values.password}
                 />
 
-                <AuthButton label="Je me connecte" onPress={handleSubmit} />
+                <CustomBigButton
+                  label="Je me connecte"
+                  onPress={handleSubmit}
+                />
               </>
             )}
           </Formik>
