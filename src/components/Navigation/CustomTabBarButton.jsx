@@ -6,6 +6,8 @@ import {
 } from 'react-native'
 import React, { useRef, useEffect } from 'react'
 
+import { useNavigation } from '@react-navigation/native'
+
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
@@ -17,6 +19,8 @@ import {
 
 const CustomTabBarButton = ({ children, opened, toggleOpened }) => {
   const animation = useRef(new Animated.Value(0)).current
+
+  const navigation = useNavigation()
 
   useEffect(() => {
     Animated.timing(animation, {
@@ -32,6 +36,11 @@ const CustomTabBarButton = ({ children, opened, toggleOpened }) => {
       inputRange: [0, 0.5, 1],
       outputRange: [0, 0, 1],
     }),
+  }
+
+  const goToScreen = (route) => {
+    toggleOpened()
+    navigation.navigate(route)
   }
 
   return (
@@ -70,7 +79,7 @@ const CustomTabBarButton = ({ children, opened, toggleOpened }) => {
         </TouchableWithoutFeedback>
 
         {/* Bouton du milieu */}
-        <TouchableWithoutFeedback>
+        <TouchableWithoutFeedback onPress={() => goToScreen('AddClub')}>
           <Animated.View
             style={[
               styles.item,
@@ -194,6 +203,8 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
+    borderWidth: 3,
+    borderColor: whiteColor,
   },
 })
 

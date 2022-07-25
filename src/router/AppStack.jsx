@@ -16,6 +16,8 @@ import CancellationScreen from '../screens/legals/TermsAndConditions/TermsOfServ
 import ConductScreen from '../screens/legals/TermsAndConditions/TermsOfService/ConductScreen'
 import SupportAndQuestionsScreen from '../screens/legals/TermsAndConditions/TermsOfService/SupportAndQuestionsScreen'
 import TerminationScreen from '../screens/legals/TermsAndConditions/TermsOfService/TerminationScreen'
+import AddClubScreen from '../screens/clubs/AddClubScreen'
+import ForgotPasswordScreen from '../screens/auth/ForgotPasswordScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -28,6 +30,7 @@ const AppStack = () => (
     {/* Auth */}
     <Stack.Screen name="Login" component={LoginScreen} />
     <Stack.Screen name="Register" component={RegisterScreen} />
+    <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
 
     {/* Divers */}
     <Stack.Screen name="Settings" component={SettingsScreen} />
@@ -37,6 +40,9 @@ const AppStack = () => (
     <Stack.Screen name="LegalFoundation" component={LegalFoundationsScreen} />
     <Stack.Screen name="Privacy" component={PrivacyScreen} />
     <Stack.Screen name="CookiePolicy" component={CookiePolicyScreen} />
+
+    {/* Clubs */}
+    <Stack.Screen name="AddClub" component={AddClubScreen} />
 
     {/* Conditions Générales */}
     <Stack.Screen

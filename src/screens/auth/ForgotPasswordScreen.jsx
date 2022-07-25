@@ -17,7 +17,7 @@ import {
 
 import ForgotPwdSVG from '../../assets/images/svg/auth/pwd-forgot.svg'
 import InputField from '../../components/InputField'
-import AuthButton from '../../components/AuthButton'
+import CustomBigButton from '../../components/CustomBigButton'
 import CustomLabelNavigation from '../../components/CustomLabelNavigation'
 
 const ForgotPasswordScreen = ({ navigation }) => {
@@ -74,10 +74,10 @@ const ForgotPasswordScreen = ({ navigation }) => {
               />
             }
             keyboardType="email-address"
-            color={colors.text}
+            colors={colors}
           />
           <View style={mt50}>
-            <AuthButton label="Recevoir l'e-mail" onPress={() => {}} />
+            <CustomBigButton label="Recevoir l'e-mail" onPress={() => {}} />
           </View>
         </Animatable.View>
       </ScrollView>
