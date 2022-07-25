@@ -7,7 +7,7 @@ const CustomDivider = ({ addStyle }) => {
   const { colors } = useTheme()
   return (
     <View
-      style={[styles.divider, addStyle, { borderTopColor: colors.border }]}
+      style={[styles.divider, { borderTopColor: colors.border }, addStyle]}
     />
   )
 }

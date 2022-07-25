@@ -14,9 +14,9 @@ import TreksScreen from '../screens/treks/TreksScreen'
 import { whiteColor, darkColor, secondaryColor } from '../assets/styles/styles'
 import CustomTabBarIcon from '../components/Navigation/CustomTabBarIcon'
 import CustomTabBarButton from '../components/Navigation/CustomTabBarButton'
-import ClubsScreen from '../screens/clubs/ClubsScreen'
 import CalendarScreen from '../screens/CalendarScreen'
 import { useTabMenu } from '../context/TabContext'
+import ClubsScreen from '../screens/clubs/list/ClubsScreen'
 
 const Tab = createBottomTabNavigator()
 

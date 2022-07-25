@@ -42,6 +42,7 @@ const useMyTheme = () => {
       activeLink: darkPrimaryColor,
       inactiveLink: darkColor,
       tabBar: secondaryColor,
+      indicator: darkColor,
     },
   }
 
@@ -65,6 +66,7 @@ const useMyTheme = () => {
       activeLink: darkPrimaryColor,
       inactiveLink: grayColor,
       tabBar: secondaryColor,
+      indicator: secondaryColor,
     },
   }
 
