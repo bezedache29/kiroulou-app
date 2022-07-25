@@ -30,8 +30,8 @@ const ClubsScreen = ({ navigation }) => {
 
   // Les deux vues du tabView
   const renderScene = SceneMap({
-    first: ClubsByName,
-    second: ClubsByCity,
+    first: ClubsByName, // Vue recherche par nom de club
+    second: ClubsByCity, // Vue recherche par ville de club
   })
 
   // Change l'index a quand on clic sur le btn

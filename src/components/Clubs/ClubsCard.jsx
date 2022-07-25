@@ -68,7 +68,7 @@ const ClubsCard = ({ club, user = { membership: false } }) => {
           </CustomButton>
         ) : (
           <CustomButton onPress={() => {}} btnStyle={{ width: '49%' }}>
-            Demande d'adhesion
+            Adhésion
           </CustomButton>
         )}
 
