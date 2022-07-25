@@ -47,7 +47,7 @@ const BottomSheet = forwardRef(({ children }, ref) => {
     })
     .onEnd(() => {
       if (translateY.value > -SCREEN_HEIGHT / 3) {
-        scrollTo(-SCREEN_HEIGHT / 8)
+        scrollTo(-SCREEN_HEIGHT / 7)
       } else if (translateY.value < -SCREEN_HEIGHT / 1.8) {
         scrollTo(-SCREEN_HEIGHT)
       }

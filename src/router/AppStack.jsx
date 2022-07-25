@@ -18,6 +18,7 @@ import SupportAndQuestionsScreen from '../screens/legals/TermsAndConditions/Term
 import TerminationScreen from '../screens/legals/TermsAndConditions/TermsOfService/TerminationScreen'
 import AddClubScreen from '../screens/clubs/AddClubScreen'
 import ForgotPasswordScreen from '../screens/auth/ForgotPasswordScreen'
+import SubsScreen from '../screens/subs/SubsScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -34,6 +35,9 @@ const AppStack = () => (
 
     {/* Divers */}
     <Stack.Screen name="Settings" component={SettingsScreen} />
+
+    {/* Abonnements */}
+    <Stack.Screen name="Subs" component={SubsScreen} />
 
     {/* Legals */}
     <Stack.Screen name="LegalNotice" component={LegalNoticeScreen} />

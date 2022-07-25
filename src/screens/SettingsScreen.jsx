@@ -174,7 +174,10 @@ const SettingsScreen = ({ navigation }) => {
               />
             }
           >
-            <View style={[rowCenter, my20]}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Subs')}
+              style={[rowCenter, my20]}
+            >
               {/* Première option Abonnements */}
               <Text
                 style={[ml20, defaultText, { flex: 2, color: colors.text }]}
@@ -194,7 +197,7 @@ const SettingsScreen = ({ navigation }) => {
               >
                 Gratuit
               </Text>
-            </View>
+            </TouchableOpacity>
 
             {/* Deuxième option pour choisir qui peut voir le profil */}
             <TouchableRipple onPress={openBottomSheet}>
@@ -361,6 +364,7 @@ const styles = StyleSheet.create({
   footerContainer: {
     position: 'absolute',
     bottom: 0,
+    zIndex: -1,
   },
   versionNumber: {
     textAlign: 'right',
