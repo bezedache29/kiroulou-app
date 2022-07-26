@@ -15,7 +15,7 @@ const HeaderDrawer = ({ onPress, title }) => {
   const { colors } = useTheme()
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { borderBottomColor: colors.border }]}>
       <Text
         style={[TitleH3, textAlignCenter, { color: colors.text, flex: 10 }]}
       >

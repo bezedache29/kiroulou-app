@@ -9,12 +9,12 @@ import React, { useCallback, useEffect, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
 
-import { faker } from '@faker-js/faker/locale/fr'
 import TabContainer from '../components/Navigation/TabContainer'
 import HeaderDrawer from '../components/Navigation/HeaderDrawer'
 import CustomCard from '../components/Home/Card/CustomCard'
 
 import { defaultText, mb30, TitleH3 } from '../assets/styles/styles'
+import useFaker from '../hooks/useFaker'
 
 const HomeScreen = ({ navigation }) => {
   const { colors } = useTheme()
@@ -22,24 +22,8 @@ const HomeScreen = ({ navigation }) => {
   const [isFetching, setIsFetching] = useState(false)
   const [data, setData] = useState([])
 
-  const getRandom = (min, max) => Math.random() * (max - min) + min
-
-  // Permet de créer un post fake
-  const createFakePost = (i) => {
-    const isTrek = getRandom(1, 2) === 1
-    const post = {
-      id: faker.datatype.uuid(),
-      username: faker.internet.userName(),
-      trek: isTrek ? faker.company.companyName() : '',
-      club: faker.company.companyName(),
-      email: faker.internet.email(),
-      avatar: faker.image.avatar(),
-      registeredAt: faker.date.past(),
-      description: faker.lorem.paragraph(),
-      title: `${i} - ${faker.commerce.product()}`,
-    }
-    return post
-  }
+  // Pour les tests
+  const { createFakePost } = useFaker()
 
   /**
    * Charge 10 posts fake

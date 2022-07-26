@@ -22,7 +22,7 @@ import {
   whiteColor,
 } from '../../../assets/styles/styles'
 
-import CustomButton from './CustomButton'
+import CustomIconButton from '../../CustomIconButton'
 
 import file from '../../../assets/images/base64/image64'
 
@@ -72,7 +72,7 @@ const CustomCard = ({ onPress, item }) => {
       </TouchableOpacity>
       <View style={styles.containerPosts}>
         {/* Bouton like */}
-        <CustomButton
+        <CustomIconButton
           onPress={() => {}}
           icon={
             <MaterialCommunityIcons
@@ -84,7 +84,7 @@ const CustomCard = ({ onPress, item }) => {
         />
 
         {/* Bouton Comments */}
-        <CustomButton
+        <CustomIconButton
           onPress={() => {}}
           icon={
             <MaterialCommunityIcons
@@ -96,7 +96,7 @@ const CustomCard = ({ onPress, item }) => {
         />
 
         {/* Bouton share */}
-        <CustomButton
+        <CustomIconButton
           onPress={customShare}
           icon={
             <MaterialCommunityIcons
