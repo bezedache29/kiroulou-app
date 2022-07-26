@@ -50,7 +50,10 @@ const SubsScreen = ({ navigation }) => {
         </View>
 
         <View style={[mx20, mt30]}>
-          <CustomBigButton onPress={() => {}} label="Choisir mon abonnement" />
+          <CustomBigButton
+            onPress={() => navigation.navigate('SubsChoice')}
+            label="Choisir mon abonnement"
+          />
         </View>
       </ScrollView>
     </View>
