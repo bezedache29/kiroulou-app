@@ -20,6 +20,8 @@ import AddClubScreen from '../screens/clubs/AddClubScreen'
 import ForgotPasswordScreen from '../screens/auth/ForgotPasswordScreen'
 import SubsScreen from '../screens/subs/SubsScreen'
 import SubsChoiceScreen from '../screens/subs/SubsChoiceScreen'
+import UserProfileScreen from '../screens/profile/user/UserProfileScreen'
+import ClubProfileScreen from '../screens/profile/club/ClubProfileScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -49,6 +51,10 @@ const AppStack = () => (
 
     {/* Clubs */}
     <Stack.Screen name="AddClub" component={AddClubScreen} />
+
+    {/* Profiles */}
+    <Stack.Screen name="UserProfile" component={UserProfileScreen} />
+    <Stack.Screen name="ClubProfile" component={ClubProfileScreen} />
 
     {/* Conditions Générales */}
     <Stack.Screen

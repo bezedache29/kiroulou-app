@@ -7,10 +7,10 @@ import {
   darkPrimaryColor,
   primaryColor,
   whiteColor,
-} from '../../../assets/styles/styles'
+} from '../assets/styles/styles'
 
-const CustomButton = ({ icon, onPress }) => (
-  <TouchableOpacity onPress={onPress} style={styles.container}>
+const CustomIconButton = ({ icon, onPress, size = '30%' }) => (
+  <TouchableOpacity onPress={onPress} style={{ width: size }}>
     <LinearGradient
       colors={[primaryColor, darkPrimaryColor]}
       style={styles.box}
@@ -21,9 +21,6 @@ const CustomButton = ({ icon, onPress }) => (
 )
 
 const styles = StyleSheet.create({
-  container: {
-    width: '30%',
-  },
   box: {
     width: '100%',
     height: 40,
@@ -40,4 +37,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default CustomButton
+export default CustomIconButton

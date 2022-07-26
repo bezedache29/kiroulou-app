@@ -1,14 +1,14 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
-import { defaultText } from '../assets/styles/styles'
+import { darkColor, defaultText } from '../assets/styles/styles'
 
 const CustomButtonInfo = ({ title, colors, onPress, route }) => (
   <TouchableOpacity
     style={[
       styles.container,
       {
-        borderColor: colors.border,
+        borderColor: darkColor,
         backgroundColor: route
           ? colors.backgroundColorBtnActive
           : colors.backgroundColorBtn,
@@ -21,7 +21,7 @@ const CustomButtonInfo = ({ title, colors, onPress, route }) => (
       <Text
         style={[
           defaultText,
-          { color: route ? colors.textBtnActive : colors.text },
+          { color: route ? colors.textBtnActive : darkColor },
         ]}
       >
         {title}
@@ -31,7 +31,7 @@ const CustomButtonInfo = ({ title, colors, onPress, route }) => (
       <MaterialIcons
         name="keyboard-arrow-right"
         size={30}
-        color={route ? colors.textBtnActive : colors.text}
+        color={route ? colors.textBtnActive : darkColor}
       />
     </View>
   </TouchableOpacity>
@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginHorizontal: 20,
     padding: 10,
+    borderRadius: 8,
   },
   containerText: {
     paddingLeft: 10,

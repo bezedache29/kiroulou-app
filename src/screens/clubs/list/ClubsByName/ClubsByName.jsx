@@ -6,15 +6,18 @@ import React, { useEffect, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
 
-import { faker } from '@faker-js/faker/locale/fr'
 import CustomSearchInput from '../../../../components/CustomSearchInput'
 import ClubsCard from '../../../../components/Clubs/ClubsCard'
+import useFaker from '../../../../hooks/useFaker'
 
 const ClubsByName = () => {
   const { colors } = useTheme()
 
   const [search, setSearch] = useState('')
   const [clubs, setClubs] = useState([])
+
+  // Pour les tests
+  const { createFakeClub } = useFaker()
 
   const onChangeText = (text) => {
     setSearch(text)
@@ -25,19 +28,6 @@ const ClubsByName = () => {
       setClubs((oldData) => [...oldData, createFakeClub(i + 1)])
     }
   }, [])
-
-  // Permet de créer un club fake
-  const createFakeClub = (i) => {
-    const club = {
-      id: faker.datatype.uuid(),
-      uri: faker.image.avatar(),
-      name: `${i} - ${faker.company.companyName()}`,
-      city: faker.address.city(),
-      members: faker.random.numeric(2),
-      posts: faker.random.numeric(3),
-    }
-    return club
-  }
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
