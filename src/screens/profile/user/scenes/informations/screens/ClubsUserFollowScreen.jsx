@@ -7,9 +7,16 @@ import useFaker from '../../../../../../hooks/useFaker'
 
 import CustomLabelNavigation from '../../../../../../components/CustomLabelNavigation'
 import ClubsFollowCard from '../../../../../../components/Profile/User/ClubsFollowCard'
+import CustomSearchInput from '../../../../../../components/CustomSearchInput'
 
 const ClubsUserFollowScreen = ({ navigation }) => {
   const { colors } = useTheme()
+
+  const [search, setSearch] = useState('')
+
+  const onChangeText = (text) => {
+    setSearch(text)
+  }
 
   // Pour les tests
   const { createFakeClub } = useFaker()
@@ -31,6 +38,12 @@ const ClubsUserFollowScreen = ({ navigation }) => {
         }}
       />
 
+      <CustomSearchInput
+        placeholder="Rechercher par nom"
+        value={search}
+        onChangeValue={onChangeText}
+      />
+
       <View style={styles.content}>
         <FlatList
           data={clubs}
@@ -49,6 +62,7 @@ const styles = StyleSheet.create({
   content: {
     marginHorizontal: 20,
     marginVertical: 10,
-    marginBottom: 50,
+    marginBottom: 10,
+    flex: 1,
   },
 })
