@@ -1,4 +1,6 @@
+// import { CommonActions } from '@react-navigation/native'
 import { useEffect } from 'react'
+import { BackHandler } from 'react-native'
 
 const SplashProfileScreen = ({ route, navigation }) => {
   useEffect(() => {
@@ -13,10 +15,30 @@ const SplashProfileScreen = ({ route, navigation }) => {
       default:
         navigation.reset({
           index: 0,
-          routes: [{ name: 'Splash' }],
+          routes: [{ name: 'Drawer' }],
         })
     }
   }, [])
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', backAction)
+
+    return () =>
+      BackHandler.removeEventListener('hardwareBackPress', backAction)
+  }, [])
+
+  const backAction = () => {
+    // navigation.dispatch(
+    //   CommonActions.reset({
+    //     index: 0,
+    //     routes: [{ name: 'Splash' }],
+    //   })
+    // )
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Splash' }],
+    })
+  }
 
   return null
 }

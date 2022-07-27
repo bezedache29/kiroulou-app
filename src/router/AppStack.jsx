@@ -20,11 +20,12 @@ import AddClubScreen from '../screens/clubs/AddClubScreen'
 import ForgotPasswordScreen from '../screens/auth/ForgotPasswordScreen'
 import SubsScreen from '../screens/subs/SubsScreen'
 import SubsChoiceScreen from '../screens/subs/SubsChoiceScreen'
-import UserProfileScreen from '../screens/profile/user/UserProfileScreen'
+// import UserProfileScreen from '../screens/profile/user/UserProfileScreen'
+// import EditUserProfileScreen from '../screens/profile/user/EditUserProfileScreen'
 import ClubProfileScreen from '../screens/profile/club/ClubProfileScreen'
-import EditUserProfileScreen from '../screens/profile/user/EditUserProfileScreen'
-import ClubsUserFollowScreen from './../screens/profile/user/scenes/informations/screens/ClubsUserFollowScreen';
-import UsersUserFollowScreen from './../screens/profile/user/scenes/informations/screens/UsersUserFollowScreen';
+import ClubsUserFollowScreen from '../screens/profile/user/scenes/informations/screens/ClubsUserFollowScreen'
+import UsersUserFollowScreen from '../screens/profile/user/scenes/informations/screens/UsersUserFollowScreen'
+import BikesUserScreen from '../screens/profile/user/scenes/informations/screens/BikesUserScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -56,11 +57,12 @@ const AppStack = () => (
     <Stack.Screen name="AddClub" component={AddClubScreen} />
 
     {/* Profile User */}
-    <Stack.Screen name="UserProfile" component={UserProfileScreen} />
-    <Stack.Screen name="EditUserProfile" component={EditUserProfileScreen} />
+    {/* <Stack.Screen name="UserProfile" component={UserProfileScreen} />
+    <Stack.Screen name="EditUserProfile" component={EditUserProfileScreen} /> */}
     {/* Screens TabView Informations */}
     <Stack.Screen name="ClubsUserFollow" component={ClubsUserFollowScreen} />
     <Stack.Screen name="UsersUserFollow" component={UsersUserFollowScreen} />
+    <Stack.Screen name="BikesUser" component={BikesUserScreen} />
 
     {/* Profile Club */}
     <Stack.Screen name="ClubProfile" component={ClubProfileScreen} />

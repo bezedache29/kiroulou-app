@@ -19,7 +19,8 @@ import CustomDrawer from '../components/Navigation/CustomDrawer'
 import AppTabs from './AppTabs'
 import PricesScreen from '../screens/prices/PricesScreen'
 import OnboardingScreen from '../screens/OnboardingScreen'
-import SplashProfileScreen from '../screens/profile/SplashProfileScreen'
+import UserProfileScreen from '../screens/profile/user/UserProfileScreen'
+import ClubProfileScreen from '../screens/profile/club/ClubProfileScreen'
 
 const Drawer = createDrawerNavigator()
 
@@ -50,7 +51,7 @@ const AppDrawer = () => {
 
       <Drawer.Screen
         name="Mon Profil"
-        component={SplashProfileScreen}
+        component={UserProfileScreen}
         initialParams={{ params: 'my-profile' }}
         options={{
           drawerIcon: ({ color }) => (
@@ -65,7 +66,7 @@ const AppDrawer = () => {
 
       <Drawer.Screen
         name="Mon Club"
-        component={SplashProfileScreen}
+        component={ClubProfileScreen}
         initialParams={{ params: 'my-club-profile' }}
         options={{
           drawerIcon: ({ color }) => (
