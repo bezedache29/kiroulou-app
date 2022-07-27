@@ -112,6 +112,9 @@ export const mt20 = {
 export const mt30 = {
   marginTop: 30,
 }
+export const mt40 = {
+  marginTop: 40,
+}
 export const mt50 = {
   marginTop: 50,
 }

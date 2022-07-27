@@ -66,7 +66,7 @@ const LayoutProfile = ({ renderScene, routes, profile }) => {
               <ImageBackground
                 // eslint-disable-next-line react/no-array-index-key
                 key={index}
-                style={{ width: 80, height: 80 }}
+                style={styles.imageContainer}
                 source={{ uri: image.uri }}
               />
             ) : (
@@ -98,7 +98,7 @@ const LayoutProfile = ({ renderScene, routes, profile }) => {
       )}
 
       {/* TabView (informations / articles) pour le user - (informations / articles / membres) pour le club */}
-      <View style={{ flex: 5 }}>
+      <View style={{ flex: 6 }}>
         <TabView
           navigationState={{ index, routes }}
           renderScene={renderScene}
@@ -121,8 +121,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   imageContainer: {
-    width: 80,
-    height: 80,
+    width: 90,
+    height: 90,
   },
   darkness: {
     backgroundColor: 'rgba(124,182,109,0.5)',

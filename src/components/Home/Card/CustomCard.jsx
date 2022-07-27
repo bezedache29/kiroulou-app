@@ -113,7 +113,7 @@ const CustomCard = ({ onPress, item }) => {
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 10,
+    marginBottom: 20,
     marginHorizontal: 20,
     padding: 10,
     borderRadius: 5,
