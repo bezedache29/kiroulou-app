@@ -9,8 +9,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import CustomLabelNavigation from '../../../components/CustomLabelNavigation'
 import LayoutProfile from '../../../components/Profile/LayoutProfile'
-import UserInformations from './UserInformations'
-import UserPosts from './UserPosts'
+import UserInformationsScene from './scenes/informations/UserInformationsScene'
+import UserPostsScene from './scenes/posts/UserPostsScene'
 
 const UserProfileScreen = ({ navigation }) => {
   const { colors } = useTheme()
@@ -23,8 +23,8 @@ const UserProfileScreen = ({ navigation }) => {
 
   // Les deux vues du tabView
   const renderScene = SceneMap({
-    informations: UserInformations,
-    posts: UserPosts,
+    informations: UserInformationsScene,
+    posts: UserPostsScene,
   })
 
   return (
