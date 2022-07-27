@@ -65,7 +65,9 @@ const UserInformationsScene = () => {
         <CustomButtonInfo
           title="Mes vélos"
           colors={colors}
-          onPress={() => {}}
+          onPress={() => {
+            navigation.navigate('BikesUser')
+          }}
           backgroundColor={primaryColor}
         />
       </View>

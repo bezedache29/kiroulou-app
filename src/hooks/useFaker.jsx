@@ -56,6 +56,21 @@ export default function useFaker() {
     return user
   }
 
+  // Permet de créer un bike fake
+  const createFakeBike = () => {
+    const bike = {
+      id: faker.datatype.uuid(),
+      name: faker.random.words(2),
+      brand: faker.random.words(1),
+      model: faker.random.words(1),
+      year: faker.random.numeric(4),
+      type: faker.random.words(1),
+      weight: faker.random.numeric(2),
+      image: faker.image.sports(),
+    }
+    return bike
+  }
+
   // Permet de créer une image en relation avec un user fake
   const createFakeAlbum = () => {
     const image = {
@@ -72,5 +87,6 @@ export default function useFaker() {
     createFakeClub,
     createFakeAlbum,
     createFakeUser,
+    createFakeBike,
   }
 }

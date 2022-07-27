@@ -9,12 +9,15 @@ import {
   whiteColor,
 } from '../assets/styles/styles'
 
-const CustomBigButton = ({ label, onPress }) => (
-  <TouchableOpacity onPress={onPress} style={mt10}>
-    <LinearGradient
-      colors={[primaryColor, darkPrimaryColor]}
-      style={styles.btn}
-    >
+const CustomBigButton = ({
+  label,
+  onPress,
+  style,
+  styleBtn,
+  colors = [primaryColor, darkPrimaryColor],
+}) => (
+  <TouchableOpacity onPress={onPress} style={[mt10, style]}>
+    <LinearGradient colors={colors} style={[styles.btn, styleBtn]}>
       <Text style={[authTitle, styles.textBtn]}>{label}</Text>
     </LinearGradient>
   </TouchableOpacity>
