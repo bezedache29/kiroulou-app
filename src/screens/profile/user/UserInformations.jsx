@@ -10,13 +10,17 @@ import React from 'react'
 import { useTheme } from 'react-native-paper'
 
 import {
+  darkColor,
   defaultText,
   littleTitle,
   mr20,
   mt10,
   mt20,
+  mt40,
   mt50,
   mx20,
+  primaryColor,
+  secondaryColor,
 } from '../../../assets/styles/styles'
 
 import CustomButtonInfo from '../../../components/CustomButtonInfo'
@@ -25,8 +29,8 @@ const UserInformations = () => {
   const { colors } = useTheme()
 
   return (
-    <ScrollView>
-      <View style={[mx20, mt20, styles.header]}>
+    <ScrollView style={{ backgroundColor: secondaryColor }}>
+      <View style={[mx20, mt40, styles.header]}>
         <ImageBackground
           source={{
             uri: 'http://lh3.ggpht.com/-OdRx9XAYxkc/TusHxirp8uI/AAAAAAAABpw/lk-2NDvmJY0/Banana%252520Alien%25255B3%25255D.jpg?imgmax=800',
@@ -35,8 +39,8 @@ const UserInformations = () => {
           imageStyle={styles.avatarStyle}
         />
         <View style={{ flex: 4 }}>
-          <Text style={[littleTitle, { color: colors.text }]}>Prénom Nom</Text>
-          <Text style={[defaultText, mt10, { color: colors.text }]}>
+          <Text style={[littleTitle, { color: darkColor }]}>Prénom Nom</Text>
+          <Text style={[defaultText, mt10, { color: darkColor }]}>
             Ville, DEPARTEMENT
           </Text>
         </View>
@@ -48,6 +52,7 @@ const UserInformations = () => {
           title="Club : Nom du Club"
           colors={colors}
           onPress={() => {}}
+          backgroundColor={primaryColor}
         />
       </View>
 
@@ -57,6 +62,7 @@ const UserInformations = () => {
           title="Mes vélos"
           colors={colors}
           onPress={() => {}}
+          backgroundColor={primaryColor}
         />
       </View>
 
@@ -66,6 +72,7 @@ const UserInformations = () => {
           title="Mes randos hype"
           colors={colors}
           onPress={() => {}}
+          backgroundColor={primaryColor}
         />
       </View>
 
@@ -75,6 +82,7 @@ const UserInformations = () => {
           title="Mes abonnements"
           colors={colors}
           onPress={() => {}}
+          backgroundColor={primaryColor}
         />
       </View>
     </ScrollView>

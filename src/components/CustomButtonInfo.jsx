@@ -3,15 +3,21 @@ import React from 'react'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { darkColor, defaultText } from '../assets/styles/styles'
 
-const CustomButtonInfo = ({ title, colors, onPress, route }) => (
+const CustomButtonInfo = ({
+  title,
+  colors,
+  onPress,
+  route,
+  backgroundColor,
+}) => (
   <TouchableOpacity
     style={[
       styles.container,
       {
         borderColor: darkColor,
-        backgroundColor: route
-          ? colors.backgroundColorBtnActive
-          : colors.backgroundColorBtn,
+        backgroundColor:
+          backgroundColor ||
+          (route ? colors.backgroundColorBtnActive : colors.backgroundColorBtn),
       },
     ]}
     onPress={onPress}
