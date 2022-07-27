@@ -53,7 +53,7 @@ const AddClubScreen = ({ navigation }) => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <CustomLabelNavigation
         label="Créer club"
         colors={colors}
