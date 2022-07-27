@@ -24,7 +24,13 @@ import {
 import CustomIconButton from '../CustomIconButton'
 
 // edit permet d'afficher l'icone d'édition du post, et de desactiver le touchableopacity de la card
-const CustomPost = ({ onPress, item, edit = false }) => (
+const CustomPost = ({
+  onPress,
+  item,
+  likes = false,
+  comments = false,
+  edit = false,
+}) => (
   <View style={styles.container}>
     {/* Icone pour edit le post */}
     {edit && (
@@ -70,6 +76,7 @@ const CustomPost = ({ onPress, item, edit = false }) => (
             color={whiteColor}
           />
         }
+        number={likes}
       />
 
       {/* Bouton Comments */}
@@ -83,6 +90,7 @@ const CustomPost = ({ onPress, item, edit = false }) => (
             color={whiteColor}
           />
         }
+        number={comments}
       />
     </View>
   </View>

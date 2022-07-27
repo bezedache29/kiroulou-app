@@ -21,6 +21,8 @@ export default function useFaker() {
       registeredAt: faker.date.past(),
       description: faker.lorem.paragraph(),
       title: `${i} - ${faker.commerce.product()}`,
+      likes: faker.random.numeric(2),
+      comments: faker.random.numeric(),
     }
     return post
   }
@@ -38,6 +40,22 @@ export default function useFaker() {
     return club
   }
 
+  // Permet de créer un user fake
+  const createFakeUser = () => {
+    const user = {
+      id: faker.datatype.uuid(),
+      avatar: faker.internet.avatar(),
+      email: faker.internet.email(),
+      firstname: faker.name.firstName(),
+      lastname: faker.name.lastName(),
+      address: faker.address.city(),
+      country: faker.address.county(),
+      club: faker.company.companyName(),
+      posts: faker.random.numeric(),
+    }
+    return user
+  }
+
   // Permet de créer une image en relation avec un user fake
   const createFakeAlbum = () => {
     const image = {
@@ -53,5 +71,6 @@ export default function useFaker() {
     createFakePost,
     createFakeClub,
     createFakeAlbum,
+    createFakeUser,
   }
 }

@@ -9,6 +9,8 @@ import React from 'react'
 
 import { useTheme } from 'react-native-paper'
 
+import { useNavigation } from '@react-navigation/native'
+
 import {
   darkColor,
   defaultText,
@@ -21,12 +23,14 @@ import {
   mx20,
   primaryColor,
   secondaryColor,
-} from '../../../assets/styles/styles'
+} from '../../../../../assets/styles/styles'
 
-import CustomButtonInfo from '../../../components/CustomButtonInfo'
+import CustomButtonInfo from '../../../../../components/CustomButtonInfo'
 
-const UserInformations = () => {
+const UserInformationsScene = () => {
   const { colors } = useTheme()
+
+  const navigation = useNavigation()
 
   return (
     <ScrollView style={{ backgroundColor: secondaryColor }}>
@@ -69,19 +73,22 @@ const UserInformations = () => {
       {/* Liste les randos que le user hype, pour avoir un aperçu */}
       <View style={mt20}>
         <CustomButtonInfo
-          title="Mes randos hype"
+          title="Les clubs que je suis"
           colors={colors}
-          onPress={() => {}}
+          onPress={() => {
+            navigation.navigate('ClubsUserFollow')
+          }}
           backgroundColor={primaryColor}
         />
       </View>
 
-      {/* Listing des commandes */}
       <View style={mt20}>
         <CustomButtonInfo
-          title="Mes abonnements"
+          title="Les personnes que je suis"
           colors={colors}
-          onPress={() => {}}
+          onPress={() => {
+            navigation.navigate('UsersUserFollow')
+          }}
           backgroundColor={primaryColor}
         />
       </View>
@@ -103,4 +110,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default UserInformations
+export default UserInformationsScene
