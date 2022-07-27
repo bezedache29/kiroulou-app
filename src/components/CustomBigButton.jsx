@@ -4,12 +4,13 @@ import LinearGradient from 'react-native-linear-gradient'
 import {
   authTitle,
   darkPrimaryColor,
+  mt10,
   primaryColor,
   whiteColor,
 } from '../assets/styles/styles'
 
 const CustomBigButton = ({ label, onPress }) => (
-  <TouchableOpacity onPress={onPress}>
+  <TouchableOpacity onPress={onPress} style={mt10}>
     <LinearGradient
       colors={[primaryColor, darkPrimaryColor]}
       style={styles.btn}

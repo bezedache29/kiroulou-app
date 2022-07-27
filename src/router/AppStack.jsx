@@ -22,6 +22,7 @@ import SubsScreen from '../screens/subs/SubsScreen'
 import SubsChoiceScreen from '../screens/subs/SubsChoiceScreen'
 import UserProfileScreen from '../screens/profile/user/UserProfileScreen'
 import ClubProfileScreen from '../screens/profile/club/ClubProfileScreen'
+import EditUserProfileScreen from '../screens/profile/user/EditUserProfileScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -55,6 +56,7 @@ const AppStack = () => (
     {/* Profiles */}
     <Stack.Screen name="UserProfile" component={UserProfileScreen} />
     <Stack.Screen name="ClubProfile" component={ClubProfileScreen} />
+    <Stack.Screen name="EditProfile" component={EditUserProfileScreen} />
 
     {/* Conditions Générales */}
     <Stack.Screen
