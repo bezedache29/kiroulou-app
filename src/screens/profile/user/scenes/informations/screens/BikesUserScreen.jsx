@@ -72,7 +72,10 @@ const BikesUserScreen = ({ navigation }) => {
         <Text style={[littleTitle, { color: colors.text }]}>
           Nombre de vélo : 6
         </Text>
-        <TouchableOpacity style={{ marginLeft: 'auto' }}>
+        <TouchableOpacity
+          style={{ marginLeft: 'auto' }}
+          onPress={() => navigation.navigate('AddBike')}
+        >
           <MaterialCommunityIcons
             name="plus-circle"
             size={35}

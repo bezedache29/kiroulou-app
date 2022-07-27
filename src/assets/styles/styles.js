@@ -189,3 +189,12 @@ export const shadow = {
   shadowRadius: 3.5,
   elevation: 5,
 }
+export const overlayBG = {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  zIndex: 1,
+  opacity: 0.2,
+}
