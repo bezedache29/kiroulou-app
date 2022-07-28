@@ -16,7 +16,12 @@ import {
   blackColor,
   darkColor,
   defaultText,
+  mt10,
   primaryColor,
+  textAlignCenter,
+  TitleH3,
+  TitleH4,
+  warningColor,
 } from '../../assets/styles/styles'
 import useFaker from '../../hooks/useFaker'
 
@@ -91,14 +96,28 @@ const LayoutProfile = ({ renderScene, routes, profile }) => {
 
       {/* Si le profile est un club on affiche une information pour la date de la rando */}
       {profile && profile === 'club' && (
-        <View style={{ flex: 1 }}>
-          <Text>Prochaine Rando prévue le :</Text>
-          <Text>Date de la prochaine randonnée VTT</Text>
+        <View
+          style={{
+            backgroundColor: warningColor,
+            marginBottom: 5,
+            padding: 10,
+          }}
+        >
+          <Text style={[TitleH4, textAlignCenter, { color: darkColor }]}>
+            Prochaine Rando prévue le :
+          </Text>
+          <Text style={[mt10, textAlignCenter, TitleH3, { color: darkColor }]}>
+            Dimanche 31 juillet 2022
+          </Text>
+          {/* S'il n'y a pas de date */}
+          {/* <Text style={[mt10, textAlignCenter, TitleH3, { color: darkColor }]}>
+            Pas encore de date
+          </Text> */}
         </View>
       )}
 
       {/* TabView (informations / articles) pour le user - (informations / articles / membres) pour le club */}
-      <View style={{ flex: 6 }}>
+      <View style={{ flex: profile && profile === 'club' ? 5 : 6 }}>
         <TabView
           navigationState={{ index, routes }}
           renderScene={renderScene}

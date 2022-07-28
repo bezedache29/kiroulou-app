@@ -42,9 +42,7 @@ const UserProfileScreen = ({ navigation }) => {
 
       {/* Icone en haut a droite qui permet de modifier son profil */}
       <TouchableOpacity
-        onPress={() => {
-          navigation.navigate('EditProfile')
-        }}
+        onPress={() => {}}
         style={{ position: 'absolute', top: 10, right: 20 }}
       >
         <MaterialCommunityIcons
