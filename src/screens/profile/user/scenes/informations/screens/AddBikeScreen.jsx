@@ -1,3 +1,6 @@
+/**
+ * Formulaire pour qu'un user ajoute un de ses vélos
+ */
 import { ScrollView, View } from 'react-native'
 import React, { useRef, useState } from 'react'
 
@@ -10,6 +13,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
+import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import addBikeSchema from '../../../../../../validationSchemas/addBikeSchema'
 
 import {
@@ -26,10 +30,22 @@ import ButtonBS from '../../../../../../components/ButtonBS'
 import InputFieldButton from '../../../../../../components/InputFieldButton'
 import CustomBSModal from '../../../../../../components/CustomBSModal'
 import CustomOverlay from '../../../../../../components/CustomOverlay'
+import useUtils from '../../../../../../hooks/useUtils'
 
 const AddBikeScreen = ({ navigation }) => {
   const { colors } = useTheme()
+
   const [overlay, setOverlay] = useState(false)
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false)
+  const [dateLabel, setDateLabel] = useState('Date du vélo')
+  const [date, setDate] = useState(false)
+  const [dateForDB, setDateForDB] = useState('')
+  const [dateError, setDateError] = useState(false)
+  const [type, setType] = useState(false)
+  const [typeError, setTypeError] = useState(false)
+
+  // Hooks
+  const { formatDate } = useUtils()
 
   // Ref pour la bottomSheet Type
   const bottomSheetRef = useRef(null)
@@ -45,14 +61,49 @@ const AddBikeScreen = ({ navigation }) => {
     }
   }
 
+  // Permet d'ouvrir la modal DatePicker
+  const showDatePicker = () => {
+    setDatePickerVisibility(true)
+  }
+
+  // Permet de fermer la modal DatePicker
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false)
+  }
+
+  // A la confirmation de la date du DatePicker
+  const handleConfirm = (date) => {
+    // Modifie le label pour afficher la date formater en français dans le bouton
+    setDateLabel(formatDate(date))
+    // Date pour ajout en DB
+    setDateForDB(date)
+    setDate(true)
+    setDateError(false)
+    hideDatePicker()
+  }
+
+  const validForm = (handleSubmit) => {
+    setDateError(false)
+    setTypeError(false)
+    if (!date) {
+      setDateError('La date est obligatoire')
+    }
+    if (!type) {
+      setTypeError('Le type est obligatoire')
+    }
+    if (date && type) {
+      handleSubmit()
+    }
+  }
+
   // Permet de valider le formulaire
   const submitForm = (values, resetForm) => {
     const data = {
       name: values.name,
       brand: values.brand,
       model: values.model,
-      type: values.type, // A récupérer avant et pas dans Formik
-      year: values.year, // A récupérer avant et pas dans Formik
+      type,
+      year: date,
       weight: values.weight,
     }
     console.log(data)
@@ -80,8 +131,6 @@ const AddBikeScreen = ({ navigation }) => {
                   name: '',
                   brand: '',
                   model: '',
-                  type: '', // A enlever si on ne passe pas par Formik
-                  year: '', // A enlever si on ne passe pas par Formik
                   weight: '',
                 }}
                 onSubmit={(values, { resetForm }) => {
@@ -167,21 +216,16 @@ const AddBikeScreen = ({ navigation }) => {
                     <InputFieldButton
                       onPress={toggleBottomSheet}
                       label="Type de vélo"
+                      error={typeError}
                       icon={
                         <MaterialCommunityIcons
                           name="shield-account"
                           size={20}
-                          color={
-                            touched.type && errors.type
-                              ? dangerColor
-                              : colors.icon
-                          }
+                          color={typeError ? dangerColor : colors.icon}
                           style={mr5}
                         />
                       }
-                      chevronColor={
-                        touched.type && errors.type ? dangerColor : colors.text
-                      }
+                      chevronColor={typeError ? dangerColor : colors.text}
                     />
 
                     <InputField
@@ -206,13 +250,26 @@ const AddBikeScreen = ({ navigation }) => {
                       value={values.weight}
                     />
 
-                    {/* !! Input Year ICI !! */}
+                    {/* Date du vélo */}
+                    <InputFieldButton
+                      onPress={showDatePicker}
+                      label={dateLabel}
+                      error={dateError}
+                      icon={
+                        <MaterialCommunityIcons
+                          name="calendar-range"
+                          size={20}
+                          color={dateError ? dangerColor : colors.icon}
+                          style={mr5}
+                        />
+                      }
+                    />
 
                     {/* !! Input Image ICI !! */}
 
                     <CustomBigButton
                       label="Ajouter le vélo"
-                      onPress={handleSubmit}
+                      onPress={() => validForm(handleSubmit)}
                     />
                   </ScrollView>
                 )}
@@ -220,6 +277,7 @@ const AddBikeScreen = ({ navigation }) => {
             </ScrollView>
           </View>
 
+          {/* BottomSheet pour les types de vélo */}
           <CustomBSModal
             title="Choisir le type de vélo"
             SP={['25%', '40%']}
@@ -232,6 +290,14 @@ const AddBikeScreen = ({ navigation }) => {
               Vélo à assistance électrique (VAE)
             </ButtonBS>
           </CustomBSModal>
+
+          {/* Modal DatePicker */}
+          <DateTimePickerModal
+            isVisible={isDatePickerVisible}
+            mode="date"
+            onConfirm={handleConfirm}
+            onCancel={hideDatePicker}
+          />
         </View>
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
