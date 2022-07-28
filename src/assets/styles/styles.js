@@ -118,6 +118,9 @@ export const mt40 = {
 export const mt50 = {
   marginTop: 50,
 }
+export const mb5 = {
+  marginBottom: 5,
+}
 export const mb10 = {
   marginBottom: 10,
 }
@@ -135,6 +138,9 @@ export const mx20 = {
 }
 export const my30 = {
   marginVertical: 30,
+}
+export const my5 = {
+  marginVertical: 5,
 }
 export const my10 = {
   marginVertical: 10,
