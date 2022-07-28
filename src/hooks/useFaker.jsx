@@ -53,6 +53,7 @@ export default function useFaker() {
       country: faker.address.county(),
       club: faker.company.companyName(),
       posts: faker.random.numeric(),
+      dateMember: faker.date.birthdate({ min: 1990, max: 2022, mode: 'year' }),
     }
     return user
   }

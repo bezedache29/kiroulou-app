@@ -133,6 +133,9 @@ export const mb30 = {
 export const my50 = {
   marginVertical: 50,
 }
+export const mx10 = {
+  marginHorizontal: 10,
+}
 export const mx20 = {
   marginHorizontal: 20,
 }
