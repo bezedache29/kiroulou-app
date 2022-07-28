@@ -63,7 +63,7 @@ export default function useFaker() {
       name: faker.random.words(2),
       brand: faker.random.words(1),
       model: faker.random.words(1),
-      year: faker.random.numeric(4),
+      date: faker.date.birthdate({ min: 1970, max: 2022, mode: 'year' }),
       type: faker.random.words(1),
       weight: faker.random.numeric(2),
       image: faker.image.sports(),

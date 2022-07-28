@@ -25,14 +25,15 @@ import {
   rowCenter,
   textAlignCenter,
   TitleH3,
-} from '../../../../../../assets/styles/styles'
+} from '../../../../../../../assets/styles/styles'
 
-import CustomLabelNavigation from '../../../../../../components/CustomLabelNavigation'
-import BikeLi from '../../../../../../components/Profile/User/Bike/BikeLi'
-import useFaker from '../../../../../../hooks/useFaker'
-import CustomModal from '../../../../../../components/CustomModal'
-import CustomDivider from '../../../../../../components/CustomDivider'
-import CustomBigButton from '../../../../../../components/CustomBigButton'
+import CustomLabelNavigation from '../../../../../../../components/CustomLabelNavigation'
+import BikeLi from '../../../../../../../components/Profile/User/Bike/BikeLi'
+import useFaker from '../../../../../../../hooks/useFaker'
+import CustomModal from '../../../../../../../components/CustomModal'
+import CustomDivider from '../../../../../../../components/CustomDivider'
+import CustomBigButton from '../../../../../../../components/CustomBigButton'
+import useUtils from '../../../../../../../hooks/useUtils'
 
 const BikesUserScreen = ({ navigation }) => {
   const { colors } = useTheme()
@@ -40,7 +41,10 @@ const BikesUserScreen = ({ navigation }) => {
   const [open, setOpen] = useState(false)
   const [bike, setBike] = useState(null)
 
+  const { formatDate } = useUtils()
+
   const openModal = (bike) => {
+    console.log(bike)
     setBike(bike)
     setOpen(true)
   }
@@ -57,6 +61,13 @@ const BikesUserScreen = ({ navigation }) => {
       setBikes((oldData) => [...oldData, createFakeBike()])
     }
   }, [])
+
+  const goToEditBike = (bike) => {
+    closeModal()
+    navigation.navigate('EditBike', {
+      bike,
+    })
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
@@ -149,9 +160,9 @@ const BikesUserScreen = ({ navigation }) => {
 
           <CustomDivider addStyle={[mt5, mb10]} />
 
-          <Text style={[littleTitle, { color: colors.text }]}>Année</Text>
+          <Text style={[littleTitle, { color: colors.text }]}>Date</Text>
           <Text style={[defaultText, { color: colors.text }]}>
-            {bike?.year}
+            {bike?.date ? formatDate(bike?.date) : 'Pas de date'}
           </Text>
 
           <CustomDivider addStyle={[mt5]} />
@@ -168,7 +179,7 @@ const BikesUserScreen = ({ navigation }) => {
           />
 
           <CustomBigButton
-            onPress={() => {}}
+            onPress={() => goToEditBike(bike)}
             label="Modifier mon vélo"
             style={{ marginTop: 0 }}
             styleBtn={{ marginVertical: 5 }}

@@ -23,8 +23,9 @@ import SubsChoiceScreen from '../screens/subs/SubsChoiceScreen'
 import ClubProfileScreen from '../screens/profile/club/ClubProfileScreen'
 import ClubsUserFollowScreen from '../screens/profile/user/scenes/informations/screens/ClubsUserFollowScreen'
 import UsersUserFollowScreen from '../screens/profile/user/scenes/informations/screens/UsersUserFollowScreen'
-import BikesUserScreen from '../screens/profile/user/scenes/informations/screens/BikesUserScreen'
-import AddBikeScreen from '../screens/profile/user/scenes/informations/screens/AddBikeScreen'
+import BikesUserScreen from '../screens/profile/user/scenes/informations/screens/bikes/BikesUserScreen'
+import AddBikeScreen from '../screens/profile/user/scenes/informations/screens/bikes/AddBikeScreen'
+import EditBikeScreen from '../screens/profile/user/scenes/informations/screens/bikes/EditBikeScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -61,6 +62,7 @@ const AppStack = () => (
     <Stack.Screen name="UsersUserFollow" component={UsersUserFollowScreen} />
     <Stack.Screen name="BikesUser" component={BikesUserScreen} />
     <Stack.Screen name="AddBike" component={AddBikeScreen} />
+    <Stack.Screen name="EditBike" component={EditBikeScreen} />
 
     {/* Profile Club */}
     <Stack.Screen name="ClubProfile" component={ClubProfileScreen} />
