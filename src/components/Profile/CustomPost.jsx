@@ -8,7 +8,6 @@ import {
 import React from 'react'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import Ionicons from 'react-native-vector-icons/Ionicons'
 
 import {
   darkColor,
@@ -30,12 +29,17 @@ const CustomPost = ({
   likes = false,
   comments = false,
   edit = false,
+  hypes = false,
 }) => (
   <View style={styles.container}>
     {/* Icone pour edit le post */}
     {edit && (
       <TouchableOpacity onPress={edit} style={styles.editIcon}>
-        <Ionicons name="create-outline" size={35} color={darkColor} />
+        <MaterialCommunityIcons
+          name="cog-outline"
+          size={25}
+          color={darkColor}
+        />
       </TouchableOpacity>
     )}
 
@@ -68,7 +72,6 @@ const CustomPost = ({
       {/* Bouton like */}
       <CustomIconButton
         onPress={() => {}}
-        size="49%"
         icon={
           <MaterialCommunityIcons
             name="thumb-up-outline"
@@ -82,7 +85,6 @@ const CustomPost = ({
       {/* Bouton Comments */}
       <CustomIconButton
         onPress={() => {}}
-        size="49%"
         icon={
           <MaterialCommunityIcons
             name="comment-text-outline"
@@ -92,6 +94,21 @@ const CustomPost = ({
         }
         number={comments}
       />
+
+      {/* Bouton Hype */}
+      {hypes && (
+        <CustomIconButton
+          onPress={() => {}}
+          icon={
+            <MaterialCommunityIcons
+              name="alarm-light-outline" // alarm-light
+              size={24}
+              color={whiteColor}
+            />
+          }
+          number={hypes}
+        />
+      )}
     </View>
   </View>
 )
@@ -129,8 +146,9 @@ const styles = StyleSheet.create({
   },
   editIcon: {
     position: 'absolute',
-    top: -5,
-    right: -5,
+    top: 5,
+    right: 5,
+    zIndex: 2,
   },
 })
 

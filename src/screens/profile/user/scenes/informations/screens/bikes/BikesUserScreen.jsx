@@ -44,7 +44,6 @@ const BikesUserScreen = ({ navigation }) => {
   const { formatDate } = useUtils()
 
   const openModal = (bike) => {
-    console.log(bike)
     setBike(bike)
     setOpen(true)
   }
