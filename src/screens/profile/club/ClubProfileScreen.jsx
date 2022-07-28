@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
@@ -10,8 +10,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import CustomLabelNavigation from '../../../components/CustomLabelNavigation'
 import LayoutProfile from '../../../components/Profile/LayoutProfile'
 import ClubInformationsScene from './scenes/informations/ClubInformationsScene'
-import ClubPostsScene from './scenes/informations/ClubPostsScene'
-import ClubMembersScene from './scenes/informations/ClubMembersScene'
+import ClubPostsScene from './scenes/posts/ClubPostsScene'
+import ClubMembersScene from './scenes/members/ClubMembersScene'
 
 const ClubProfileScreen = ({ navigation }) => {
   const { colors } = useTheme()
@@ -44,10 +44,7 @@ const ClubProfileScreen = ({ navigation }) => {
       />
 
       {/* Icone en haut a droite qui permet de modifier son profil */}
-      <TouchableOpacity
-        onPress={() => {}}
-        style={{ position: 'absolute', top: 10, right: 20 }}
-      >
+      <TouchableOpacity onPress={() => {}} style={styles.editIcon}>
         <MaterialCommunityIcons
           name="account-edit"
           size={28}
@@ -62,4 +59,10 @@ const ClubProfileScreen = ({ navigation }) => {
 }
 export default ClubProfileScreen
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  editIcon: {
+    position: 'absolute',
+    top: 10,
+    right: 20,
+  },
+})

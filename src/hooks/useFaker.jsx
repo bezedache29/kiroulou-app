@@ -23,6 +23,7 @@ export default function useFaker() {
       title: `${i} - ${faker.commerce.product()}`,
       likes: faker.random.numeric(2),
       comments: faker.random.numeric(),
+      hypes: faker.random.numeric(2),
     }
     return post
   }

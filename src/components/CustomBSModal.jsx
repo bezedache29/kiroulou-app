@@ -13,7 +13,7 @@ import React, {
 import { BottomSheetModal } from '@gorhom/bottom-sheet'
 import { useTheme } from 'react-native-paper'
 import {
-  darkPrimaryColor,
+  darkColor,
   mb10,
   textAlignCenter,
   TitleH4,
@@ -56,7 +56,12 @@ const CustomBSModal = forwardRef(
         handleIndicatorStyle={{
           backgroundColor: colors.reverseText,
         }}
-        handleStyle={styles.handleStyle}
+        handleStyle={[
+          styles.handleStyle,
+          {
+            backgroundColor: colors.text,
+          },
+        ]}
         style={[
           styles.container,
           {
@@ -87,11 +92,11 @@ export default CustomBSModal
 
 const styles = StyleSheet.create({
   handleStyle: {
-    backgroundColor: darkPrimaryColor,
     borderTopLeftRadius: 22,
     borderTopRightRadius: 22,
-    elevation: 5,
     paddingVertical: 13,
+    borderColor: darkColor,
+    borderWidth: 3,
   },
   container: {
     borderTopLeftRadius: 25,
