@@ -16,16 +16,6 @@ const addBikeSchema = yup.object().shape({
     .min(6, 'trop petit')
     .max(30, 'trop long!')
     .required('Le modèle est obligatoire'),
-  type: yup
-    .string()
-    .min(6, 'trop petit')
-    .max(30, 'trop long!')
-    .required('Le type est obligatoire'),
-  year: yup
-    .number()
-    .min(4, 'trop petit')
-    .max(4, 'trop long!')
-    .required("L'année est obligatoire"),
   weight: yup
     .number()
     .min(1, 'trop petit')

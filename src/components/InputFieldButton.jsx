@@ -5,31 +5,42 @@ import { useTheme } from 'react-native-paper'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
-import { defaultText, rowCenter } from '../assets/styles/styles'
+import { dangerColor, defaultText, rowCenter } from '../assets/styles/styles'
 
-const InputFieldButton = ({ onPress, icon, label, chevronColor }) => {
+const InputFieldButton = ({ onPress, icon, label, chevronColor, error }) => {
   const { colors } = useTheme()
 
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={[
-        rowCenter,
-        styles.container,
-        {
-          borderBottomColor: colors.border,
-        },
-      ]}
-    >
-      {icon}
-      <Text style={[defaultText, { color: colors.text }]}>{label}</Text>
-      <MaterialCommunityIcons
-        name="chevron-down"
-        size={18}
-        color={chevronColor}
-        style={styles.iconDown}
-      />
-    </TouchableOpacity>
+    <>
+      <TouchableOpacity
+        onPress={onPress}
+        style={[
+          rowCenter,
+          styles.container,
+          {
+            borderBottomColor: error ? dangerColor : colors.border,
+          },
+        ]}
+      >
+        {icon}
+
+        <Text
+          style={[defaultText, { color: error ? dangerColor : colors.text }]}
+        >
+          {label}
+        </Text>
+
+        {chevronColor && (
+          <MaterialCommunityIcons
+            name="chevron-down"
+            size={18}
+            color={chevronColor}
+            style={styles.iconDown}
+          />
+        )}
+      </TouchableOpacity>
+      {error && <Text style={{ color: dangerColor }}>{error}</Text>}
+    </>
   )
 }
 
