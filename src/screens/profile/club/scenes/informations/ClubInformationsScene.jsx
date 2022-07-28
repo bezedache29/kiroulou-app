@@ -80,7 +80,9 @@ const ClubInformationsScene = () => {
           <CustomButtonInfo
             title="Les randos organisées par le club"
             colors={colors}
-            onPress={() => {}}
+            onPress={() => {
+              navigation.navigate('ComingSoon')
+            }}
             backgroundColor={primaryColor}
           />
         </View>

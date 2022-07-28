@@ -26,6 +26,7 @@ import UsersUserFollowScreen from '../screens/profile/user/scenes/informations/s
 import BikesUserScreen from '../screens/profile/user/scenes/informations/screens/bikes/BikesUserScreen'
 import AddBikeScreen from '../screens/profile/user/scenes/informations/screens/bikes/AddBikeScreen'
 import EditBikeScreen from '../screens/profile/user/scenes/informations/screens/bikes/EditBikeScreen'
+import ComingSoonScreen from '../screens/ComingSoonScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -42,6 +43,7 @@ const AppStack = () => (
 
     {/* Divers */}
     <Stack.Screen name="Settings" component={SettingsScreen} />
+    <Stack.Screen name="ComingSoon" component={ComingSoonScreen} />
 
     {/* Abonnements */}
     <Stack.Screen name="Subs" component={SubsScreen} />
