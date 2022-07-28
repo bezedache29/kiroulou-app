@@ -16,8 +16,9 @@ const useUtils = () => {
 
   // Permet de formater un date => "28 Juillet 2022"
   const formatDate = (date) => {
+    console.log('date', date.getMonth())
     const newDate = `${date.getDate()} ${
-      month[date.getMonth() - 1]
+      month[date.getMonth()]
     } ${date.getFullYear()}`
     return newDate
   }

@@ -2,7 +2,7 @@
  * Formulaire pour qu'un user ajoute un de ses vélos
  */
 import { ScrollView, View } from 'react-native'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 
@@ -14,38 +14,50 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
-import addBikeSchema from '../../../../../../validationSchemas/addBikeSchema'
+import addBikeSchema from '../../../../../../../validationSchemas/addBikeSchema'
 
 import {
   dangerColor,
   mr5,
   mt20,
   mx20,
-} from '../../../../../../assets/styles/styles'
+} from '../../../../../../../assets/styles/styles'
 
-import CustomLabelNavigation from '../../../../../../components/CustomLabelNavigation'
-import InputField from '../../../../../../components/InputField'
-import CustomBigButton from '../../../../../../components/CustomBigButton'
-import ButtonBS from '../../../../../../components/ButtonBS'
-import InputFieldButton from '../../../../../../components/InputFieldButton'
-import CustomBSModal from '../../../../../../components/CustomBSModal'
-import CustomOverlay from '../../../../../../components/CustomOverlay'
-import useUtils from '../../../../../../hooks/useUtils'
+import CustomLabelNavigation from '../../../../../../../components/CustomLabelNavigation'
+import InputField from '../../../../../../../components/InputField'
+import CustomBigButton from '../../../../../../../components/CustomBigButton'
+import ButtonBS from '../../../../../../../components/ButtonBS'
+import InputFieldButton from '../../../../../../../components/InputFieldButton'
+import CustomBSModal from '../../../../../../../components/CustomBSModal'
+import CustomOverlay from '../../../../../../../components/CustomOverlay'
+import useUtils from '../../../../../../../hooks/useUtils'
 
-const AddBikeScreen = ({ navigation }) => {
+const EditBikeScreen = ({ navigation, route }) => {
   const { colors } = useTheme()
 
   const [overlay, setOverlay] = useState(false)
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false)
-  const [dateLabel, setDateLabel] = useState('Date du vélo')
-  const [date, setDate] = useState(false)
+  const [dateLabel, setDateLabel] = useState('')
+  const [date, setDate] = useState(true)
   const [dateForDB, setDateForDB] = useState('')
   const [dateError, setDateError] = useState(false)
-  const [type, setType] = useState(false)
+  const [type, setType] = useState(true)
+  const [typeLabel, setTypeLabel] = useState('Type de vélo')
   const [typeError, setTypeError] = useState(false)
 
   // Hooks
   const { formatDate } = useUtils()
+
+  // Au montage du composant, on récupère la date et le type
+  useEffect(() => {
+    if (route.params.bike.date) {
+      setDateLabel(formatDate(route.params.bike.date))
+      setDateForDB(route.params.bike.date)
+    }
+    if (route.params.bike.type) {
+      setTypeLabel(route.params.bike.type)
+    }
+  }, [route.params])
 
   // Ref pour la bottomSheet Type
   const bottomSheetRef = useRef(null)
@@ -103,7 +115,7 @@ const AddBikeScreen = ({ navigation }) => {
       brand: values.brand,
       model: values.model,
       type,
-      year: date,
+      date: dateForDB,
       weight: values.weight,
     }
     console.log(data)
@@ -115,7 +127,7 @@ const AddBikeScreen = ({ navigation }) => {
       <BottomSheetModalProvider>
         <View style={{ flex: 1, backgroundColor: colors.background }}>
           <CustomLabelNavigation
-            label="Ajouter un vélo"
+            label="Modifier le vélo"
             colors={colors}
             onPress={() => navigation.goBack()}
           />
@@ -128,10 +140,10 @@ const AddBikeScreen = ({ navigation }) => {
               <Formik
                 validationSchema={addBikeSchema}
                 initialValues={{
-                  name: '',
-                  brand: '',
-                  model: '',
-                  weight: '',
+                  name: route.params.bike.name,
+                  brand: route.params.bike.brand,
+                  model: route.params.bike.model,
+                  weight: route.params.bike.weight,
                 }}
                 onSubmit={(values, { resetForm }) => {
                   submitForm(values, resetForm)
@@ -215,7 +227,7 @@ const AddBikeScreen = ({ navigation }) => {
                     {/* Type de vélo */}
                     <InputFieldButton
                       onPress={toggleBottomSheet}
-                      label="Type de vélo"
+                      label={typeLabel}
                       error={typeError}
                       icon={
                         <MaterialCommunityIcons
@@ -248,6 +260,7 @@ const AddBikeScreen = ({ navigation }) => {
                       onChange={handleChange('weight')}
                       onBlur={handleBlur('weight')}
                       value={values.weight}
+                      keyboardType="numeric"
                     />
 
                     {/* Date du vélo */}
@@ -268,7 +281,7 @@ const AddBikeScreen = ({ navigation }) => {
                     {/* !! Input Image ICI !! */}
 
                     <CustomBigButton
-                      label="Ajouter le vélo"
+                      label="Modifier le vélo"
                       onPress={() => validForm(handleSubmit)}
                     />
                   </ScrollView>
@@ -295,6 +308,7 @@ const AddBikeScreen = ({ navigation }) => {
           <DateTimePickerModal
             isVisible={isDatePickerVisible}
             mode="date"
+            date={route.params.bike.date}
             onConfirm={handleConfirm}
             onCancel={hideDatePicker}
           />
@@ -304,4 +318,4 @@ const AddBikeScreen = ({ navigation }) => {
   )
 }
 
-export default AddBikeScreen
+export default EditBikeScreen

@@ -18,8 +18,8 @@ const addBikeSchema = yup.object().shape({
     .required('Le modèle est obligatoire'),
   weight: yup
     .number()
-    .min(1, 'trop petit')
-    .max(10, 'trop long!')
+    .min(5, 'trop petit')
+    .max(50, 'trop long!')
     .transform((_value, originalValue) =>
       Number(originalValue.replace(/,/, '.'))
     ),
