@@ -7,9 +7,11 @@ import {
   darkColor,
   darkPrimaryColor,
   defaultLink,
+  defaultText,
   littleTitle,
   mb30,
   ml20,
+  mt10,
   mt20,
   mt30,
   mt5,
@@ -68,14 +70,20 @@ const SubsChoiceScreen = ({ navigation }) => {
         }}
       />
 
-      <ScrollView>
+      <View>
         <Text
           style={[textAlignCenter, littleTitle, mt20, { color: colors.text }]}
         >
           Choisir mon abonnement
         </Text>
 
-        <View style={[mt30, ml20]}>
+        <Text
+          style={[textAlignCenter, defaultText, mt10, { color: colors.text }]}
+        >
+          Facturation récurrente. Annulez à tout moment.
+        </Text>
+
+        <ScrollView style={[mt20, ml20]}>
           {/* BOX Premium 1 */}
           <View style={[mb30, mt30, { alignItems: 'center' }]}>
             <CustomBox
@@ -131,7 +139,7 @@ const SubsChoiceScreen = ({ navigation }) => {
               </Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </ScrollView>
 
         <View style={[mx20]}>
           <CustomBigButton
@@ -143,7 +151,7 @@ const SubsChoiceScreen = ({ navigation }) => {
             }
           />
         </View>
-      </ScrollView>
+      </View>
 
       {/* Ouvre la Modal qui informe les avantages des différents premium */}
       <CustomModal showModal={showModalAdvantages} closeModal={closeModal}>
