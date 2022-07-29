@@ -22,7 +22,7 @@ import {
   secondaryColor,
 } from '../../../assets/styles/styles'
 
-const UserWaitMembershipCar = ({ user }) => {
+const UserWaitMembershipCard = ({ user }) => {
   const { colors } = useTheme()
 
   return (
@@ -65,7 +65,7 @@ const UserWaitMembershipCar = ({ user }) => {
   )
 }
 
-export default UserWaitMembershipCar
+export default UserWaitMembershipCard
 
 const styles = StyleSheet.create({
   container: {
