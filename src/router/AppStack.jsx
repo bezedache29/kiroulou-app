@@ -27,6 +27,9 @@ import BikesUserScreen from '../screens/profile/user/scenes/informations/screens
 import AddBikeScreen from '../screens/profile/user/scenes/informations/screens/bikes/AddBikeScreen'
 import EditBikeScreen from '../screens/profile/user/scenes/informations/screens/bikes/EditBikeScreen'
 import ComingSoonScreen from '../screens/ComingSoonScreen'
+import EditUserProfileScreen from '../screens/profile/user/EditUserProfileScreen'
+import EditClubProfileScreen from '../screens/profile/club/EditClubProfileScreen'
+import AdminClubProfileScreen from '../screens/profile/club/AdminClubProfileScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -59,6 +62,7 @@ const AppStack = () => (
     <Stack.Screen name="AddClub" component={AddClubScreen} />
 
     {/* Profile User */}
+    <Stack.Screen name="EditUserProfile" component={EditUserProfileScreen} />
     {/* Screens TabView Informations */}
     <Stack.Screen name="ClubsUserFollow" component={ClubsUserFollowScreen} />
     <Stack.Screen name="UsersUserFollow" component={UsersUserFollowScreen} />
@@ -68,6 +72,8 @@ const AppStack = () => (
 
     {/* Profile Club */}
     <Stack.Screen name="ClubProfile" component={ClubProfileScreen} />
+    <Stack.Screen name="EditClubProfile" component={EditClubProfileScreen} />
+    <Stack.Screen name="AdminClubProfile" component={AdminClubProfileScreen} />
 
     {/* Conditions Générales */}
     <Stack.Screen

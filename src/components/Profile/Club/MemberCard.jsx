@@ -1,5 +1,13 @@
-import { ImageBackground, StyleSheet, Text, View } from 'react-native'
+import {
+  ImageBackground,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import React from 'react'
+
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
 import {
   cancelColor,
@@ -15,11 +23,26 @@ import useUtils from '../../../hooks/useUtils'
 import CustomDivider from '../../CustomDivider'
 import CustomButton from '../../CustomButton'
 
-const MembersCard = ({ member }) => {
+const MembersCard = ({
+  member,
+  redBtn,
+  onPressLeftBtn,
+  onPressRightBtn,
+  toggleFollow,
+}) => {
   const { formatDate } = useUtils()
 
   return (
     <View style={styles.container}>
+      {/* Ajout favoris */}
+      <TouchableOpacity onPress={toggleFollow} style={styles.editIcon}>
+        <MaterialCommunityIcons
+          name="star-outline" // star
+          size={25}
+          color={darkColor}
+        />
+      </TouchableOpacity>
+
       {/* Icon */}
       <View style={styles.header}>
         <ImageBackground
@@ -57,20 +80,15 @@ const MembersCard = ({ member }) => {
         {/* Btn demande adhesion */}
 
         <CustomButton
-          onPress={() => {}}
+          onPress={onPressLeftBtn}
           btnStyle={{ width: '49%' }}
           gradient={[cancelColor, dangerColor]}
         >
-          Expluser
+          {redBtn}
         </CustomButton>
 
         {/* Btn voir détails */}
-        <CustomButton
-          onPress={() => {
-            alert(member.id)
-          }}
-          btnStyle={{ width: '49%' }}
-        >
+        <CustomButton onPress={onPressRightBtn} btnStyle={{ width: '49%' }}>
           Voir détails
         </CustomButton>
       </View>
@@ -114,5 +132,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginTop: 10,
+  },
+  editIcon: {
+    position: 'absolute',
+    top: 5,
+    right: 5,
+    zIndex: 2,
   },
 })

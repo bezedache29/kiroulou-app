@@ -32,7 +32,7 @@ import {
 
 import CustomButtonInfo from '../../../../../components/CustomButtonInfo'
 
-const ClubInformationsScene = () => {
+const ClubInformationsScene = ({ club }) => {
   const { colors } = useTheme()
 
   const navigation = useNavigation()
@@ -43,15 +43,15 @@ const ClubInformationsScene = () => {
         <View style={[mx20, mt40, styles.header]}>
           <ImageBackground
             source={{
-              uri: 'http://lh3.ggpht.com/-OdRx9XAYxkc/TusHxirp8uI/AAAAAAAABpw/lk-2NDvmJY0/Banana%252520Alien%25255B3%25255D.jpg?imgmax=800',
+              uri: club.avatar,
             }}
             style={[mr20, styles.avatar]}
             imageStyle={styles.avatarStyle}
           />
           <View style={{ flex: 4 }}>
-            <Text style={[littleTitle, { color: darkColor }]}>Nom du club</Text>
+            <Text style={[littleTitle, { color: darkColor }]}>{club.name}</Text>
             <Text style={[defaultText, mt10, { color: darkColor }]}>
-              Ville, DEPARTEMENT
+              {club.city}
             </Text>
           </View>
         </View>

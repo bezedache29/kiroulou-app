@@ -23,17 +23,25 @@ import {
   TitleH4,
   warningColor,
 } from '../../assets/styles/styles'
+
 import useFaker from '../../hooks/useFaker'
+import useUtils from '../../hooks/useUtils'
 
-// Tableau factice pour design
-// const images = [1, 2, 3, 4]
-
-const LayoutProfile = ({ renderScene, routes, profile }) => {
+const LayoutProfile = ({
+  renderScene,
+  routes,
+  profile,
+  treckDate = false,
+  data = {}, // Ici on peut passer le club pour le profil du club
+}) => {
   const { colors } = useTheme()
+  const { formatDate } = useUtils()
 
   // Sert pour la TabView
   const layout = useWindowDimensions()
   const [index, setIndex] = useState(0)
+
+  const [dateTreck, setDateTreck] = useState('')
 
   // Pour les tests
   const [images, setImages] = useState([])
@@ -43,6 +51,23 @@ const LayoutProfile = ({ renderScene, routes, profile }) => {
       setImages((oldData) => [...oldData, createFakeAlbum()])
     }
   }, [])
+
+  /**
+   * On récupère la date de la rando du club
+   * Si pas de date, ou date passé par rapport a celle d'aujourd'hui : On indique pas de rando
+   * Sinon : On indique la date de la futur rando, formatée
+   * Sert uniquement pour le profil des clubs
+   */
+  useEffect(() => {
+    if (treckDate) {
+      console.log(treckDate)
+      if (treckDate >= Date.now()) {
+        setDateTreck(formatDate(treckDate))
+      } else {
+        setDateTreck('Pas de encore de date')
+      }
+    }
+  }, [treckDate])
 
   // Change l'index a quand on clic sur le btn
   const handleIndexChange = (index) => setIndex(index)
@@ -107,12 +132,8 @@ const LayoutProfile = ({ renderScene, routes, profile }) => {
             Prochaine Rando prévue le :
           </Text>
           <Text style={[mt10, textAlignCenter, TitleH3, { color: darkColor }]}>
-            Dimanche 31 juillet 2022
+            {dateTreck}
           </Text>
-          {/* S'il n'y a pas de date */}
-          {/* <Text style={[mt10, textAlignCenter, TitleH3, { color: darkColor }]}>
-            Pas encore de date
-          </Text> */}
         </View>
       )}
 
