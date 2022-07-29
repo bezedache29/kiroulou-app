@@ -14,8 +14,8 @@ import {
 
 import useFaker from '../../../../../../hooks/useFaker'
 import CustomContainer from '../../../../../../components/CustomContainer'
-import UserWaitMembershipCar from '../../../../../../components/Profile/Club/UserWaitMembershipCar'
 import CustomBox from '../../../../../../components/CustomBox'
+import UserWaitMembershipCard from '../../../../../../components/Profile/Club/UserWaitMembershipCard'
 
 const NewMembersRequestScreen = ({ navigation }) => {
   const { colors } = useTheme()
@@ -60,7 +60,7 @@ const NewMembersRequestScreen = ({ navigation }) => {
           {users && users.length > 0 ? (
             <FlatList
               data={users}
-              renderItem={({ item }) => <UserWaitMembershipCar user={item} />}
+              renderItem={({ item }) => <UserWaitMembershipCard user={item} />}
               keyExtractor={(item) => item.id}
               showsVerticalScrollIndicator={false}
               style={[mt20]}
