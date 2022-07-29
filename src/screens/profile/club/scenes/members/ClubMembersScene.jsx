@@ -1,6 +1,8 @@
 import { FlatList, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 
+import { useNavigation } from '@react-navigation/native'
+
 import { useTheme } from 'react-native-paper'
 
 import AwesomeAlert from 'react-native-awesome-alerts'
@@ -29,6 +31,8 @@ const ClubMembersScene = () => {
   const [member, setMember] = useState({})
   const [showAlert, setShowAlert] = useState(false)
 
+  const navigation = useNavigation()
+
   useEffect(() => {
     for (let i = 0; i < 10; i++) {
       setMembers((oldData) => [...oldData, createFakeUser()])
@@ -44,7 +48,7 @@ const ClubMembersScene = () => {
           my10,
           { flex: 1, color: darkPrimaryColor },
         ]}
-        onPress={() => alert('demandes en attente')}
+        onPress={() => navigation.navigate('NewMembersRequest')}
       >
         Demandes en attentes : 2
       </Text>
