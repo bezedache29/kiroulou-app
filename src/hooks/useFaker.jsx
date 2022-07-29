@@ -32,11 +32,12 @@ export default function useFaker() {
   const createFakeClub = (i = 1) => {
     const club = {
       id: faker.datatype.uuid(),
-      uri: faker.image.avatar(),
+      avatar: faker.image.avatar(),
       name: `${i} - ${faker.company.companyName()}`,
       city: faker.address.city(),
       members: faker.random.numeric(2),
       posts: faker.random.numeric(3),
+      dateTreck: faker.date.birthdate({ min: 2022, max: 2023, mode: 'year' }),
     }
     return club
   }

@@ -14,6 +14,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
+
 import addBikeSchema from '../../../../../../../validationSchemas/addBikeSchema'
 
 import {
@@ -30,13 +31,19 @@ import ButtonBS from '../../../../../../../components/ButtonBS'
 import InputFieldButton from '../../../../../../../components/InputFieldButton'
 import CustomBSModal from '../../../../../../../components/CustomBSModal'
 import CustomOverlay from '../../../../../../../components/CustomOverlay'
+
 import useUtils from '../../../../../../../hooks/useUtils'
+import useDatePicker from '../../../../../../../hooks/useDatePicker'
 
 const EditBikeScreen = ({ navigation, route }) => {
+  // Hooks
   const { colors } = useTheme()
+  const { formatDate } = useUtils()
+  const { datePickerVisibility, showDatePicker, hideDatePicker } =
+    useDatePicker()
 
+  // Variables
   const [overlay, setOverlay] = useState(false)
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false)
   const [dateLabel, setDateLabel] = useState('')
   const [date, setDate] = useState(true)
   const [dateForDB, setDateForDB] = useState('')
@@ -44,9 +51,6 @@ const EditBikeScreen = ({ navigation, route }) => {
   const [type, setType] = useState(true)
   const [typeLabel, setTypeLabel] = useState('Type de vélo')
   const [typeError, setTypeError] = useState(false)
-
-  // Hooks
-  const { formatDate } = useUtils()
 
   // Au montage du composant, on récupère la date et le type
   useEffect(() => {
@@ -71,16 +75,6 @@ const EditBikeScreen = ({ navigation, route }) => {
       setOverlay(true)
       bottomSheetRef?.current?.openBottomSheet()
     }
-  }
-
-  // Permet d'ouvrir la modal DatePicker
-  const showDatePicker = () => {
-    setDatePickerVisibility(true)
-  }
-
-  // Permet de fermer la modal DatePicker
-  const hideDatePicker = () => {
-    setDatePickerVisibility(false)
   }
 
   // A la confirmation de la date du DatePicker
@@ -306,7 +300,7 @@ const EditBikeScreen = ({ navigation, route }) => {
 
           {/* Modal DatePicker */}
           <DateTimePickerModal
-            isVisible={isDatePickerVisible}
+            isVisible={datePickerVisibility}
             mode="date"
             date={route.params.bike.date}
             onConfirm={handleConfirm}

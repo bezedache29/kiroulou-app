@@ -14,6 +14,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
+
 import addBikeSchema from '../../../../../../../validationSchemas/addBikeSchema'
 
 import {
@@ -30,22 +31,25 @@ import ButtonBS from '../../../../../../../components/ButtonBS'
 import InputFieldButton from '../../../../../../../components/InputFieldButton'
 import CustomBSModal from '../../../../../../../components/CustomBSModal'
 import CustomOverlay from '../../../../../../../components/CustomOverlay'
+
 import useUtils from '../../../../../../../hooks/useUtils'
+import useDatePicker from '../../../../../../../hooks/useDatePicker'
 
 const AddBikeScreen = ({ navigation }) => {
+  // Hooks
+  const { formatDate } = useUtils()
   const { colors } = useTheme()
+  const { datePickerVisibility, showDatePicker, hideDatePicker } =
+    useDatePicker()
 
+  // Variables
   const [overlay, setOverlay] = useState(false)
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false)
   const [dateLabel, setDateLabel] = useState('Date du vélo')
   const [date, setDate] = useState(false)
   const [dateForDB, setDateForDB] = useState('')
   const [dateError, setDateError] = useState(false)
   const [type, setType] = useState(false)
   const [typeError, setTypeError] = useState(false)
-
-  // Hooks
-  const { formatDate } = useUtils()
 
   // Ref pour la bottomSheet Type
   const bottomSheetRef = useRef(null)
@@ -59,16 +63,6 @@ const AddBikeScreen = ({ navigation }) => {
       setOverlay(true)
       bottomSheetRef?.current?.openBottomSheet()
     }
-  }
-
-  // Permet d'ouvrir la modal DatePicker
-  const showDatePicker = () => {
-    setDatePickerVisibility(true)
-  }
-
-  // Permet de fermer la modal DatePicker
-  const hideDatePicker = () => {
-    setDatePickerVisibility(false)
   }
 
   // A la confirmation de la date du DatePicker
@@ -293,7 +287,7 @@ const AddBikeScreen = ({ navigation }) => {
 
           {/* Modal DatePicker */}
           <DateTimePickerModal
-            isVisible={isDatePickerVisible}
+            isVisible={datePickerVisibility}
             mode="date"
             onConfirm={handleConfirm}
             onCancel={hideDatePicker}

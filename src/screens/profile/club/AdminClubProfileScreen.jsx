@@ -1,33 +1,31 @@
-import { FlatList, Text, View } from 'react-native'
+import { FlatList, StyleSheet, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
 
 import AwesomeAlert from 'react-native-awesome-alerts'
 
+import useFaker from '../../../hooks/useFaker'
+
 import {
   cancelColor,
   darkPrimaryColor,
-  defaultLink,
   defaultText,
-  mt10,
-  mx10,
-  my10,
-  textAlignCenter,
   TitleH3,
-} from '../../../../../assets/styles/styles'
+} from '../../../assets/styles/styles'
 
-import useFaker from '../../../../../hooks/useFaker'
+import CustomSearchInput from '../../../components/CustomSearchInput'
+import MembersCard from '../../../components/Profile/Club/MemberCard'
+import CustomLabelNavigation from '../../../components/CustomLabelNavigation'
 
-import MembersCard from '../../../../../components/Profile/Club/MemberCard'
-
-const ClubMembersScene = () => {
+const AdminClubProfileScreen = ({ navigation }) => {
   const { colors } = useTheme()
   const { createFakeUser } = useFaker()
 
-  const [members, setMembers] = useState([])
-  const [member, setMember] = useState({})
+  const [search, setSearch] = useState('')
   const [showAlert, setShowAlert] = useState(false)
+  const [member, setMember] = useState({})
+  const [members, setMembers] = useState([])
 
   useEffect(() => {
     for (let i = 0; i < 10; i++) {
@@ -35,26 +33,31 @@ const ClubMembersScene = () => {
     }
   }, [])
 
+  const onChangeText = (text) => {
+    setSearch(text)
+  }
+
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <Text
-        style={[
-          textAlignCenter,
-          defaultLink,
-          my10,
-          { flex: 1, color: darkPrimaryColor },
-        ]}
-        onPress={() => alert('demandes en attente')}
-      >
-        Demandes en attentes : 2
-      </Text>
-      <View style={{ flex: 20 }}>
+      <CustomLabelNavigation
+        label="Changer d'administrateur"
+        colors={colors}
+        onPress={() => navigation.goBack()}
+      />
+
+      <CustomSearchInput
+        placeholder="Rechercher par nom"
+        value={search}
+        onChangeValue={onChangeText}
+      />
+
+      <View style={styles.content}>
         <FlatList
           data={members}
           renderItem={({ item }) => (
             <MembersCard
               member={item}
-              redBtn="Expulser"
+              redBtn="Définir Admin"
               onPressLeftBtn={() => {
                 setShowAlert(true)
                 setMember(item)
@@ -67,16 +70,15 @@ const ClubMembersScene = () => {
           )}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
-          style={[mx10, mt10]}
         />
       </View>
 
-      {/* Alert avant de supprimer un membre */}
+      {/* Alert avant de changer d'administrateur */}
       <AwesomeAlert
         show={showAlert}
         showProgress={!showAlert}
         title="Attention !"
-        message={`Supprimer ${member.firstname} ${member.lastname} du club Nom du club ?`}
+        message={`Mettre ${member.firstname} ${member.lastname} administrateur de nom du club ?`}
         closeOnTouchOutside
         closeOnHardwareBackPress={false}
         showCancelButton
@@ -104,4 +106,11 @@ const ClubMembersScene = () => {
   )
 }
 
-export default ClubMembersScene
+export default AdminClubProfileScreen
+
+const styles = StyleSheet.create({
+  content: {
+    margin: 10,
+    flex: 1,
+  },
+})
