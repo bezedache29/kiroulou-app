@@ -10,6 +10,8 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
+import AwesomeAlert from 'react-native-awesome-alerts'
+
 import CustomLabelNavigation from '../../../components/CustomLabelNavigation'
 import LayoutProfile from '../../../components/Profile/LayoutProfile'
 import ClubInformationsScene from './scenes/informations/ClubInformationsScene'
@@ -20,18 +22,27 @@ import CustomOverlay from '../../../components/CustomOverlay'
 import useFaker from '../../../hooks/useFaker'
 import ClubMembersScene from './scenes/members/ClubMembersScene'
 import useDatePicker from '../../../hooks/useDatePicker'
+import {
+  cancelColor,
+  darkPrimaryColor,
+  defaultText,
+  TitleH3,
+} from '../../../assets/styles/styles'
 
 const ClubProfileScreen = ({ navigation }) => {
+  // Hooks
   const { colors } = useTheme()
   const { createFakeClub } = useFaker()
   const { datePickerVisibility, showDatePicker, hideDatePicker } =
     useDatePicker()
 
+  // Variables
   const [overlay, setOverlay] = useState(false)
   const [club, setClub] = useState([])
   const [treckDate, setTreckDate] = useState()
   const [loader, setLoader] = useState(false)
   const [change, setChange] = useState(false)
+  const [showAlertDeleteClub, setShowAlertDeleteClub] = useState(false)
 
   // Les titres de la TabView
   const [routes] = useState([
@@ -68,11 +79,15 @@ const ClubProfileScreen = ({ navigation }) => {
   // Ref pour la bottomSheet Type
   const optionsProfile = useRef(null)
 
+  const closeBottomSheet = () => {
+    setOverlay(false)
+    optionsProfile?.current?.closeBottomSheet()
+  }
+
   // Permet d'ouvrir et fermer la bottomSheet pour choisir le type de vélo
   const toggleBottomSheet = () => {
     if (overlay) {
-      setOverlay(false)
-      optionsProfile?.current?.closeBottomSheet()
+      closeBottomSheet()
     } else {
       setOverlay(true)
       optionsProfile?.current?.openBottomSheet()
@@ -166,7 +181,12 @@ const ClubProfileScreen = ({ navigation }) => {
             ref={optionsProfile}
             onDismiss={toggleBottomSheet}
           >
-            <ButtonBS onPress={() => {}} cancel>
+            <ButtonBS
+              onPress={() => {
+                setShowAlertDeleteClub(true)
+              }}
+              cancel
+            >
               Supprimer le club
             </ButtonBS>
             <ButtonBS
@@ -185,7 +205,7 @@ const ClubProfileScreen = ({ navigation }) => {
             </ButtonBS>
             <ButtonBS
               onPress={() => {
-                toggleBottomSheet()
+                closeBottomSheet()
                 showDatePicker()
               }}
             >
@@ -200,6 +220,36 @@ const ClubProfileScreen = ({ navigation }) => {
             date={treckDate}
             onConfirm={handleConfirm}
             onCancel={hideDatePicker}
+          />
+
+          {/* Alert avant de changer de supprimer le club */}
+          <AwesomeAlert
+            show={showAlertDeleteClub}
+            showProgress={!showAlertDeleteClub}
+            title="Attention !"
+            message="Supprimer le club entrainera la perte de ses données et de son historique"
+            closeOnTouchOutside
+            closeOnHardwareBackPress={false}
+            showCancelButton
+            showConfirmButton
+            cancelText="Annuler"
+            confirmText="Supprimer"
+            confirmButtonColor={darkPrimaryColor}
+            cancelButtonColor={cancelColor}
+            cancelButtonTextStyle={defaultText}
+            confirmButtonTextStyle={defaultText}
+            onDismiss={() => {
+              setShowAlertDeleteClub(false)
+            }}
+            contentContainerStyle={{ backgroundColor: colors.background }}
+            titleStyle={[TitleH3, { color: colors.text }]}
+            messageStyle={[defaultText, { color: colors.text }]}
+            onCancelPressed={() => {
+              setShowAlertDeleteClub(false)
+            }}
+            onConfirmPressed={() => {
+              setShowAlertDeleteClub(false)
+            }}
           />
         </View>
       </BottomSheetModalProvider>
