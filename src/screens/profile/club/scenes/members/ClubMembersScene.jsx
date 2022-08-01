@@ -5,23 +5,19 @@ import { useNavigation } from '@react-navigation/native'
 
 import { useTheme } from 'react-native-paper'
 
-import AwesomeAlert from 'react-native-awesome-alerts'
-
 import {
-  cancelColor,
   darkPrimaryColor,
   defaultLink,
-  defaultText,
   mt10,
   mx10,
   my10,
   textAlignCenter,
-  TitleH3,
 } from '../../../../../assets/styles/styles'
 
 import useFaker from '../../../../../hooks/useFaker'
 
 import MembersCard from '../../../../../components/Profile/Club/MemberCard'
+import CustomAlert from '../../../../../components/CustomAlert'
 
 const ClubMembersScene = () => {
   const { colors } = useTheme()
@@ -76,27 +72,13 @@ const ClubMembersScene = () => {
       </View>
 
       {/* Alert avant de supprimer un membre */}
-      <AwesomeAlert
-        show={showAlert}
-        showProgress={!showAlert}
+      <CustomAlert
+        showAlert={showAlert}
         title="Attention !"
         message={`Supprimer ${member.firstname} ${member.lastname} du club Nom du club ?`}
-        closeOnTouchOutside
-        closeOnHardwareBackPress={false}
-        showCancelButton
-        showConfirmButton
-        cancelText="Non"
-        confirmText="Oui"
-        confirmButtonColor={darkPrimaryColor}
-        cancelButtonColor={cancelColor}
-        cancelButtonTextStyle={defaultText}
-        confirmButtonTextStyle={defaultText}
         onDismiss={() => {
           setShowAlert(false)
         }}
-        contentContainerStyle={{ backgroundColor: colors.background }}
-        titleStyle={[TitleH3, { color: colors.text }]}
-        messageStyle={[defaultText, { color: colors.text }]}
         onCancelPressed={() => {
           setShowAlert(false)
         }}

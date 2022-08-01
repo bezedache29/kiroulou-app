@@ -12,6 +12,8 @@ import { useTheme } from 'react-native-paper'
 
 import { TabView, TabBar } from 'react-native-tab-view'
 
+import { useNavigation } from '@react-navigation/native'
+
 import {
   blackColor,
   darkColor,
@@ -32,10 +34,11 @@ const LayoutProfile = ({
   routes,
   profile,
   treckDate = false,
-  data = {}, // Ici on peut passer le club pour le profil du club
+  // data = {}, Ici on peut passer le club pour le profil du club ou le user pour le user
 }) => {
   const { colors } = useTheme()
   const { formatDate } = useUtils()
+  const navigation = useNavigation()
 
   // Sert pour la TabView
   const layout = useWindowDimensions()
@@ -104,7 +107,9 @@ const LayoutProfile = ({
                 // eslint-disable-next-line react/no-array-index-key
                 key={index}
                 style={styles.imageContainer}
-                onPress={() => {}}
+                onPress={() => {
+                  navigation.navigate('ImagesProfile', { profile })
+                }}
               >
                 <ImageBackground
                   imageStyle={{ opacity: 0.5 }}

@@ -31,6 +31,7 @@ import EditUserProfileScreen from '../screens/profile/user/EditUserProfileScreen
 import EditClubProfileScreen from '../screens/profile/club/EditClubProfileScreen'
 import AdminClubProfileScreen from '../screens/profile/club/AdminClubProfileScreen'
 import NewMembersRequestScreen from '../screens/profile/club/scenes/members/screens/NewMembersRequestScreen'
+import ImagesProfileScreen from '../screens/profile/images/ImagesProfileScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -61,6 +62,9 @@ const AppStack = () => (
 
     {/* Clubs */}
     <Stack.Screen name="AddClub" component={AddClubScreen} />
+
+    {/* Profil User & Club */}
+    <Stack.Screen name="ImagesProfile" component={ImagesProfileScreen} />
 
     {/* Profil User */}
     <Stack.Screen name="EditUserProfile" component={EditUserProfileScreen} />

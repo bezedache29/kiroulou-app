@@ -77,8 +77,11 @@ export default function useFaker() {
   // Permet de créer une image en relation avec un user fake
   const createFakeAlbum = () => {
     const image = {
+      id: faker.datatype.uuid(),
       userId: faker.datatype.uuid(),
-      uri: faker.image.imageUrl(),
+      // uri: faker.image.imageUrl(),
+      // uri: faker.image.imageUrl(1234, 2345),
+      uri: 'https://luehangs.site/pic-chat-app-images/beautiful-blond-blonde-hair-478544.jpg',
     }
 
     return image

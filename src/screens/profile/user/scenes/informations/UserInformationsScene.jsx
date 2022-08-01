@@ -15,6 +15,7 @@ import {
   darkColor,
   defaultText,
   littleTitle,
+  mb20,
   mr20,
   mt10,
   mt20,
@@ -34,34 +35,33 @@ const UserInformationsScene = () => {
 
   return (
     <ScrollView style={{ backgroundColor: secondaryColor }}>
-      <View style={[mx20, mt40, styles.header]}>
-        <ImageBackground
-          source={{
-            uri: 'http://lh3.ggpht.com/-OdRx9XAYxkc/TusHxirp8uI/AAAAAAAABpw/lk-2NDvmJY0/Banana%252520Alien%25255B3%25255D.jpg?imgmax=800',
-          }}
-          style={[mr20, styles.avatar]}
-          imageStyle={styles.avatarStyle}
-        />
-        <View style={{ flex: 4 }}>
-          <Text style={[littleTitle, { color: darkColor }]}>Prénom Nom</Text>
-          <Text style={[defaultText, mt10, { color: darkColor }]}>
-            Ville, DEPARTEMENT
-          </Text>
+      <View style={[mb20, { flex: 1 }]}>
+        <View style={[mx20, mt40, styles.header]}>
+          <ImageBackground
+            source={{
+              uri: 'http://lh3.ggpht.com/-OdRx9XAYxkc/TusHxirp8uI/AAAAAAAABpw/lk-2NDvmJY0/Banana%252520Alien%25255B3%25255D.jpg?imgmax=800',
+            }}
+            style={[mr20, styles.avatar]}
+            imageStyle={styles.avatarStyle}
+          />
+          <View style={{ flex: 4 }}>
+            <Text style={[littleTitle, { color: darkColor }]}>Prénom Nom</Text>
+            <Text style={[defaultText, mt10, { color: darkColor }]}>
+              Ville, DEPARTEMENT
+            </Text>
+          </View>
         </View>
-      </View>
 
-      {/* Si le user est membre d'un club */}
-      <View style={mt50}>
+        {/* Si le user est membre d'un club */}
         <CustomButtonInfo
           title="Club : Nom du Club"
           colors={colors}
           onPress={() => {}}
           backgroundColor={primaryColor}
+          style={mt50}
         />
-      </View>
 
-      {/* Liste des vélos du user, qui serviront pour l'algo des entretiens / recherches de pièces */}
-      <View style={mt20}>
+        {/* Liste des vélos du user, qui serviront pour l'algo des entretiens / recherches de pièces */}
         <CustomButtonInfo
           title="Mes vélos"
           colors={colors}
@@ -69,11 +69,10 @@ const UserInformationsScene = () => {
             navigation.navigate('BikesUser')
           }}
           backgroundColor={primaryColor}
+          style={mt20}
         />
-      </View>
 
-      {/* Liste les randos que le user hype, pour avoir un aperçu */}
-      <View style={mt20}>
+        {/* Liste les randos que le user hype, pour avoir un aperçu */}
         <CustomButtonInfo
           title="Les clubs que je suis"
           colors={colors}
@@ -81,10 +80,9 @@ const UserInformationsScene = () => {
             navigation.navigate('ClubsUserFollow')
           }}
           backgroundColor={primaryColor}
+          style={mt20}
         />
-      </View>
 
-      <View style={mt20}>
         <CustomButtonInfo
           title="Les personnes que je suis"
           colors={colors}
@@ -92,6 +90,7 @@ const UserInformationsScene = () => {
             navigation.navigate('UsersUserFollow')
           }}
           backgroundColor={primaryColor}
+          style={mt20}
         />
       </View>
     </ScrollView>
