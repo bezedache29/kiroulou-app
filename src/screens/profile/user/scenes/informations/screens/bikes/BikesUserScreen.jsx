@@ -34,12 +34,15 @@ import CustomModal from '../../../../../../../components/CustomModal'
 import CustomDivider from '../../../../../../../components/CustomDivider'
 import CustomBigButton from '../../../../../../../components/CustomBigButton'
 import useUtils from '../../../../../../../hooks/useUtils'
+import CustomAlert from '../../../../../../../components/CustomAlert'
 
 const BikesUserScreen = ({ navigation }) => {
   const { colors } = useTheme()
 
   const [open, setOpen] = useState(false)
   const [bike, setBike] = useState(null)
+
+  const [showDeleteBike, setShowDeleteBike] = useState(false)
 
   const { formatDate } = useUtils()
 
@@ -170,7 +173,7 @@ const BikesUserScreen = ({ navigation }) => {
         {/* Boutons */}
         <View style={[mx20, mb10]}>
           <CustomBigButton
-            onPress={() => {}}
+            onPress={() => setShowDeleteBike(true)}
             label="Supprimer mon vélo"
             style={{ marginTop: 0 }}
             styleBtn={{ marginVertical: 5 }}
@@ -184,6 +187,15 @@ const BikesUserScreen = ({ navigation }) => {
             styleBtn={{ marginVertical: 5 }}
           />
         </View>
+
+        <CustomAlert
+          showAlert={showDeleteBike}
+          title="Attention !"
+          message={`Etes vous sur de vouloir supprimer le vélo : ${bike?.name} ?\n\nSes données seront perdues !`}
+          onDismiss={() => setShowDeleteBike(false)}
+          onCancelPressed={() => setShowDeleteBike(false)}
+          onConfirmPressed={() => setShowDeleteBike(false)}
+        />
       </CustomModal>
     </View>
   )
