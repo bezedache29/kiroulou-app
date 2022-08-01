@@ -154,6 +154,7 @@ const AppTabs = () => {
               }
             />
           ),
+          tabBarStyle: { display: 'none' }, // Permet de ne pas afficher la BottomTabBar sur cette View
         }}
         listeners={{
           tabPress: (e) => opened && e.preventDefault(),
