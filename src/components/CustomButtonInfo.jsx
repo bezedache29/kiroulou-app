@@ -9,6 +9,7 @@ const CustomButtonInfo = ({
   onPress,
   route,
   backgroundColor,
+  style,
 }) => (
   <TouchableOpacity
     style={[
@@ -19,6 +20,7 @@ const CustomButtonInfo = ({
           backgroundColor ||
           (route ? colors.backgroundColorBtnActive : colors.backgroundColorBtn),
       },
+      style,
     ]}
     onPress={onPress}
     disabled={!!route}
@@ -47,10 +49,11 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
+    // borderWidth: 1,
     marginHorizontal: 20,
     padding: 10,
     borderRadius: 8,
+    elevation: 5,
   },
   containerText: {
     paddingLeft: 10,
