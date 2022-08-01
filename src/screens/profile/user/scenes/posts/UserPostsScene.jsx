@@ -1,10 +1,8 @@
-import { FlatList, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
-
-import { my10 } from '../../../../../assets/styles/styles'
+import { View } from 'react-native'
+import LayoutPosts from '../../../../../components/Profile/LayoutPosts'
 
 import useFaker from '../../../../../hooks/useFaker'
-import CustomPost from '../../../../../components/Profile/CustomPost'
 
 const UserPostsScene = () => {
   const [data, setData] = useState([])
@@ -17,23 +15,11 @@ const UserPostsScene = () => {
     }
   }, [])
 
-  return (
-    <View style={[my10, { flex: 1 }]}>
-      <FlatList
-        data={data}
-        renderItem={({ item }) => (
-          <CustomPost
-            item={item}
-            likes={item.likes}
-            comments={item.comments}
-            edit={() => {}}
-          />
-        )}
-        keyExtractor={(item) => item.id}
-        showsVerticalScrollIndicator={false}
-      />
-    </View>
-  )
+  if (data.length) {
+    return <LayoutPosts data={data} />
+  }
+
+  return <View />
 }
 
 export default UserPostsScene
