@@ -71,6 +71,7 @@ const CustomPost = ({
     <View style={styles.containerPosts}>
       {/* Bouton like */}
       <CustomIconButton
+        size={!hypes ? '49%' : '30%'}
         onPress={() => {}}
         icon={
           <MaterialCommunityIcons
@@ -84,6 +85,7 @@ const CustomPost = ({
 
       {/* Bouton Comments */}
       <CustomIconButton
+        size={!hypes ? '49%' : '30%'}
         onPress={() => {}}
         icon={
           <MaterialCommunityIcons
