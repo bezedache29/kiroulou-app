@@ -4,6 +4,8 @@ import React from 'react'
 import LinearGradient from 'react-native-linear-gradient'
 
 import {
+  cancelColor,
+  dangerColor,
   darkPrimaryColor,
   defaultText,
   mr10,
@@ -11,15 +13,23 @@ import {
   whiteColor,
 } from '../assets/styles/styles'
 
-const CustomIconButton = ({ icon, onPress, size = '30%', number = false }) => (
+const CustomIconButton = ({
+  icon,
+  onPress,
+  size = '30%',
+  text = false,
+  cancel = false,
+}) => (
   <TouchableOpacity onPress={onPress} style={{ width: size }}>
     <LinearGradient
-      colors={[primaryColor, darkPrimaryColor]}
+      colors={
+        cancel ? [cancelColor, dangerColor] : [primaryColor, darkPrimaryColor]
+      }
       style={styles.box}
     >
-      {number && (
+      {text && (
         <Text style={[defaultText, mr10, { color: whiteColor, fontSize: 20 }]}>
-          {number}
+          {text}
         </Text>
       )}
       {icon}

@@ -81,7 +81,8 @@ export default function useFaker() {
       userId: faker.datatype.uuid(),
       // uri: faker.image.imageUrl(),
       // uri: faker.image.imageUrl(1234, 2345),
-      uri: 'https://luehangs.site/pic-chat-app-images/beautiful-blond-blonde-hair-478544.jpg',
+      url: 'https://luehangs.site/pic-chat-app-images/beautiful-blond-blonde-hair-478544.jpg',
+      // uri: 'https://i.ytimg.com/vi/xDW6GCD1pxA/maxresdefault.jpg',
     }
 
     return image

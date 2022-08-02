@@ -7,7 +7,11 @@ const CustomBox = ({ style, children }) => {
 
   return (
     <View
-      style={[styles.container, { backgroundColor: colors.background }, style]}
+      style={[
+        styles.container,
+        { backgroundColor: colors.backgroundBox },
+        style,
+      ]}
     >
       {children}
     </View>
