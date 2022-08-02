@@ -4,17 +4,12 @@
  */
 import {
   FlatList,
-  Modal,
   Pressable,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native'
 import React, { useEffect, useState } from 'react'
-
-import { useTheme } from 'react-native-paper'
-
-import ImageViewer from 'react-native-image-zoom-viewer'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
@@ -26,9 +21,9 @@ import RenderItemImages from './renders/RenderItemImages'
 import ListHeaderComponent from './renders/ListHeaderComponent'
 import { cancelColor, darkColor } from '../../../assets/styles/styles'
 import CustomAlert from '../../../components/CustomAlert'
+import CustomImageViewer from '../../../components/CustomImageViewer'
 
 const ImagesProfileScreen = ({ navigation, route }) => {
-  const { colors } = useTheme()
   const { createFakeUser, createFakeClub, createFakeAlbum } = useFaker()
 
   const [profile, setProfile] = useState('')
@@ -134,7 +129,7 @@ const ImagesProfileScreen = ({ navigation, route }) => {
                   onPress={() => handleOnPress(item)}
                   onLongPress={() => handleLongPress(item)}
                   selected={getSelected(item)}
-                  uri={item.uri}
+                  uri={item.url}
                 />
               )}
             />
@@ -143,25 +138,17 @@ const ImagesProfileScreen = ({ navigation, route }) => {
       </View>
 
       {/* Permet de voir l'image en fullScreen */}
-      <Modal
-        visible={imageViewer}
-        transparent
-        onRequestClose={() => {
-          setImageViewer(!imageViewer)
-        }}
+      <CustomImageViewer
+        showModal={imageViewer}
+        setShowModal={setImageViewer}
+        imageUrls={[{ url: image.url }]}
+        renderHeader={() => (
+          <RenderHeaderImageViewer
+            setImageViewer={setImageViewer}
+            onDelete={() => setShowDelete(true)}
+          />
+        )}
       >
-        <ImageViewer
-          imageUrls={[{ url: image.uri }]}
-          renderHeader={() => (
-            <RenderHeaderImageViewer
-              setImageViewer={setImageViewer}
-              onDelete={() => setShowDelete(true)}
-            />
-          )}
-          renderIndicator={() => null}
-          backgroundColor={colors.background}
-        />
-
         {/* Alert lors de la suppression d'une image */}
         <CustomAlert
           showAlert={showDelete}
@@ -171,7 +158,7 @@ const ImagesProfileScreen = ({ navigation, route }) => {
           onCancelPressed={() => setShowDelete(false)}
           onConfirmPressed={() => setShowDelete(false)}
         />
-      </Modal>
+      </CustomImageViewer>
 
       {/* Alert lors de la suppression de plusieurs images */}
       <CustomAlert

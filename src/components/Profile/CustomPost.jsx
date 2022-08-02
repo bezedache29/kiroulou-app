@@ -80,7 +80,7 @@ const CustomPost = ({
             color={whiteColor}
           />
         }
-        number={likes}
+        text={likes}
       />
 
       {/* Bouton Comments */}
@@ -94,7 +94,7 @@ const CustomPost = ({
             color={whiteColor}
           />
         }
-        number={comments}
+        text={comments}
       />
 
       {/* Bouton Hype */}
@@ -108,7 +108,7 @@ const CustomPost = ({
               color={whiteColor}
             />
           }
-          number={hypes}
+          text={hypes}
         />
       )}
     </View>

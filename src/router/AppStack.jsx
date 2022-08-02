@@ -32,7 +32,7 @@ import EditClubProfileScreen from '../screens/profile/club/EditClubProfileScreen
 import AdminClubProfileScreen from '../screens/profile/club/AdminClubProfileScreen'
 import NewMembersRequestScreen from '../screens/profile/club/scenes/members/screens/NewMembersRequestScreen'
 import ImagesProfileScreen from '../screens/profile/images/ImagesProfileScreen'
-import HikesScreen from '../screens/hikes/HikesScreen'
+import HikeScreen from '../screens/hikes/HikeScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -103,7 +103,7 @@ const AppStack = () => (
     <Stack.Screen name="Drawer" component={AppDrawer} />
 
     {/* Randonnée */}
-    <Stack.Screen name="Hike" component={HikesScreen} />
+    <Stack.Screen name="Hike" component={HikeScreen} />
   </Stack.Navigator>
 )
 

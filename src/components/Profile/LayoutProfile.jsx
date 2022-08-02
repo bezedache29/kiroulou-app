@@ -100,7 +100,7 @@ const LayoutProfile = ({
                 // eslint-disable-next-line react/no-array-index-key
                 key={index}
                 style={styles.imageContainer}
-                source={{ uri: image.uri }}
+                source={{ uri: image.url }}
               />
             ) : (
               <TouchableOpacity
