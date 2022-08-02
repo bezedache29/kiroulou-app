@@ -29,7 +29,7 @@ import file from '../../../assets/images/base64/image64'
 const CustomCard = ({ onPress, item }) => {
   const customShare = async () => {
     const shareOptions = {
-      message: `${item.trek ? item.club : item.user} vous informe :\n${
+      message: `${item.hike ? item.club : item.user} vous informe :\n${
         item.description
       }`,
       // message: 'mon message',
@@ -60,7 +60,7 @@ const CustomCard = ({ onPress, item }) => {
               {item.title}
             </Text>
             <Text style={[defaultText, textAlignCenter, { color: darkColor }]}>
-              {item.club ? item.club : item.trek}
+              {item.club ? item.club : item.hike}
             </Text>
           </View>
         </View>

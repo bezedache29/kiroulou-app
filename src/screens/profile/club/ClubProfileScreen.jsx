@@ -39,7 +39,7 @@ const ClubProfileScreen = ({ navigation }) => {
   // Variables
   const [overlay, setOverlay] = useState(false)
   const [club, setClub] = useState([])
-  const [treckDate, setTreckDate] = useState()
+  const [hikeDate, setHikeDate] = useState()
   const [loader, setLoader] = useState(false)
   const [change, setChange] = useState(false)
   const [showAlertDeleteClub, setShowAlertDeleteClub] = useState(false)
@@ -73,7 +73,7 @@ const ClubProfileScreen = ({ navigation }) => {
   }, [])
 
   useEffect(() => {
-    setTreckDate(club.dateTreck)
+    setHikeDate(club.dateHike)
   }, [club])
 
   // Ref pour la bottomSheet Type
@@ -106,7 +106,7 @@ const ClubProfileScreen = ({ navigation }) => {
   // A la confirmation de la date du DatePicker
   const handleConfirm = (date) => {
     setLoader(true)
-    setTreckDate(date)
+    setHikeDate(date)
     setChange(true)
 
     // !! Modifier la date en DB !!
@@ -170,7 +170,7 @@ const ClubProfileScreen = ({ navigation }) => {
               routes={routes}
               profile="club"
               data={club}
-              treckDate={treckDate}
+              hikeDate={hikeDate}
             />
           </View>
 
@@ -217,7 +217,7 @@ const ClubProfileScreen = ({ navigation }) => {
           <DateTimePickerModal
             isVisible={datePickerVisibility}
             mode="date"
-            date={treckDate}
+            date={hikeDate}
             onConfirm={handleConfirm}
             onCancel={hideDatePicker}
           />

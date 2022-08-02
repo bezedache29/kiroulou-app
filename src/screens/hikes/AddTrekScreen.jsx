@@ -1,10 +1,10 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const AddTrekScreen = () => (
+const AddHikeScreen = () => (
   <View>
-    <Text>AddTrekScreen</Text>
+    <Text>AddHikeScreen</Text>
   </View>
 )
 
-export default AddTrekScreen
+export default AddHikeScreen

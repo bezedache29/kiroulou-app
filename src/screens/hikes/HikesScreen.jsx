@@ -121,7 +121,7 @@ const mapMarkers = [
   },
 ]
 
-const TreksScreen = ({ navigation }) => {
+const HikesScreen = ({ navigation }) => {
   const { colors } = useTheme()
 
   const [inputSearch, setInputSearch] = useState(false)
@@ -357,7 +357,7 @@ const TreksScreen = ({ navigation }) => {
   )
 }
 
-export default TreksScreen
+export default HikesScreen
 
 const styles = StyleSheet.create({
   iconRight: {

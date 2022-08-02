@@ -10,11 +10,11 @@ export default function useFaker() {
 
   // Permet de créer un post fake
   const createFakePost = (i = 1) => {
-    const isTrek = getRandom(1, 2) === 1
+    const isHike = getRandom(1, 2) === 1
     const post = {
       id: faker.datatype.uuid(),
       username: faker.internet.userName(),
-      trek: isTrek ? faker.company.companyName() : '',
+      hike: isHike ? faker.company.companyName() : '',
       club: faker.company.companyName(),
       email: faker.internet.email(),
       avatar: faker.image.avatar(),
@@ -37,7 +37,7 @@ export default function useFaker() {
       city: faker.address.city(),
       members: faker.random.numeric(2),
       posts: faker.random.numeric(3),
-      dateTreck: faker.date.birthdate({ min: 2022, max: 2023, mode: 'year' }),
+      dateHike: faker.date.birthdate({ min: 2022, max: 2023, mode: 'year' }),
     }
     return club
   }

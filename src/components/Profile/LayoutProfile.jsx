@@ -33,7 +33,7 @@ const LayoutProfile = ({
   renderScene,
   routes,
   profile,
-  treckDate = false,
+  hikeDate = false,
   // data = {}, Ici on peut passer le club pour le profil du club ou le user pour le user
 }) => {
   const { colors } = useTheme()
@@ -44,7 +44,7 @@ const LayoutProfile = ({
   const layout = useWindowDimensions()
   const [index, setIndex] = useState(0)
 
-  const [dateTreck, setDateTreck] = useState('')
+  const [dateHike, setDateHike] = useState('')
 
   // Pour les tests
   const [images, setImages] = useState([])
@@ -62,15 +62,15 @@ const LayoutProfile = ({
    * Sert uniquement pour le profil des clubs
    */
   useEffect(() => {
-    if (treckDate) {
-      console.log(treckDate)
-      if (treckDate >= Date.now()) {
-        setDateTreck(formatDate(treckDate))
+    if (hikeDate) {
+      console.log(hikeDate)
+      if (hikeDate >= Date.now()) {
+        setDateHike(formatDate(hikeDate))
       } else {
-        setDateTreck('Pas de encore de date')
+        setDateHike('Pas de encore de date')
       }
     }
-  }, [treckDate])
+  }, [hikeDate])
 
   // Change l'index a quand on clic sur le btn
   const handleIndexChange = (index) => setIndex(index)
@@ -137,7 +137,7 @@ const LayoutProfile = ({
             Prochaine Rando prévue le :
           </Text>
           <Text style={[mt10, textAlignCenter, TitleH3, { color: darkColor }]}>
-            {dateTreck}
+            {dateHike}
           </Text>
         </View>
       )}
