@@ -9,14 +9,16 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
-import HomeScreen from '../screens/HomeScreen'
-import TreksScreen from '../screens/treks/TreksScreen'
 import { whiteColor, darkColor, secondaryColor } from '../assets/styles/styles'
+
+import { useTabMenu } from '../context/TabContext'
+
+import HomeScreen from '../screens/HomeScreen'
 import CustomTabBarIcon from '../components/Navigation/CustomTabBarIcon'
 import CustomTabBarButton from '../components/Navigation/CustomTabBarButton'
 import CalendarScreen from '../screens/CalendarScreen'
-import { useTabMenu } from '../context/TabContext'
 import ClubsScreen from '../screens/clubs/list/ClubsScreen'
+import HikesScreen from '../screens/hikes/HikesScreen'
 
 const Tab = createBottomTabNavigator()
 
@@ -137,8 +139,8 @@ const AppTabs = () => {
       />
 
       <Tab.Screen
-        name="Treks"
-        component={TreksScreen}
+        name="Hikes"
+        component={HikesScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <CustomTabBarIcon

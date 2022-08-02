@@ -58,7 +58,7 @@ const CustomPost = ({
             {item.title}
           </Text>
           <Text style={[defaultText, textAlignCenter, { color: darkColor }]}>
-            {item.club ? item.club : item.trek}
+            {item.club ? item.club : item.hike}
           </Text>
         </View>
       </View>

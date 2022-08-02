@@ -3,13 +3,13 @@ import React from 'react'
 
 import { useTheme } from 'react-native-paper'
 
-const TrekScreen = () => {
+const HikeScreen = () => {
   const { colors } = useTheme()
   return (
     <View>
-      <Text>TrekScreen</Text>
+      <Text>HikeScreen</Text>
     </View>
   )
 }
 
-export default TrekScreen
+export default HikeScreen
