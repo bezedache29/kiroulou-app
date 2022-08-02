@@ -7,7 +7,6 @@ import {
   Platform,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native'
@@ -16,11 +15,14 @@ import { LeafletView } from 'react-native-leaflet-view'
 import { useTheme } from 'react-native-paper'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import Ionicons from 'react-native-vector-icons/Ionicons'
+import Feather from 'react-native-vector-icons/Feather'
+
+import Modal from 'react-native-modal'
 
 import {
   cancelColor,
   darkColor,
+  darkPrimaryColor,
   defaultText,
   defaultTextBold,
   grayColor,
@@ -33,9 +35,9 @@ import {
 import CustomContainer from '../../components/CustomContainer'
 import CustomDivider from '../../components/CustomDivider'
 import CustomButton from '../../components/CustomButton'
-import CustomOverlay from '../../components/CustomOverlay'
+import InputField from '../../components/InputField'
 
-const { width } = Dimensions.get('window')
+const { width, height } = Dimensions.get('window')
 const CARD_HEIGHT = 220
 const CARD_WIDTH = width * 0.8
 const SPACING_FOR_CARD_INSET = width * 0.1 - 10
@@ -126,6 +128,7 @@ const HikesScreen = ({ navigation }) => {
 
   const [inputSearch, setInputSearch] = useState(false)
   const [search, setSearch] = useState('')
+  const [moveEnd, setMoveEnd] = useState(false)
 
   // Les coordonées initial
   const [coordonate, setCoordonate] = useState({
@@ -182,8 +185,6 @@ const HikesScreen = ({ navigation }) => {
 
       {/* Content */}
       <View style={{ flex: 1 }}>
-        {inputSearch && <CustomOverlay />}
-
         {/* La map Leaflet */}
         <LeafletView
           mapCenterPosition={coordonate}
@@ -200,6 +201,7 @@ const HikesScreen = ({ navigation }) => {
               )
             }
             if (message.event === 'onMoveEnd') {
+              setMoveEnd(true)
               // Ici on fera un fetch des randos dans une distance de XX km
               // Ou faire un bouton de recherche qui sera actionner par le user
               // Alert.alert(
@@ -210,39 +212,98 @@ const HikesScreen = ({ navigation }) => {
         />
 
         {/* Bouton qui permet de relocaliser le user */}
-        <TouchableOpacity onPress={() => {}} style={styles.crosshair}>
+        <TouchableOpacity
+          onPress={() =>
+            setCoordonate({ lat: 48.6049675528421, lng: -4.368736230974384 })
+          }
+          style={[styles.icon, { top: 65 }]}
+        >
           <MaterialCommunityIcons
             name="crosshairs"
-            size={35}
+            size={28}
             color={grayColor}
           />
         </TouchableOpacity>
 
-        {/* SearchBar */}
-        {inputSearch && (
-          <View
-            style={[styles.searchBox, { backgroundColor: colors.background }]}
+        {/* Bouton qui permet de rechercher au point ou le user est sur la carte */}
+        {moveEnd && (
+          <TouchableOpacity
+            onPress={() => setMoveEnd(false)}
+            style={[styles.icon, { top: 120 }]}
           >
-            <TextInput
-              placeholder="Rechercher ici"
-              placeholderTextColor={colors.text}
-              autoCapitalize="none"
-              autoFocus
-              value={search}
-              onChangeText={setSearch}
-              style={[
-                defaultText,
-                {
-                  flex: 1,
-                  padding: 0,
-                  color: colors.text,
-                  backgroundColor: colors.background,
-                },
-              ]}
-            />
-            <Ionicons name="ios-search" size={20} color={colors.text} />
-          </View>
+            <Feather name="refresh-cw" size={28} color={grayColor} />
+          </TouchableOpacity>
         )}
+
+        {/* SearchBar */}
+        <Modal
+          isVisible={inputSearch}
+          animationIn="slideInDown"
+          animationOut="slideOutUp"
+          backdropOpacity={0.6}
+          backdropTransitionInTiming={800}
+          backdropTransitionOutTiming={800}
+          animationInTiming={800}
+          animationOutTiming={800}
+          onBackdropPress={() => setInputSearch(false)}
+          style={styles.modal}
+        >
+          <View
+            style={[
+              styles.modalContainer,
+              {
+                backgroundColor: colors.background,
+              },
+            ]}
+          >
+            <Text
+              style={[
+                littleTitle,
+                textAlignCenter,
+                { color: colors.text, paddingVertical: 10 },
+              ]}
+            >
+              Rechercher autour d'une ville
+            </Text>
+
+            <CustomDivider />
+
+            <View style={{ marginBottom: 50 }}>
+              <InputField
+                label="Stade Georges Martin ..."
+                colors={colors}
+                value={search}
+                onChange={setSearch}
+                icon={
+                  <MaterialCommunityIcons
+                    name="home-search"
+                    size={22}
+                    color={darkPrimaryColor}
+                  />
+                }
+              />
+
+              {/* Résultats de la recherche */}
+              {/* <View style={{ zIndex: 2, backgroundColor: colors.background }}>
+                <Text style={{ borderBottomWidth: 1, padding: 10 }}>ici</Text>
+                <Text style={{ borderBottomWidth: 1, padding: 10 }}>ici</Text>
+                <Text style={{ borderBottomWidth: 1, padding: 10 }}>ici</Text>
+                <Text style={{ borderBottomWidth: 1, padding: 10 }}>ici</Text>
+                <Text style={{ borderBottomWidth: 1, padding: 10 }}>ici</Text>
+                <Text style={{ borderBottomWidth: 1, padding: 10 }}>ici</Text>
+                <Text style={{ borderBottomWidth: 1, padding: 10 }}>ici</Text>
+                <Text style={{ borderBottomWidth: 1, padding: 10 }}>ici</Text>
+                <Text style={{ borderBottomWidth: 1, padding: 10 }}>ici</Text>
+              </View> */}
+            </View>
+
+            <View style={{ marginTop: 'auto' }}>
+              <CustomButton onPress={() => setInputSearch(false)}>
+                Rechercher
+              </CustomButton>
+            </View>
+          </View>
+        </Modal>
 
         {/* Les cards en bas de la map */}
         <Animated.ScrollView
@@ -423,14 +484,25 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
     marginBottom: 10,
   },
-  crosshair: {
+  icon: {
     position: 'absolute',
     right: 10,
-    top: 70,
     backgroundColor: whiteColor,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: grayColor,
-    padding: 5,
+    padding: 8,
+  },
+  modal: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    width: width / 1.2,
+    maxHeight: height / 2,
+    borderRadius: 10,
+    elevation: 10,
+    padding: 10,
   },
 })
