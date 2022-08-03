@@ -88,6 +88,33 @@ export default function useFaker() {
     return image
   }
 
+  const createFakeHike = () => {
+    const hike = {
+      id: faker.datatype.uuid(),
+      position: { lat: 48.50044705226551, lng: -4.425040802537101 },
+      name: faker.random.words(2),
+      description: faker.lorem.paragraph(),
+      flyer:
+        'https://www.ats-sport.com/admin/fichiers_epreuves/FLYER-RandoVTTdesVignes_2021_D_page-0001-2021-11-04-13-51-25.jpg',
+      images: [],
+      icon: `
+      <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11.9 1a8.6 8.6 0 00-8.6 8.6c0 4.35 7.2 12.05 8.42 13.33a.24.24 0 00.35 0c1.22-1.27 8.42-9 8.42-13.33A8.6 8.6 0 0011.9 1zm0 11.67A3.07 3.07 0 1115 9.6a3.07 3.07 0 01-3.1 3.07z"/>
+      </svg>
+      `,
+      size: [24, 24],
+      publicPrice: 6,
+      privatePrice: 4,
+      date: new Date('2022', '9', '20'),
+    }
+
+    for (let i = 0; i < 5; i++) {
+      hike.images.push(createFakeAlbum())
+    }
+
+    return hike
+  }
+
   return {
     getRandom,
     createFakePost,
@@ -95,5 +122,6 @@ export default function useFaker() {
     createFakeAlbum,
     createFakeUser,
     createFakeBike,
+    createFakeHike,
   }
 }

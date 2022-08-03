@@ -44,6 +44,7 @@ import RouteHike from '../../components/Hikes/RouteHike'
 import AvatarHype from '../../components/Hikes/AvatarHype'
 import CustomLabelNavigation from '../../components/CustomLabelNavigation'
 import CustomImageViewer from '../../components/CustomImageViewer'
+import Weather from '../../components/Weather/Weather'
 
 const { width, height } = Dimensions.get('window')
 const CARD_HEIGHT = 220
@@ -51,9 +52,12 @@ const CARD_WIDTH = width * 0.8
 
 const HikeScreen = ({ navigation, route }) => {
   const { colors } = useTheme()
-  const { createFakeAlbum } = useFaker()
+  const { createFakeAlbum, createFakeHike } = useFaker()
 
-  const [hike, setHike] = useState({})
+  // On récupère la randonnée via les paramètres de la route
+  // const { hike } = route.params
+
+  const [hike, setHike] = useState(false) // Pour les tests
   const [images, setImages] = useState([])
   const [isHype, setIsHype] = useState(false)
   const [showFlyer, setShowFlyer] = useState(false)
@@ -62,17 +66,23 @@ const HikeScreen = ({ navigation, route }) => {
 
   const animation = new Animated.Value(0)
 
-  // On récupère la randonnée via les paramètres de la route
   useEffect(() => {
-    if (route.params.hike) {
-      setHike(route.params.hike)
+    console.log('hike :', hike)
+    if (hike) {
+      const today = new Date()
+      console.log(today.getTime())
+      // Timestamp de la date de la rando
+      const { date } = hike
+      console.log(date.getTime())
     }
-  }, [route.params])
+  }, [hike])
 
   useEffect(() => {
     for (let i = 0; i < 5; i++) {
       setImages((oldData) => [...oldData, createFakeAlbum()])
     }
+
+    setHike(createFakeHike())
   }, [])
 
   return (
@@ -227,9 +237,7 @@ const HikeScreen = ({ navigation, route }) => {
           </CustomBox>
 
           {/* Météo */}
-          <CustomBox>
-            <Text>Application Météo</Text>
-          </CustomBox>
+          <CustomBox>{hike && <Weather hike={hike} />}</CustomBox>
 
           {/* Commentaires */}
           <CustomBox>

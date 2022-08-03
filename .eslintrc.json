@@ -19,6 +19,9 @@
         "react",
         "prettier"
     ],
+    "globals": {
+        "__DEV__": true
+    },
     "rules": {
         "prettier/prettier": [
             "error",

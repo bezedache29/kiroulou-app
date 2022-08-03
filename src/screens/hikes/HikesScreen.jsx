@@ -185,6 +185,7 @@ const HikesScreen = ({ navigation }) => {
         <LeafletView
           mapCenterPosition={coordonate}
           zoom={12}
+          debugEnabled={false}
           mapMarkers={mapMarkers}
           mapOptions={mapOptions}
           mapLayers={mapLayers}
