@@ -3,6 +3,8 @@ export const primaryColor = '#a7ce9d'
 // export const primaryColor = '#9acd8d'
 export const secondaryColor = '#ddecd9'
 export const darkPrimaryColor = '#7cb66d'
+// export const darkPrimaryColor = '#6DB68F'
+export const dullPrimaryColor = '#3F7631'
 
 export const darkColor = '#221326'
 export const whiteColor = '#fefefe'

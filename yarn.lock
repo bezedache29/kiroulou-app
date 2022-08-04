@@ -6515,6 +6515,11 @@ react-native-dotenv@^3.3.1:
   dependencies:
     dotenv "^10.0.0"
 
+react-native-fading-edge@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-fading-edge/-/react-native-fading-edge-1.0.0.tgz#509329015053ff81fcd32dac26669afdb06f13f0"
+  integrity sha512-vL8C4CYIjFXYFg58gzZwOnllpQIXhGnu1osdJciYFYYRDWAUKr3p+i2KQB3WCBgiFMbTdB9ZIPrJJrNC5DS+KA==
+
 react-native-flipper@^0.34.0:
   version "0.34.0"
   resolved "https://registry.yarnpkg.com/react-native-flipper/-/react-native-flipper-0.34.0.tgz#7df1f38ba5d97a9321125fe0fccbe47d99e6fa1d"

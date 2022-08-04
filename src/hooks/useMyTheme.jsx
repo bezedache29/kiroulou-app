@@ -39,11 +39,12 @@ const useMyTheme = () => {
       backgroundColorBtn: whiteColor,
       backgroundColorBtnActive: primaryColor,
       textBtnActive: darkColor,
-      activeLink: darkPrimaryColor,
+      activeLink: secondaryColor,
       inactiveLink: darkColor,
       tabBar: secondaryColor,
       indicator: darkColor,
       box: whiteColor,
+      card: secondaryColor,
     },
   }
 
@@ -66,11 +67,14 @@ const useMyTheme = () => {
       backgroundColorBtn: primaryColor,
       backgroundColorBtnActive: darkPrimaryColor,
       textBtnActive: darkColor,
-      activeLink: darkPrimaryColor,
-      inactiveLink: grayColor,
+      // activeLink: darkPrimaryColor,
+      activeLink: secondaryColor,
+      // inactiveLink: grayColor,
+      inactiveLink: darkColor,
       tabBar: secondaryColor,
       indicator: secondaryColor,
       box: primaryColor,
+      card: blackColor,
     },
   }
 

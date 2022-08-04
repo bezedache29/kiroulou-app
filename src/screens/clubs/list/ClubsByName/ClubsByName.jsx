@@ -4,17 +4,18 @@
 import { FlatList, StyleSheet, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 
-import { useTheme } from 'react-native-paper'
+import FadingEdge from 'react-native-fading-edge'
 
+import { useTheme } from 'react-native-paper'
 import CustomSearchInput from '../../../../components/CustomSearchInput'
 import ClubsCard from '../../../../components/Clubs/ClubsCard'
 import useFaker from '../../../../hooks/useFaker'
 
 const ClubsByName = () => {
-  const { colors } = useTheme()
-
   const [search, setSearch] = useState('')
   const [clubs, setClubs] = useState([])
+
+  const { colors } = useTheme()
 
   // Pour les tests
   const { createFakeClub } = useFaker()
@@ -30,22 +31,24 @@ const ClubsByName = () => {
   }, [])
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <CustomSearchInput
-        placeholder="Rechercher par nom"
-        value={search}
-        onChangeValue={onChangeText}
-      />
-
-      <View style={styles.content}>
-        <FlatList
-          data={clubs}
-          renderItem={({ item }) => <ClubsCard club={item} />}
-          keyExtractor={(item) => item.id}
-          showsVerticalScrollIndicator={false}
+    <FadingEdge bottom={500}>
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
+        <CustomSearchInput
+          placeholder="Rechercher par nom"
+          value={search}
+          onChangeValue={onChangeText}
         />
+
+        <View style={styles.content}>
+          <FlatList
+            data={clubs}
+            renderItem={({ item }) => <ClubsCard club={item} />}
+            keyExtractor={(item) => item.id}
+            showsVerticalScrollIndicator={false}
+          />
+        </View>
       </View>
-    </View>
+    </FadingEdge>
   )
 }
 
