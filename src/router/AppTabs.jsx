@@ -48,7 +48,7 @@ const AppTabs = () => {
           // borderColor: colors.tabBar,
           borderColor: darkPrimaryColor,
           borderRadius: 15,
-          height: 60,
+          height: 50,
           shadowColor: darkColor,
           ...styles.shadow,
         },

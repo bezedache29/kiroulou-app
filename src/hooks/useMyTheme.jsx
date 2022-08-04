@@ -45,6 +45,7 @@ const useMyTheme = () => {
       indicator: darkColor,
       box: whiteColor,
       card: secondaryColor,
+      borderAvatar: whiteColor,
     },
   }
 
@@ -75,6 +76,7 @@ const useMyTheme = () => {
       indicator: secondaryColor,
       box: primaryColor,
       card: blackColor,
+      borderAvatar: secondaryColor,
     },
   }
 

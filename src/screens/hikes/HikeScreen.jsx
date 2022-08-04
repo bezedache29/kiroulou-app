@@ -45,6 +45,8 @@ import AvatarHype from '../../components/Hikes/AvatarHype'
 import CustomLabelNavigation from '../../components/CustomLabelNavigation'
 import CustomImageViewer from '../../components/CustomImageViewer'
 import Weather from '../../components/Weather/Weather'
+import CustomModal from '../../components/CustomModal'
+import PoepleHypeModal from '../../components/Hikes/Hike/PoepleHypeModal'
 
 const { width, height } = Dimensions.get('window')
 const CARD_HEIGHT = 220
@@ -52,7 +54,7 @@ const CARD_WIDTH = width * 0.8
 
 const HikeScreen = ({ navigation, route }) => {
   const { colors } = useTheme()
-  const { createFakeAlbum, createFakeHike } = useFaker()
+  const { createFakeAlbum, createFakeHike, createFakeUser } = useFaker()
 
   // On récupère la randonnée via les paramètres de la route
   // const { hike } = route.params
@@ -63,6 +65,8 @@ const HikeScreen = ({ navigation, route }) => {
   const [showFlyer, setShowFlyer] = useState(false)
   const [showImages, setShowImages] = useState(false)
   const [index, setIndex] = useState(0)
+  const [showHypes, setShowHypes] = useState(false)
+  const [peopleHype, setPeopleHype] = useState([])
 
   const animation = new Animated.Value(0)
 
@@ -74,6 +78,10 @@ const HikeScreen = ({ navigation, route }) => {
       // Timestamp de la date de la rando
       const { date } = hike
       console.log(date.getTime())
+
+      for (let i = 0; i < 7; i++) {
+        setPeopleHype((oldData) => [...oldData, createFakeUser()])
+      }
     }
   }, [hike])
 
@@ -167,18 +175,34 @@ const HikeScreen = ({ navigation, route }) => {
             </CustomBox>
           </View>
 
-          <CustomBox style={[rowCenter]}>
-            <Text style={[mr20, defaultText, { color: colors.textBox }]}>
-              Personnes Hypes :
-            </Text>
-            <View style={[rowCenter]}>
-              <AvatarHype />
-              <AvatarHype />
-              <AvatarHype />
-              <AvatarHype />
-              <AvatarHype />
-              <AvatarHype />
-            </View>
+          <CustomBox>
+            <TouchableOpacity
+              onPress={() => setShowHypes(true)}
+              style={rowCenter}
+            >
+              <Text style={[mr20, defaultText, { color: colors.textBox }]}>
+                Personnes Hypes :
+              </Text>
+              <View style={[rowCenter]}>
+                {/* On boucle sur les personnes hypes jusqu'a en avoir 5 */}
+                {peopleHype &&
+                  peopleHype.map(
+                    (user, index) =>
+                      index <= 4 && <AvatarHype key={user.id} user={user} />
+                  )}
+                {/* Si 6 personnes hype on affiche le 6 ème */}
+                {peopleHype && peopleHype.length === 6 && (
+                  <AvatarHype user={peopleHype[5]} />
+                )}
+                {/* Si plus de 6 personnes hype, on affiche le compteur des personnes restante sur le 6 eme */}
+                {peopleHype && peopleHype.length > 6 && (
+                  <AvatarHype
+                    user={peopleHype[5]}
+                    nbUsers={peopleHype.length - 6}
+                  />
+                )}
+              </View>
+            </TouchableOpacity>
           </CustomBox>
 
           <CustomBox>
@@ -288,6 +312,14 @@ const HikeScreen = ({ navigation, route }) => {
             </View>
           )}
         />
+
+        {/* Modal pour montrer les personnes hypes */}
+        <CustomModal
+          showModal={showHypes}
+          closeModal={() => setShowHypes(false)}
+        >
+          <PoepleHypeModal peopleHype={peopleHype} />
+        </CustomModal>
       </View>
     </CustomContainer>
   )
