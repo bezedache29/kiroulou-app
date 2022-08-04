@@ -3,22 +3,23 @@ import React from 'react'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
+import { useTheme } from 'react-native-paper'
 import {
   cancelColor,
   dangerColor,
   darkColor,
   defaultText,
   defaultTextBold,
-  secondaryColor,
 } from '../../assets/styles/styles'
 
 import CustomDivider from '../CustomDivider'
 import CustomButton from '../CustomButton'
 
 const ClubsCard = ({ club, user = { membership: false } }) => {
-  const a = 1
+  const { colors } = useTheme()
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.card }]}>
       {/* Icon */}
       <View style={styles.header}>
         <ImageBackground
@@ -30,32 +31,36 @@ const ClubsCard = ({ club, user = { membership: false } }) => {
         />
         <View>
           {/* Nom du club */}
-          <Text style={[defaultTextBold, { color: darkColor }]}>
+          <Text style={[defaultTextBold, { color: colors.text }]}>
             {club.name}
           </Text>
           {/* Ville du club */}
-          <Text style={[defaultText, { color: darkColor, fontSize: 14 }]}>
+          <Text style={[defaultText, { color: colors.text, fontSize: 14 }]}>
             {club.city}
           </Text>
         </View>
       </View>
-      <CustomDivider addStyle={{ borderTopColor: darkColor }} />
+
+      <CustomDivider addStyle={{ borderTopColor: colors.border }} />
+
       <View style={styles.content}>
         {/* Nombre de membres */}
-        <Text style={[defaultText, { color: darkColor }]}>
+        <Text style={[defaultText, { color: colors.text }]}>
           {club.members} membres
         </Text>
         <MaterialCommunityIcons
           name="circle-small"
           size={20}
-          color={darkColor}
+          color={colors.text}
         />
         {/* Nombre de publications */}
-        <Text style={[defaultText, { color: darkColor }]}>
+        <Text style={[defaultText, { color: colors.text }]}>
           {club.posts} publications
         </Text>
       </View>
-      <CustomDivider addStyle={{ borderTopColor: darkColor }} />
+
+      <CustomDivider addStyle={{ borderTopColor: colors.border }} />
+
       <View style={styles.buttons}>
         {/* Btn demande adhesion */}
         {user.membership ? (
@@ -92,7 +97,6 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 8,
     padding: 10,
-    backgroundColor: secondaryColor,
     marginBottom: 20,
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.3,

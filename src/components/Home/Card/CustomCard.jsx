@@ -17,7 +17,6 @@ import {
   defaultText,
   littleTitle,
   my10,
-  secondaryColor,
   textAlignCenter,
   whiteColor,
 } from '../../../assets/styles/styles'
@@ -114,11 +113,11 @@ const CustomCard = ({ onPress, item }) => {
 const styles = StyleSheet.create({
   container: {
     marginBottom: 20,
-    marginHorizontal: 20,
+    marginHorizontal: 10,
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 8,
     borderColor: darkPrimaryColor,
-    backgroundColor: secondaryColor,
+    backgroundColor: 'white',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.3,
     shadowRadius: 20,

@@ -183,6 +183,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: darkPrimaryColor,
+    borderWidth: 3,
+    borderColor: 'white',
     width: 60,
     height: 60,
     borderRadius: 30,

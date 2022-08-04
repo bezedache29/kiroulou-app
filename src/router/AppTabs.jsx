@@ -9,7 +9,11 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
-import { whiteColor, darkColor, secondaryColor } from '../assets/styles/styles'
+import {
+  whiteColor,
+  darkColor,
+  darkPrimaryColor,
+} from '../assets/styles/styles'
 
 import { useTabMenu } from '../context/TabContext'
 
@@ -34,13 +38,15 @@ const AppTabs = () => {
         tabBarShowLabel: false,
         tabBarStyle: {
           position: 'absolute',
-          bottom: 20,
-          left: 20,
-          right: 20,
-          backgroundColor: secondaryColor,
+          bottom: 10,
+          left: 10,
+          right: 10,
+          backgroundColor: darkPrimaryColor,
           borderWidth: 1,
-          borderTopColor: whiteColor,
-          borderColor: colors.tabBar,
+          // borderTopColor: whiteColor,
+          borderTopColor: darkPrimaryColor,
+          // borderColor: colors.tabBar,
+          borderColor: darkPrimaryColor,
           borderRadius: 15,
           height: 60,
           shadowColor: darkColor,

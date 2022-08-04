@@ -69,7 +69,6 @@ const ClubsScreen = ({ navigation }) => {
             initialLayout={{ width: layout.width }}
           />
         </View>
-        <View style={{ flex: 1 }} />
       </View>
     </TabContainer>
   )
