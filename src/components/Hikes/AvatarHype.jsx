@@ -1,15 +1,30 @@
-import { ImageBackground, StyleSheet } from 'react-native'
+import { ImageBackground, StyleSheet, Text } from 'react-native'
 import React from 'react'
 
-const AvatarHype = () => (
-  <ImageBackground
-    source={{
-      uri: 'https://itigic.com/wp-content/uploads/2022/04/20220414_6257c3e610125.webp?ezimgfmt=rs:372x195/rscb2/ng:webp/ngcb2',
-    }}
-    style={styles.avatar}
-  />
-)
+import { useTheme } from 'react-native-paper'
+import { darkColor, defaultText } from '../../assets/styles/styles'
 
+const AvatarHype = ({ user, nbUsers }) => {
+  const { colors } = useTheme()
+
+  return (
+    <ImageBackground
+      source={{
+        uri: user.avatar,
+      }}
+      style={[styles.avatar, { borderColor: colors.borderAvatar }]}
+      imageStyle={{ opacity: nbUsers ? 0.3 : 1 }}
+    >
+      {nbUsers && (
+        <Text
+          style={[defaultText, { color: colors.borderAvatar, fontSize: 16 }]}
+        >
+          +{nbUsers}
+        </Text>
+      )}
+    </ImageBackground>
+  )
+}
 export default AvatarHype
 
 const styles = StyleSheet.create({
@@ -19,7 +34,9 @@ const styles = StyleSheet.create({
     borderRadius: 150,
     marginLeft: -10,
     borderWidth: 3,
-    borderColor: 'white',
     overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: darkColor,
   },
 })
