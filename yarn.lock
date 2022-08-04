@@ -6515,6 +6515,11 @@ react-native-dotenv@^3.3.1:
   dependencies:
     dotenv "^10.0.0"
 
+react-native-element-dropdown@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/react-native-element-dropdown/-/react-native-element-dropdown-2.1.0.tgz#a13c544798e2d889e076a917f7980d090b62541a"
+  integrity sha512-y6s+MANhVy2HIfsnrHh1pVMVu9aXUPcxWH7GuCJ12W+iJiBdzmyyKYNWl37b/9IJHbsIpDyiFlCFwj21VBANeA==
+
 react-native-fading-edge@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/react-native-fading-edge/-/react-native-fading-edge-1.0.0.tgz#509329015053ff81fcd32dac26669afdb06f13f0"

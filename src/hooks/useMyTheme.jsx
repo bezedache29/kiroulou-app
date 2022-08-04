@@ -46,6 +46,7 @@ const useMyTheme = () => {
       box: whiteColor,
       card: secondaryColor,
       borderAvatar: whiteColor,
+      dropdown: secondaryColor,
     },
   }
 
@@ -77,6 +78,7 @@ const useMyTheme = () => {
       box: primaryColor,
       card: blackColor,
       borderAvatar: secondaryColor,
+      dropdown: blackColor,
     },
   }
 

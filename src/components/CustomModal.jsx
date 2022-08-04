@@ -19,13 +19,16 @@ const CustomModal = ({ children, showModal, closeModal }) => {
           },
         ]}
       >
-        <TouchableOpacity onPress={closeModal} style={styles.closeBtn}>
-          <MaterialCommunityIcons
-            name="close-circle"
-            size={35}
-            color={cancelColor}
-          />
-        </TouchableOpacity>
+        {closeModal && (
+          <TouchableOpacity onPress={closeModal} style={styles.closeBtn}>
+            <MaterialCommunityIcons
+              name="close-circle"
+              size={35}
+              color={cancelColor}
+            />
+          </TouchableOpacity>
+        )}
+
         <View style={[mt50, { flex: 1 }]}>{children}</View>
       </View>
     </Modal>

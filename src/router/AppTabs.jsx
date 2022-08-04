@@ -36,6 +36,7 @@ const AppTabs = () => {
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
+        unmountOnBlur: true,
         tabBarStyle: {
           position: 'absolute',
           bottom: 10,
