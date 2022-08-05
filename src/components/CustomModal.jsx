@@ -6,7 +6,7 @@ import { useTheme } from 'react-native-paper'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { cancelColor, mt50 } from '../assets/styles/styles'
 
-const CustomModal = ({ children, showModal, closeModal }) => {
+const CustomModal = ({ children, showModal, closeModal, style }) => {
   const { colors } = useTheme()
 
   return (
@@ -17,6 +17,7 @@ const CustomModal = ({ children, showModal, closeModal }) => {
           {
             backgroundColor: colors.background,
           },
+          style,
         ]}
       >
         {closeModal && (

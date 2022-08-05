@@ -105,7 +105,8 @@ export default function useFaker() {
       size: [24, 24],
       publicPrice: 6,
       privatePrice: 4,
-      date: new Date('2022', '9', '20'),
+      date: new Date('2022', '7', '05'),
+      // date: faker.date.birthdate({ min: 2022, max: 2023, mode: 'year' }),
     }
 
     for (let i = 0; i < 5; i++) {

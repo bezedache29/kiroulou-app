@@ -25,6 +25,7 @@ const ModalSearchDepartment = ({
   departments,
   department,
   setDepartment,
+  setDepartmentCode,
   setSearch,
 }) => {
   const { colors } = useTheme()
@@ -77,6 +78,7 @@ const ModalSearchDepartment = ({
               data={departments}
               value={department}
               setValue={setDepartment}
+              setValueCode={setDepartmentCode}
               renderAttr="nom"
               placeholder="Selectionner un département"
               searchPlaceholder="Nom du département"
