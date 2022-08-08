@@ -33,6 +33,9 @@ import AdminClubProfileScreen from '../screens/profile/club/AdminClubProfileScre
 import NewMembersRequestScreen from '../screens/profile/club/scenes/members/screens/NewMembersRequestScreen'
 import ImagesProfileScreen from '../screens/profile/images/ImagesProfileScreen'
 import HikeScreen from '../screens/hikes/HikeScreen'
+import AddHikeStep1Screen from '../screens/hikes/AddHikeScreen/AddHikeStep1Screen'
+import AddHikeStep2Screen from '../screens/hikes/AddHikeScreen/AddHikeStep2Screen'
+import AddHikeStep3Screen from '../screens/hikes/AddHikeScreen/AddHikeStep3Screen'
 
 const Stack = createNativeStackNavigator()
 
@@ -104,6 +107,9 @@ const AppStack = () => (
 
     {/* Randonnée */}
     <Stack.Screen name="Hike" component={HikeScreen} />
+    <Stack.Screen name="AddHikeStep1" component={AddHikeStep1Screen} />
+    <Stack.Screen name="AddHikeStep2" component={AddHikeStep2Screen} />
+    <Stack.Screen name="AddHikeStep3" component={AddHikeStep3Screen} />
   </Stack.Navigator>
 )
 

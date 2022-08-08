@@ -3,6 +3,7 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   Animated,
+  TouchableOpacity,
 } from 'react-native'
 import React, { useRef, useEffect } from 'react'
 
@@ -47,7 +48,7 @@ const CustomTabBarButton = ({ children, opened, toggleOpened }) => {
     <View style={styles.container}>
       <View style={styles.box}>
         {/* Bouton de gauche */}
-        <TouchableWithoutFeedback>
+        <TouchableOpacity>
           <Animated.View
             style={[
               styles.item,
@@ -76,10 +77,10 @@ const CustomTabBarButton = ({ children, opened, toggleOpened }) => {
               size={24}
             />
           </Animated.View>
-        </TouchableWithoutFeedback>
+        </TouchableOpacity>
 
         {/* Bouton du milieu */}
-        <TouchableWithoutFeedback onPress={() => goToScreen('AddClub')}>
+        <TouchableOpacity onPress={() => goToScreen('AddClub')}>
           <Animated.View
             style={[
               styles.item,
@@ -98,10 +99,10 @@ const CustomTabBarButton = ({ children, opened, toggleOpened }) => {
           >
             <MaterialIcons name="group-add" color={whiteColor} size={24} />
           </Animated.View>
-        </TouchableWithoutFeedback>
+        </TouchableOpacity>
 
         {/* Bouton de droite */}
-        <TouchableWithoutFeedback>
+        <TouchableOpacity onPress={() => goToScreen('AddHikeStep1')}>
           <Animated.View
             style={[
               styles.item,
@@ -130,7 +131,7 @@ const CustomTabBarButton = ({ children, opened, toggleOpened }) => {
               size={24}
             />
           </Animated.View>
-        </TouchableWithoutFeedback>
+        </TouchableOpacity>
 
         {/* Gros Bouton + au milieu */}
         <TouchableWithoutFeedback
