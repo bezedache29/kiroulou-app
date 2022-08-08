@@ -6498,6 +6498,11 @@ react-native-awesome-alerts@^2.0.0:
   dependencies:
     prop-types "^15.7.2"
 
+react-native-bouncy-checkbox@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/react-native-bouncy-checkbox/-/react-native-bouncy-checkbox-3.0.2.tgz#f0582db65155e06ccfa9f40f78806672dd892da5"
+  integrity sha512-OaldnDzfnATaT7v08C+vAoywfTZmUaiX5qT/GlWGJiFNMVQOuFFGYlWDhgDg52BGSRbPGlSgwKW3BMB9ubapZA==
+
 react-native-codegen@^0.69.1:
   version "0.69.1"
   resolved "https://registry.yarnpkg.com/react-native-codegen/-/react-native-codegen-0.69.1.tgz#3632be2f24464e6fad8dd11a25d1b6f3bc2c7d0b"

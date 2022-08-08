@@ -6,7 +6,7 @@ import {
   TextInput,
   View,
 } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
 
@@ -38,30 +38,45 @@ import CustomBigButton from '../CustomBigButton'
 import InputField from '../InputField'
 import CustomRadioBox from '../CustomRadioBox'
 
-const AddTripToHikeModal = ({ showModalTrip, closeModal, setTripCreated }) => {
+const AddOrEditTripToHikeModal = ({
+  showModalTrip,
+  closeModal,
+  setTripCreated,
+  edit,
+}) => {
   const { colors } = useTheme()
 
   const [checked, setChecked] = useState(1)
+  const [trip, setTrip] = useState(false) // Parcours que l'on modifie
+
+  // Si on edit le parcours
+  useEffect(() => {
+    if (edit) {
+      setTrip(edit)
+      setChecked(edit.difficulty)
+    }
+  }, [edit])
 
   return (
     <CustomModal showModal={showModalTrip} closeModal={closeModal}>
       <Text style={[TitleH3, textAlignCenter, { color: colors.text }]}>
-        Ajouter un parcours
+        {edit ? 'Modifier' : 'Ajouter'} un parcours
       </Text>
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={[px10, mt20, { flex: 1 }]}>
           <Text style={[defaultText, { color: colors.text }]}>
-            Ajouter un parcours a votre rando, en indiquant la distance, le
-            denivelé, la diffculté et le nombre de ravitaillements sur celle-ci
+            {edit ? 'Modifier' : 'Ajouter'} un parcours a votre rando, en
+            indiquant la distance, le denivelé, la diffculté et le nombre de
+            ravitaillements sur celle-ci
           </Text>
           <Formik
             validationSchema={addTripSchema}
             initialValues={{
-              distance: '',
-              heightDifference: 0,
-              difficulty: 1,
-              supplies: 0,
+              distance: trip ? trip.distance : '',
+              heightDifference: trip ? trip.heightDifference : 0,
+              difficulty: trip ? trip.difficulty : 1,
+              supplies: trip ? trip.supplies : 0,
             }}
             onSubmit={(values, { resetForm }) => {
               const data = {
@@ -251,7 +266,7 @@ const AddTripToHikeModal = ({ showModalTrip, closeModal, setTripCreated }) => {
                 </View>
 
                 <CustomBigButton
-                  label="Ajouter le parcours"
+                  label={trip ? 'Modifier le parcours' : 'Ajouter le parcours'}
                   onPress={handleSubmit}
                 />
               </View>
@@ -263,7 +278,7 @@ const AddTripToHikeModal = ({ showModalTrip, closeModal, setTripCreated }) => {
   )
 }
 
-export default AddTripToHikeModal
+export default AddOrEditTripToHikeModal
 
 const styles = StyleSheet.create({
   radioButton: {
