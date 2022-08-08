@@ -14,6 +14,7 @@ export const ivoryColor = '#ffffd4'
 export const eggplantColor = '#370028'
 export const pinkColor = '#d58490'
 export const blueColor = '#77b5fe'
+
 // export const blackColor = '#1c1c1c'
 export const blackColor = '#606060'
 export const grayColor = '#748c94'
@@ -24,6 +25,15 @@ export const dangerColor = '#ff0921'
 export const warningColor = '#f0d500'
 export const successColor = '#b0f2b6'
 export const infoColor = '#318ce7'
+
+export const beginnerColor = '#77b5fe'
+export const beginnerSecondaryColor = '#c8e1fe'
+
+export const athleticColor = '#f1c232'
+export const athleticSecondaryColor = '#f9e6ad'
+
+export const sportyColor = '#f44336'
+export const sportySecondaryColor = '#fab3ae'
 
 // TEXT
 export const defaultTitle = {
@@ -157,6 +167,9 @@ export const my20 = {
 // PADDINGS
 export const px25 = {
   paddingHorizontal: 25,
+}
+export const px10 = {
+  paddingHorizontal: 10,
 }
 export const px20 = {
   paddingHorizontal: 20,

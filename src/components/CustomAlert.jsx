@@ -21,6 +21,7 @@ const CustomAlert = ({
   onConfirmPressed,
   titleStyle,
   messageStyle,
+  backgroundColor,
 }) => {
   const { colors } = useTheme()
 
@@ -41,7 +42,9 @@ const CustomAlert = ({
       cancelButtonTextStyle={defaultText}
       confirmButtonTextStyle={defaultText}
       onDismiss={onDismiss}
-      contentContainerStyle={{ backgroundColor: colors.background }}
+      contentContainerStyle={{
+        backgroundColor: backgroundColor || colors.background,
+      }}
       titleStyle={[TitleH3, { color: colors.text }, titleStyle]}
       messageStyle={[defaultText, { color: colors.text }, messageStyle]}
       onCancelPressed={onCancelPressed}

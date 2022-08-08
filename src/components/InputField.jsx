@@ -27,6 +27,9 @@ const InputField = ({
   name,
   value,
   onBlur,
+  maxLength,
+  multiline = false,
+  numberOfLines = 1,
 }) => (
   <>
     <View
@@ -40,6 +43,9 @@ const InputField = ({
       {icon}
       <TextInput
         name={name}
+        multiline={multiline}
+        maxLength={maxLength}
+        numberOfLines={numberOfLines}
         value={value}
         placeholder={label}
         placeholderTextColor={colors.text}
