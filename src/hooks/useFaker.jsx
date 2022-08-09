@@ -93,6 +93,9 @@ export default function useFaker() {
       id: faker.datatype.uuid(),
       position: { lat: 48.50044705226551, lng: -4.425040802537101 },
       name: faker.random.words(2),
+      address: faker.address.streetAddress(),
+      city: faker.address.city(),
+      postCode: faker.address.zipCode('####'),
       description: faker.lorem.paragraph(),
       flyer:
         'https://www.ats-sport.com/admin/fichiers_epreuves/FLYER-RandoVTTdesVignes_2021_D_page-0001-2021-11-04-13-51-25.jpg',
@@ -105,8 +108,30 @@ export default function useFaker() {
       size: [24, 24],
       publicPrice: 6,
       privatePrice: 4,
-      date: new Date('2022', '7', '05'),
+      date: new Date('2022', '7', '10'),
       // date: faker.date.birthdate({ min: 2022, max: 2023, mode: 'year' }),
+      trips: [
+        {
+          distance: faker.random.numeric(2),
+          heightDifference: faker.random.numeric(3),
+          difficulty: +faker.random.numeric(1, {
+            bannedDigits: ['0', '5', '6', '7', '8', '9'],
+          }),
+          supplies: faker.random.numeric(1, {
+            bannedDigits: ['0', '4', '5', '6', '7', '8', '9'],
+          }),
+        },
+        {
+          distance: faker.random.numeric(2),
+          heightDifference: faker.random.numeric(3),
+          difficulty: +faker.random.numeric(1, {
+            bannedDigits: ['0', '5', '6', '7', '8', '9'],
+          }),
+          supplies: faker.random.numeric(1, {
+            bannedDigits: ['0', '4', '5', '6', '7', '8', '9'],
+          }),
+        },
+      ],
     }
 
     for (let i = 0; i < 5; i++) {

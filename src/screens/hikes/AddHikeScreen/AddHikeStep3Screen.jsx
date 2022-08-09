@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
 
@@ -36,6 +36,17 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
   const [flyer, setFlyer] = useState(false)
   const [images, setImages] = useState([])
 
+  useEffect(() => {
+    if (route.params?.hikeEdit) {
+      console.log('hikeEdit', route.params.hikeEdit)
+      setFlyer(route.params.hikeEdit.flyer)
+    }
+  }, [route.params?.hikeEdit])
+
+  useEffect(() => {
+    console.log('flyer', flyer)
+  }, [flyer])
+
   const createHike = () => {
     const dataStep3 = {
       flyer: '', // Nom du flyer stocké en DB
@@ -52,11 +63,13 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
 
   return (
     <AddHikeLayout
-      label="Créer une rando"
+      label={route.params?.hikeEdit ? 'Modifier une rando' : 'Créer une rando'}
       step={3}
       subTitle="Partagez votre flyer et diverses images / photos en relation avec votre randonnée."
       nextStepCondition={flyer}
-      buttonLabel="Créer la rando"
+      buttonLabel={
+        route.params?.hikeEdit ? 'Modifier la rando' : 'Créer la rando'
+      }
       buttonPress={createHike}
     >
       <CustomDivider />
@@ -87,12 +100,13 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
                       ? require('../../../assets/images/png/default-flyer.png')
                       : {
                           // ici URI du flyer depuis l'api
-                          uri: 'https://www.nafix.fr/tracts/2022_tract/tract_72407.jpg',
+                          // uri: 'https://www.nafix.fr/tracts/2022_tract/tract_72407.jpg',
+                          uri: flyer,
                         }
                   }
                   style={[
                     {
-                      borderRadius: !flyer && 8,
+                      borderRadius: !flyer ? 8 : 0,
                     },
                     styles.flyer,
                   ]}

@@ -79,6 +79,34 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
 
   const [showDeleteTrip, setShowDeleteTrip] = useState(false)
 
+  useEffect(() => {
+    if (route.params?.hikeEdit) {
+      console.log('hikeEdit2', route.params.hikeEdit)
+      // On check si l'adresse hikeEdit est la même que celle du club
+      // Si oui
+      // setIsClubAddress(true)
+      // Sinon
+      setIsClubAddress(false)
+      setAddress(
+        `${route.params.hikeEdit.address} ${route.params.hikeEdit.postCode} ${route.params.hikeEdit.city}`
+      )
+      setAddressToDB({
+        address: route.params.hikeEdit.address,
+        city: route.params.hikeEdit.city,
+        postCode: route.params.hikeEdit.postCode,
+        lat: route.params.hikeEdit.lat,
+        lng: route.params.hikeEdit.lng,
+        region: route.params.hikeEdit.region,
+        department: route.params.hikeEdit.department,
+        departmentCode: route.params.hikeEdit.departmentCode,
+      })
+      setTrips(route.params.hikeEdit.trips)
+      setDateLabel(formatDate(route.params.hikeEdit.date))
+      setDate(true)
+      setDateForDB(route.params.hikeEdit.date)
+    }
+  }, [route.params?.hikeEdit])
+
   // Ref pour la bottomSheet
   const bottomSheetRef = useRef(null)
 
@@ -113,11 +141,15 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
       setAddressError(false)
       searchToApi(address)
     }
-    if (address === '') {
+    if (address === '' && !route.params?.hikeEdit) {
       setAddressToDB(false)
       setProposals([])
     }
   }, [address])
+
+  useEffect(() => {
+    console.log('addressToDB', addressToDB)
+  }, [addressToDB])
 
   const selectAddress = (value) => {
     setAddress(value.properties.label)
@@ -222,7 +254,10 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
 
       console.log('data', dataSteps)
 
-      navigation.navigate('AddHikeStep3', { dataSteps })
+      navigation.navigate('AddHikeStep3', {
+        dataSteps,
+        hikeEdit: route.params?.hikeEdit,
+      })
     }
   }
 
@@ -230,7 +265,9 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <BottomSheetModalProvider>
         <AddHikeLayout
-          label="Créer une rando"
+          label={
+            route.params?.hikeEdit ? 'Modifier une rando' : 'Créer une rando'
+          }
           step={2}
           subTitle="Inscrivez l'adresse ou se trouvera la randonnée, ainsi que les parcours
     disponible si vous le souhaitez."
@@ -393,6 +430,9 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
             mode="date"
             onConfirm={handleConfirmDate}
             onCancel={hideDatePicker}
+            date={
+              route.params?.hikeEdit ? route.params?.hikeEdit?.date : new Date()
+            }
           />
 
           {/* BottomSheet pour options du parcours */}
@@ -400,7 +440,10 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
             title="Que souhaitez vous faire ?"
             SP={['25%', '30%']}
             ref={bottomSheetRef}
-            onDismiss={() => bottomSheetRef?.current?.closeBottomSheet()}
+            onDismiss={() => {
+              bottomSheetRef?.current?.closeBottomSheet()
+              setOverlay(false)
+            }}
           >
             <ButtonBS onPress={() => setShowDeleteTrip(true)} cancel>
               Supprimer le parcours

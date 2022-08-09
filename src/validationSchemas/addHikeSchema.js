@@ -9,7 +9,7 @@ const addHikeSchema = yup.object().shape({
   description: yup
     .string()
     .min(6, 'trop petit')
-    .max(200, 'trop long!')
+    .max(500, 'trop long!')
     .required('La description est obligatoire'),
   publicPrice: yup.string().required('Le prix public est obligatoire'),
   privatePrice: yup.string(),
