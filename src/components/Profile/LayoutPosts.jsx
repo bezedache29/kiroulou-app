@@ -1,5 +1,6 @@
 import { FlatList, View } from 'react-native'
 import React, { useRef, useState } from 'react'
+import { useNavigation } from '@react-navigation/native'
 
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
@@ -15,6 +16,8 @@ const LayoutPosts = ({ data, club = false }) => {
   const [overlay, setOverlay] = useState(false)
   const [post, setPost] = useState(false)
   const [showDeletePost, setShowDeletePost] = useState(false)
+
+  const navigation = useNavigation()
 
   // Ref pour la bottomSheet
   const bottomSheetRef = useRef(null)
@@ -57,14 +60,19 @@ const LayoutPosts = ({ data, club = false }) => {
           title="Que souhaitez vous faire ?"
           SP={['25%', '50%']}
           ref={bottomSheetRef}
-          onDismiss={toggleBottomSheet}
+          onDismiss={() => {
+            setOverlay(false)
+            bottomSheetRef?.current?.closeBottomSheet()
+          }}
         >
           <ButtonBS onPress={() => setShowDeletePost(true)} cancel>
             Supprimer l'article
           </ButtonBS>
           <ButtonBS
             onPress={() => {
-              alert(post.title)
+              setOverlay(false)
+              bottomSheetRef?.current?.closeBottomSheet()
+              navigation.navigate('AddOrEditPost', { editPost: post })
             }}
           >
             Modifier l'article

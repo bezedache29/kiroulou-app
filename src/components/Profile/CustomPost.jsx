@@ -64,7 +64,7 @@ const CustomPost = ({
       </View>
       <View style={my10}>
         <Text numberOfLines={3} style={[defaultText, { color: darkColor }]}>
-          {item.description}
+          {item.message}
         </Text>
       </View>
     </TouchableOpacity>
