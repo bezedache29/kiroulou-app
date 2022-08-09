@@ -88,7 +88,7 @@ const CustomCard = ({ onPress, item }) => {
 
         {/* Bouton Comments */}
         <CustomIconButton
-          onPress={() => navigation.navigate('PostComments', { post: item })}
+          onPress={() => navigation.navigate('Comments', { data: item })}
           icon={
             <MaterialCommunityIcons
               name="comment-text-outline"
