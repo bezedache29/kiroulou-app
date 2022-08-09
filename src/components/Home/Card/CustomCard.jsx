@@ -7,6 +7,8 @@ import {
 } from 'react-native'
 import React from 'react'
 
+import { useNavigation } from '@react-navigation/native'
+
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
 import Share from 'react-native-share'
@@ -26,6 +28,8 @@ import CustomIconButton from '../../CustomIconButton'
 import file from '../../../assets/images/base64/image64'
 
 const CustomCard = ({ onPress, item }) => {
+  const navigation = useNavigation()
+
   const customShare = async () => {
     const shareOptions = {
       message: `${item.hike ? item.club : item.user} vous informe :\n${
@@ -84,7 +88,7 @@ const CustomCard = ({ onPress, item }) => {
 
         {/* Bouton Comments */}
         <CustomIconButton
-          onPress={() => {}}
+          onPress={() => navigation.navigate('PostComments', { post: item })}
           icon={
             <MaterialCommunityIcons
               name="comment-text-outline"

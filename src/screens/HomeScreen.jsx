@@ -69,7 +69,7 @@ const HomeScreen = ({ navigation }) => {
                 renderItem={({ item }) => (
                   <CustomCard
                     item={item}
-                    onPress={() => console.log(item.id)}
+                    onPress={() => navigation.navigate('Post', { post: item })}
                   />
                 )}
                 keyExtractor={(item) => item.id}
