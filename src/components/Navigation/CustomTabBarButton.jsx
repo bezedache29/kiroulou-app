@@ -48,7 +48,7 @@ const CustomTabBarButton = ({ children, opened, toggleOpened }) => {
     <View style={styles.container}>
       <View style={styles.box}>
         {/* Bouton de gauche */}
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => goToScreen('AddOrEditPost')}>
           <Animated.View
             style={[
               styles.item,

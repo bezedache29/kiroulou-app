@@ -29,7 +29,7 @@ const CustomCard = ({ onPress, item }) => {
   const customShare = async () => {
     const shareOptions = {
       message: `${item.hike ? item.club : item.user} vous informe :\n${
-        item.description
+        item.message
       }`,
       // message: 'mon message',
       url: file.image1,
@@ -65,7 +65,7 @@ const CustomCard = ({ onPress, item }) => {
         </View>
         <View style={my10}>
           <Text numberOfLines={3} style={[defaultText, { color: darkColor }]}>
-            {item.description}
+            {item.message}
           </Text>
         </View>
       </TouchableOpacity>

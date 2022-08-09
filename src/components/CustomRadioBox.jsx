@@ -8,8 +8,8 @@ import {
   whiteColor,
 } from '../assets/styles/styles'
 
-const CustomRadioBox = ({ checked, onPress, value, color, label }) => (
-  <View style={styles.container}>
+const CustomRadioBox = ({ checked, onPress, value, color, label, style }) => (
+  <View style={[styles.container, style]}>
     <TouchableOpacity
       style={[
         styles.button,
