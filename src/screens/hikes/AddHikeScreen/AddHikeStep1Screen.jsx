@@ -1,5 +1,5 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
 
@@ -24,18 +24,38 @@ import CustomBigButton from '../../../components/CustomBigButton'
 import CustomContainer from '../../../components/CustomContainer'
 import InputField from '../../../components/InputField'
 
-const AddHikeStep1Screen = ({ navigation }) => {
+const AddHikeStep1Screen = ({ navigation, route }) => {
   const { colors } = useTheme()
+  const [hikeEdit, setHikeEdit] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (route.params?.hikeEdit) {
+      setLoading(true)
+      setHikeEdit(route.params.hikeEdit)
+      console.log('hikeEdit', route.params.hikeEdit)
+    }
+  }, [route.params?.hikeEdit])
+
+  useEffect(() => {
+    if (hikeEdit) {
+      setLoading(false)
+    }
+  }, [hikeEdit])
+
+  if (loading) {
+    return null
+  }
 
   return (
     <CustomContainer
-      label="Créer une rando"
+      label={hikeEdit ? 'Modifier une rando' : 'Créer une rando'}
       pressBack={() => navigation.goBack()}
     >
       <View style={[px10, { flex: 1 }]}>
         <Text style={[defaultText, mt10, styles.step]}>Etape 1/3</Text>
         <Text style={[defaultText, my20, { color: colors.text }]}>
-          Formulaire pour création de randonnée VTT.
+          Formulaire pour {hikeEdit ? 'modifier' : 'créer'} une randonnée VTT.
         </Text>
         <Text style={[defaultText, mb20, { color: colors.text }]}>
           Vous devez complétez et valider les 3 étapes pour que votre randonnée
@@ -47,10 +67,10 @@ const AddHikeStep1Screen = ({ navigation }) => {
             <Formik
               validationSchema={addHikeSchema}
               initialValues={{
-                name: '',
-                description: '',
-                publicPrice: '',
-                privatePrice: '',
+                name: hikeEdit ? hikeEdit.name : '',
+                description: hikeEdit ? hikeEdit.description : '',
+                publicPrice: hikeEdit ? hikeEdit.publicPrice.toString() : '',
+                privatePrice: hikeEdit ? hikeEdit.privatePrice.toString() : '',
               }}
               onSubmit={(values, { resetForm }) => {
                 const data = {
@@ -70,7 +90,10 @@ const AddHikeStep1Screen = ({ navigation }) => {
                 console.log('DATA STEP 1 ', data)
                 // resetForm()
 
-                navigation.navigate('AddHikeStep2', { dataStep1: data })
+                navigation.navigate('AddHikeStep2', {
+                  dataStep1: data,
+                  hikeEdit,
+                })
               }}
             >
               {({

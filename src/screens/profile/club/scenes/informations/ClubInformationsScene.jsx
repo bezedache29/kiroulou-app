@@ -25,6 +25,7 @@ import {
   mt40,
   mx20,
   my30,
+  pb20,
   primaryColor,
   secondaryColor,
   TitleH4,
@@ -39,7 +40,7 @@ const ClubInformationsScene = ({ club }) => {
 
   return (
     <ScrollView style={{ backgroundColor: secondaryColor }}>
-      <View style={{ flex: 1 }}>
+      <View style={[pb20, { flex: 1 }]}>
         <View style={[mx20, mt40, styles.header]}>
           <ImageBackground
             source={{
@@ -81,7 +82,7 @@ const ClubInformationsScene = ({ club }) => {
             title="Les randos organisées par le club"
             colors={colors}
             onPress={() => {
-              navigation.navigate('ComingSoon')
+              navigation.navigate('HikesClub')
             }}
             backgroundColor={primaryColor}
           />
