@@ -9,11 +9,14 @@ import React from 'react'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
+import { useNavigation } from '@react-navigation/native'
+
 import {
   darkColor,
   darkPrimaryColor,
   defaultText,
   littleTitle,
+  ml10,
   my10,
   secondaryColor,
   textAlignCenter,
@@ -30,90 +33,96 @@ const CustomPost = ({
   comments = false,
   edit = false,
   hypes = false,
-}) => (
-  <View style={styles.container}>
-    {/* Icone pour edit le post */}
-    {edit && (
-      <TouchableOpacity onPress={edit} style={styles.editIcon}>
-        <MaterialCommunityIcons
-          name="cog-outline"
-          size={25}
-          color={darkColor}
-        />
-      </TouchableOpacity>
-    )}
+}) => {
+  const navigation = useNavigation()
 
-    {/* Card */}
-    <TouchableOpacity onPress={onPress} disabled={edit}>
-      <View style={styles.header}>
-        <ImageBackground
-          source={{
-            uri: item.avatar,
-          }}
-          style={styles.avatar}
-          imageStyle={styles.avatarStyle}
-        />
-        <View style={{ flex: 4 }}>
-          <Text style={[littleTitle, textAlignCenter, { color: darkColor }]}>
-            {item.title}
-          </Text>
-          <Text style={[defaultText, textAlignCenter, { color: darkColor }]}>
-            {item.club ? item.club : item.hike}
+  return (
+    <View style={styles.container}>
+      {/* Icone pour edit le post */}
+      {edit && (
+        <TouchableOpacity onPress={edit} style={styles.editIcon}>
+          <MaterialCommunityIcons
+            name="cog-outline"
+            size={25}
+            color={darkColor}
+          />
+        </TouchableOpacity>
+      )}
+
+      {/* Card */}
+      <TouchableOpacity onPress={onPress} disabled={edit}>
+        <View style={styles.header}>
+          <ImageBackground
+            source={{
+              uri: item.avatar,
+            }}
+            style={styles.avatar}
+            imageStyle={styles.avatarStyle}
+          />
+          <View style={{ flex: 4 }}>
+            <Text style={[littleTitle, textAlignCenter, { color: darkColor }]}>
+              {item.title}
+            </Text>
+            <Text style={[defaultText, textAlignCenter, { color: darkColor }]}>
+              {item.club ? item.club : item.hike}
+            </Text>
+          </View>
+        </View>
+        <View style={my10}>
+          <Text numberOfLines={3} style={[defaultText, { color: darkColor }]}>
+            {item.message}
           </Text>
         </View>
-      </View>
-      <View style={my10}>
-        <Text numberOfLines={3} style={[defaultText, { color: darkColor }]}>
-          {item.message}
-        </Text>
-      </View>
-    </TouchableOpacity>
-    <View style={styles.containerPosts}>
-      {/* Bouton like */}
-      <CustomIconButton
-        size={!hypes ? '49%' : '30%'}
-        onPress={() => {}}
-        icon={
-          <MaterialCommunityIcons
-            name="thumb-up-outline"
-            size={24}
-            color={whiteColor}
-          />
-        }
-        text={likes}
-      />
-
-      {/* Bouton Comments */}
-      <CustomIconButton
-        size={!hypes ? '49%' : '30%'}
-        onPress={() => {}}
-        icon={
-          <MaterialCommunityIcons
-            name="comment-text-outline"
-            size={24}
-            color={whiteColor}
-          />
-        }
-        text={comments}
-      />
-
-      {/* Bouton Hype */}
-      {hypes && (
+      </TouchableOpacity>
+      <View style={styles.containerPosts}>
+        {/* Bouton like */}
         <CustomIconButton
+          size={!hypes ? '49%' : '30%'}
           onPress={() => {}}
           icon={
             <MaterialCommunityIcons
-              name="alarm-light-outline" // alarm-light
+              name="thumb-up-outline"
               size={24}
               color={whiteColor}
+              style={ml10}
             />
           }
-          text={hypes}
+          text={likes}
         />
-      )}
+
+        {/* Bouton Comments */}
+        <CustomIconButton
+          size={!hypes ? '49%' : '30%'}
+          onPress={() => navigation.navigate('PostComments', { post: item })}
+          icon={
+            <MaterialCommunityIcons
+              name="comment-text-outline"
+              size={24}
+              color={whiteColor}
+              style={ml10}
+            />
+          }
+          text={comments}
+        />
+
+        {/* Bouton Hype */}
+        {hypes && (
+          <CustomIconButton
+            onPress={() => {}}
+            icon={
+              <MaterialCommunityIcons
+                name="alarm-light-outline" // alarm-light
+                size={24}
+                color={whiteColor}
+              />
+            }
+            text={hypes}
+          />
+        )}
+      </View>
     </View>
-  </View>
-)
+  )
+}
 
 const styles = StyleSheet.create({
   container: {

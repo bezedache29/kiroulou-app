@@ -8,14 +8,15 @@ import {
   dangerColor,
   darkPrimaryColor,
   defaultText,
-  mr10,
   primaryColor,
   whiteColor,
 } from '../assets/styles/styles'
 
 const CustomIconButton = ({
   icon,
+  iconLeft,
   onPress,
+  textStyle,
   size = '30%',
   text = false,
   cancel = false,
@@ -27,8 +28,11 @@ const CustomIconButton = ({
       }
       style={styles.box}
     >
+      {iconLeft}
       {text && (
-        <Text style={[defaultText, mr10, { color: whiteColor, fontSize: 20 }]}>
+        <Text
+          style={[defaultText, { color: whiteColor, fontSize: 20 }, textStyle]}
+        >
           {text}
         </Text>
       )}

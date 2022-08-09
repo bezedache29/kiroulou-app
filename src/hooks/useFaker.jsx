@@ -21,12 +21,28 @@ export default function useFaker() {
       registeredAt: faker.date.past(),
       message: faker.lorem.paragraph(),
       is_club: 0,
+      date: faker.date.birthdate({ min: 2022, max: 2022, mode: 'year' }),
       title: `${i} - ${faker.commerce.product()}`,
       likes: faker.random.numeric(2),
       comments: faker.random.numeric(),
       hypes: faker.random.numeric(2),
     }
     return post
+  }
+
+  // Permet de créer un commentaire fake
+  const createFakeComment = () => {
+    const comment = {
+      id: faker.datatype.uuid(),
+      firstname: faker.name.firstName(),
+      lastname: faker.name.lastName(),
+      avatar: faker.image.avatar(),
+      club: faker.company.companyName(),
+      message: faker.lorem.paragraph(),
+      is_club: 0,
+      date: faker.date.birthdate({ min: 2022, max: 2022, mode: 'year' }),
+    }
+    return comment
   }
 
   // Permet de créer un club fake
@@ -150,5 +166,6 @@ export default function useFaker() {
     createFakeUser,
     createFakeBike,
     createFakeHike,
+    createFakeComment,
   }
 }
