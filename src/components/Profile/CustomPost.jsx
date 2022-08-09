@@ -93,7 +93,7 @@ const CustomPost = ({
         {/* Bouton Comments */}
         <CustomIconButton
           size={!hypes ? '49%' : '30%'}
-          onPress={() => navigation.navigate('PostComments', { post: item })}
+          onPress={() => navigation.navigate('Comments', { data: item })}
           icon={
             <MaterialCommunityIcons
               name="comment-text-outline"

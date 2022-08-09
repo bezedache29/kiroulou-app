@@ -21,18 +21,18 @@ import {
   my10,
   rowCenter,
   textAlignCenter,
-} from '../../../assets/styles/styles'
+} from '../../assets/styles/styles'
 
-import CustomContainer from '../../../components/CustomContainer'
-import useFaker from '../../../hooks/useFaker'
-import useUtils from '../../../hooks/useUtils'
+import CustomContainer from '../../components/CustomContainer'
+import useFaker from '../../hooks/useFaker'
+import useUtils from '../../hooks/useUtils'
 
-const PostCommentsScreen = ({ navigation, route }) => {
+const CommentsScreen = ({ navigation, route }) => {
   const { colors } = useTheme()
   const { formatDate } = useUtils()
   const { createFakeComment } = useFaker()
 
-  const { post } = route.params
+  const { data } = route.params
 
   const [comments, setComments] = useState([])
   const [comment, setComment] = useState('')
@@ -149,7 +149,7 @@ const PostCommentsScreen = ({ navigation, route }) => {
   )
 }
 
-export default PostCommentsScreen
+export default CommentsScreen
 
 const styles = StyleSheet.create({
   header: {

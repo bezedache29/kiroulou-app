@@ -39,7 +39,7 @@ import AddHikeStep3Screen from '../screens/hikes/AddHikeScreen/AddHikeStep3Scree
 import HikesClubScreen from '../screens/hikes/HikesClub/HikesClubScreen'
 import AddOrEditPostScreen from '../screens/posts/AddOrEditPostScreen'
 import PostScreen from '../screens/posts/PostScreen'
-import PostCommentsScreen from '../screens/posts/comments/PostCommentsScreen'
+import CommentsScreen from '../screens/comments/CommentsScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -120,7 +120,7 @@ const AppStack = () => (
     <Stack.Screen name="AddOrEditPost" component={AddOrEditPostScreen} />
     <Stack.Screen name="Post" component={PostScreen} />
     {/* Commentaires */}
-    <Stack.Screen name="PostComments" component={PostCommentsScreen} />
+    <Stack.Screen name="Comments" component={CommentsScreen} />
   </Stack.Navigator>
 )
 

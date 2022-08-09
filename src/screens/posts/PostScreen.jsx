@@ -89,7 +89,7 @@ const PostScreen = ({ navigation, route }) => {
           <CustomIconButton
             text={`Commenter (${post.comments})`}
             size="45%"
-            onPress={() => navigation.navigate('PostComments', { post })}
+            onPress={() => navigation.navigate('Comments', { data: post })}
             textStyle={{ fontSize: 16 }}
             iconLeft={
               <MaterialCommunityIcons

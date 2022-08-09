@@ -27,9 +27,8 @@ import {
   darkColor,
   mr20,
   mb20,
-  defaultLink,
-  darkPrimaryColor,
   whiteColor,
+  mr10,
 } from '../../assets/styles/styles'
 
 import useFaker from '../../hooks/useFaker'
@@ -38,7 +37,6 @@ import CustomContainer from '../../components/CustomContainer'
 import CustomDivider from '../../components/CustomDivider'
 import CustomBox from '../../components/CustomBox'
 import CustomIconButton from '../../components/CustomIconButton'
-import CommentHikeCard from '../../components/Hikes/CommentHikeCard'
 import CustomCarousel from '../../components/CustomCarousel'
 import RouteHike from '../../components/Hikes/RouteHike'
 import AvatarHype from '../../components/Hikes/AvatarHype'
@@ -268,15 +266,19 @@ const HikeScreen = ({ navigation, route }) => {
             <Text style={[littleTitle, { color: colors.textBox }]}>
               Commentaires
             </Text>
-            <TouchableOpacity onPress={() => {}}>
-              <Text style={[defaultLink, { color: darkPrimaryColor }]}>
-                Ajouter un commentaire
-              </Text>
-            </TouchableOpacity>
-            <View>
-              <CommentHikeCard goToProfile={() => {}} />
-              <CommentHikeCard goToProfile={() => {}} />
-            </View>
+            <CustomIconButton
+              text="Voir les commentaires (5)"
+              size="100%"
+              onPress={() => navigation.navigate('Comments', { data: hike })}
+              iconLeft={
+                <MaterialCommunityIcons
+                  name="comment-text-outline"
+                  size={24}
+                  color={whiteColor}
+                  style={mr10}
+                />
+              }
+            />
           </CustomBox>
         </ScrollView>
 
