@@ -40,6 +40,7 @@ import HikesClubScreen from '../screens/hikes/HikesClub/HikesClubScreen'
 import AddOrEditPostScreen from '../screens/posts/AddOrEditPostScreen'
 import PostScreen from '../screens/posts/PostScreen'
 import CommentsScreen from '../screens/comments/CommentsScreen'
+import EditCommentScreen from '../screens/comments/EditCommentScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -121,6 +122,7 @@ const AppStack = () => (
     <Stack.Screen name="Post" component={PostScreen} />
     {/* Commentaires */}
     <Stack.Screen name="Comments" component={CommentsScreen} />
+    <Stack.Screen name="EditComment" component={EditCommentScreen} />
   </Stack.Navigator>
 )
 
