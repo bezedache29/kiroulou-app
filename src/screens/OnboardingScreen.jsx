@@ -50,15 +50,20 @@ const DotsComponent = ({ selected }) => {
 }
 
 const OnboardingScreen = ({ navigation }) => {
-  const goToRegister = async () => {
-    await AsyncStorage.setItem('alreadyLaunched', 'true')
-    navigation.navigate('Register')
+  // A la fin du Onboarding, On met une cle en storage et on redirect vers SplashScreen
+  const goToSplash = async () => {
+    await AsyncStorage.setItem('kro_alreadyLaunched', 'true')
+    await AsyncStorage.setItem('kro_firstLaunched', 'true')
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Splash' }],
+    })
   }
 
   return (
     <Onboarding
       showSkip={false}
-      onDone={goToRegister}
+      onDone={goToSplash}
       NextButtonComponent={NextComponent}
       DoneButtonComponent={DoneComponent}
       DotComponent={DotsComponent}

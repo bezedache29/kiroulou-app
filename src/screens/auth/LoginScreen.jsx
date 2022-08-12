@@ -13,6 +13,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 
 import * as Animatable from 'react-native-animatable'
 
+import AsyncStorage from '@react-native-async-storage/async-storage'
+
 import { useTheme } from 'react-native-paper'
 import { Formik } from 'formik'
 import * as yup from 'yup'
@@ -37,6 +39,7 @@ import StravaSVG from '../../assets/images/svg/auth/icons/strava.svg'
 import InputField from '../../components/InputField'
 import CustomBigButton from '../../components/CustomBigButton'
 import CustomSocialButton from '../../components/CustomSocialButton'
+import useAxios from '../../hooks/useAxios'
 
 const loginSchema = yup.object().shape({
   email: yup
@@ -54,8 +57,11 @@ const loginSchema = yup.object().shape({
 
 const LoginScreen = ({ navigation }) => {
   const { colors } = useTheme()
+  const { axiosPostWithoutToken } = useAxios()
 
   const [error, setError] = useState(false)
+  const [emailError, setEmailError] = useState(false)
+  const [passwordError, setPasswordError] = useState(false)
 
   /**
    * A la soumission du formulaire si la validation est bonne :
@@ -64,23 +70,65 @@ const LoginScreen = ({ navigation }) => {
    * B - Erreur
    * Reset les values des inputs
    */
-  const submitForm = (values, resetForm) => {
+  const submitForm = async (values, resetForm) => {
     setError(false)
+    setEmailError(false)
+    setPasswordError(false)
+
     const data = {
       email: values.email,
       password: values.password,
     }
-    console.log(data)
+
+    // Request API
+    const response = await axiosPostWithoutToken('login', data)
+
+    console.log(response)
+
+    switch (response.status) {
+      case 422:
+        if (response.data.email) {
+          setEmailError(response.data.email[0])
+        }
+        if (response.data.password) {
+          setPasswordError(response.data.password[0])
+        }
+        break
+
+      case 403:
+        setError(response.data.message)
+        break
+
+      case 200:
+        // navigation.navigate('Login')
+        console.log(response.data.auth_token)
+        await AsyncStorage.setItem(
+          'kro_auth_token',
+          JSON.stringify(response.data.auth_token)
+        )
+
+        resetForm()
+
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Splash' }],
+        })
+        break
+
+      default:
+    }
+
     // Request API des datas
     // Retour erreur ?
     // setError(response.message)
     // Sinon
-    resetForm()
+
     // JWT dans le localstorage
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Drawer' }],
-    })
+
+    // navigation.reset({
+    //   index: 0,
+    //   routes: [{ name: 'Drawer' }],
+    // })
   }
 
   return (
@@ -145,7 +193,7 @@ const LoginScreen = ({ navigation }) => {
                   keyboardType="email-address"
                   name="email"
                   colors={colors}
-                  otherError={error}
+                  otherError={error || emailError}
                   error={touched.email && errors.email}
                   onChange={handleChange('email')}
                   onBlur={handleBlur('email')}
@@ -168,7 +216,7 @@ const LoginScreen = ({ navigation }) => {
                   }
                   inputType="password"
                   colors={colors}
-                  otherError={error}
+                  otherError={error || passwordError}
                   fieldButtonLabel="Oublié ?"
                   fieldButtonFunction={() => {
                     navigation.navigate('ForgotPassword')
