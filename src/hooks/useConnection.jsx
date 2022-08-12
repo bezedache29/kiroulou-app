@@ -1,9 +1,11 @@
 import { useNavigation } from '@react-navigation/native'
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import useAxios from './useAxios'
 
 const useConnection = () => {
   const navigation = useNavigation()
+  const { axiosPostWithToken } = useAxios()
 
   /**
    * @description Permet de savoir s'il y a un item particulier dans le localStorage
@@ -43,15 +45,22 @@ const useConnection = () => {
   }
 
   /**
-   * Permet au user de se deconnecter de l'app et d'etre redirect sur la page login
+   * @description Permet au user de se deconnecter de l'app et d'etre redirect sur la page login
    */
   const disconnect = async () => {
-    // TODO: Request API pour supprimer les tokens du user
-    await AsyncStorage.removeItem('kro_auth_token')
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Splash' }],
-    })
+    const authToken = await AsyncStorage.getItem('kro_auth_token')
+    const response = await axiosPostWithToken(
+      'disconnect',
+      JSON.parse(authToken)
+    )
+
+    if (response.status === 200) {
+      await AsyncStorage.removeItem('kro_auth_token')
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Splash' }],
+      })
+    }
   }
 
   return {
