@@ -12,6 +12,7 @@ module.exports = async () => {
     resolver: { sourceExts, assetExts },
   } = await getDefaultConfig()
   return {
+    resetCache: true, // Reset metro a chaque démarrage, permet de modifier .env et de reset le cache
     transformer: {
       babelTransformerPath: require.resolve('react-native-svg-transformer'),
     },

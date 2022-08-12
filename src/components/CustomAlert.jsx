@@ -22,6 +22,8 @@ const CustomAlert = ({
   titleStyle,
   messageStyle,
   backgroundColor,
+  showConfirmButton = true,
+  showCancelButton = true,
 }) => {
   const { colors } = useTheme()
 
@@ -33,8 +35,8 @@ const CustomAlert = ({
       message={message}
       closeOnTouchOutside
       closeOnHardwareBackPress={false}
-      showCancelButton
-      showConfirmButton
+      showCancelButton={showCancelButton}
+      showConfirmButton={showConfirmButton}
       cancelText={cancelText}
       confirmText={confirmText}
       confirmButtonColor={darkPrimaryColor}

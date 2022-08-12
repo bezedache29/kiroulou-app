@@ -16,9 +16,10 @@ import * as Animatable from 'react-native-animatable'
 
 import { useTheme } from 'react-native-paper'
 import { Formik } from 'formik'
-import * as yup from 'yup'
 
 import LinearGradient from 'react-native-linear-gradient'
+import registerSchema from '../../validationSchemas/registerSchema'
+
 import {
   authTitle,
   dangerColor,
@@ -45,43 +46,24 @@ import InputField from '../../components/InputField'
 import CustomBigButton from '../../components/CustomBigButton'
 import CustomSocialButton from '../../components/CustomSocialButton'
 import CustomLink from '../../components/CustomLink'
-
-const registerSchema = yup.object().shape({
-  email: yup
-    .string()
-    .email("L'email doit être un email valide")
-    .min(5, 'trop petit')
-    .max(40, 'trop long!')
-    .required("L'email est obligatoire"),
-  password: yup
-    .string()
-    .min(6, 'trop petit')
-    .max(30, 'trop long!')
-    .required('Le mot de passe est obligatoire'),
-  passwordConfirm: yup
-    .string()
-    .min(6, 'trop petit')
-    .max(30, 'trop long!')
-    .required('La confirmation de mot de passe est obligatoire')
-    .oneOf(
-      [yup.ref('password'), null],
-      'Le mot de passe de confirmation ne correspond pas'
-    ),
-})
+import useAxios from '../../hooks/useAxios'
+import CustomAlert from '../../components/CustomAlert'
 
 const RegisterScreen = ({ navigation }) => {
   const { colors } = useTheme()
+  const { axiosPostWithoutToken } = useAxios()
 
   const [emailError, setEmailError] = useState(false)
+  const [passwordError, setPasswordError] = useState(false)
   const [showModal, setShowModal] = useState(false)
+  const [showErrorAlert, setShowErrorAlert] = useState(false)
+  const [messageAlert, setMessageAlert] = useState('')
   const [formData, setFormData] = useState()
 
+  // A la soumission du formulaire, fait pop une modal pour les mentions légales
   const submitForm = (values, resetForm) => {
     setEmailError(false)
-    // Check en DB si le mail n'existe pas deja
-    // Si oui
-    // setEmailError(response.message)
-    // Sinon
+    setPasswordError(false)
     const data = {
       email: values.email,
       password: values.password,
@@ -94,11 +76,37 @@ const RegisterScreen = ({ navigation }) => {
   /**
    * Envoie les datas du formulaire a l'api pour créer le user
    */
-  const createAccount = () => {
+  const createAccount = async () => {
     setShowModal(false)
-    console.log(formData)
+
+    // Request API
+    const response = await axiosPostWithoutToken('register', formData)
+
+    switch (response.status) {
+      case 409:
+        // Pop Alert avec le message
+        setMessageAlert(response.data.message)
+        setShowErrorAlert(true)
+        break
+
+      case 422:
+        if (response.data.email) {
+          setEmailError(response.data.email[0])
+        }
+
+        if (response.data.password) {
+          setPasswordError(response.data.password[0])
+        }
+        break
+
+      case 201:
+        navigation.navigate('Login')
+        break
+
+      default:
+    }
+
     setFormData({})
-    // navigation.navigate('Login')
   }
 
   return (
@@ -174,7 +182,7 @@ const RegisterScreen = ({ navigation }) => {
                   }
                   keyboardType="email-address"
                   colors={colors}
-                  otherError={emailError}
+                  // otherError={emailError}
                   error={(touched.email && errors.email) || emailError}
                   name="email"
                   onChange={handleChange('email')}
@@ -189,7 +197,7 @@ const RegisterScreen = ({ navigation }) => {
                       name="ios-lock-closed-outline"
                       size={20}
                       color={
-                        touched.password && errors.password
+                        (touched.password && errors.password) || passwordError
                           ? dangerColor
                           : colors.icon
                       }
@@ -198,7 +206,7 @@ const RegisterScreen = ({ navigation }) => {
                   }
                   inputType="password"
                   colors={colors}
-                  error={touched.password && errors.password}
+                  error={(touched.password && errors.password) || passwordError}
                   name="password"
                   onChange={handleChange('password')}
                   onBlur={handleBlur('password')}
@@ -258,21 +266,13 @@ const RegisterScreen = ({ navigation }) => {
         }}
       >
         <View
-          style={{
-            padding: 20,
-            backgroundColor: colors.background,
-            borderRadius: 8,
-            borderWidth: 1,
-            borderColor: colors.border,
-            shadowColor: darkPrimaryColor,
-            shadowOffset: {
-              width: 0,
-              height: 2,
+          style={[
+            {
+              borderColor: colors.border,
+              backgroundColor: colors.background,
             },
-            shadowOpacity: 0.8,
-            shadowRadius: 4,
-            elevation: 15,
-          }}
+            styles.modalContainer,
+          ]}
         >
           <Text
             style={[TitleH3, textAlignCenter, mb30, { color: colors.text }]}
@@ -294,14 +294,7 @@ const RegisterScreen = ({ navigation }) => {
           <TouchableOpacity onPress={createAccount}>
             <LinearGradient
               colors={[primaryColor, darkPrimaryColor]}
-              style={{
-                width: '100%',
-                height: 50,
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderRadius: 10,
-                marginVertical: 20,
-              }}
+              style={styles.btnCreate}
             >
               <Text style={[defaultText, { color: whiteColor }]}>
                 J'ai lu et j'accepte des mentions légales
@@ -322,6 +315,23 @@ const RegisterScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </Modal>
+
+      <CustomAlert
+        showAlert={showErrorAlert}
+        title="Erreur !"
+        message={messageAlert}
+        cancelText="Fermer"
+        showConfirmButton={false}
+        onDismiss={() => {
+          setShowErrorAlert(false)
+          setMessageAlert('')
+        }}
+        onConfirmPressed={() => setShowErrorAlert(false)}
+        onCancelPressed={() => {
+          setShowErrorAlert(false)
+          setMessageAlert('')
+        }}
+      />
     </SafeAreaView>
   )
 }
@@ -343,6 +353,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     marginBottom: 30,
+  },
+  modalContainer: {
+    padding: 20,
+    borderRadius: 8,
+    borderWidth: 1,
+    shadowColor: darkPrimaryColor,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
+    elevation: 15,
+  },
+  btnCreate: {
+    width: '100%',
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    marginVertical: 20,
   },
 })
 
