@@ -3,13 +3,19 @@ import React, { useContext, useEffect, useState } from 'react'
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
+import { useStoreActions } from 'easy-peasy'
+
 import { AppContext } from '../context/Context'
 import useConnection from '../hooks/useConnection'
+import useAxios from '../hooks/useAxios'
 
 const SplashScreen = ({ navigation }) => {
   const { toggleTheme } = useContext(AppContext)
 
-  const { haveItemStorage, haveAuthToken } = useConnection()
+  const { haveItemStorage } = useConnection()
+  const { axiosPostWithToken } = useAxios()
+
+  const userActions = useStoreActions((actions) => actions.user)
 
   const [isFirstLaunch, setIsFirstLaunch] = useState(null)
 
@@ -33,17 +39,29 @@ const SplashScreen = ({ navigation }) => {
           routes: [{ name: 'Register' }],
         })
       } else {
-        // On check si le user a un auth_token
-        // S'il a un auth_token on redirect vars la HomeScreen piloté par Drawer
-        // Sinon on redirect vers Login
-        await haveAuthToken(
-          () =>
+        // Est-ce que le user a un auth_token
+        const authToken = await haveItemStorage('kro_auth_token')
+
+        // Si le user a un auth_token
+        if (authToken) {
+          // On recherche le user depuis l'api
+          const response = await axiosPostWithToken('me', JSON.parse(authToken))
+
+          // On met le user dans le store
+          if (response.status === 200) {
+            userActions.loadUser(response.data)
+            // Redirect sur la HomeScreen piloté par Drawer
             navigation.reset({
               index: 0,
               routes: [{ name: 'Drawer' }],
-            }),
-          () => navigation.navigate('Login')
-        )
+            })
+          }
+        } else {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Login' }],
+          })
+        }
       }
     } else {
       setIsFirstLaunch(true)
@@ -56,6 +74,8 @@ const SplashScreen = ({ navigation }) => {
    */
   useEffect(() => {
     checkIsFirstLauch()
+
+    // AsyncStorage.removeItem('kro_auth_token')
 
     AsyncStorage.getItem('darkmode').then((value) => {
       if (value) {

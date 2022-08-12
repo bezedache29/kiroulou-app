@@ -54,6 +54,7 @@
             "off","warn","error",
             { "allowAsProps": true }
         ],
-        "no-shadow": "off"
+        "no-shadow": "off",
+        "no-param-reassign": 0
     }
 }
