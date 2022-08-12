@@ -6,8 +6,7 @@ const useConnection = () => {
   const navigation = useNavigation()
 
   /**
-   * Permet de savoir s'il y a un item particulier dans le localStorage
-   *
+   * @description Permet de savoir s'il y a un item particulier dans le localStorage
    * @param {string} itemName
    * @returns
    */
@@ -26,8 +25,7 @@ const useConnection = () => {
    * @callback callbackFunctionEchec
    */
   /**
-   * Permet de savoir si le user a un auth_token et est donc connecté
-   *
+   * @description Permet de savoir si le user a un auth_token et est donc connecté
    * @param {callbackFunctionSuccess} goToSuccess
    * @param {callbackFunctionEchec} goToEchec
    */
@@ -48,6 +46,7 @@ const useConnection = () => {
    * Permet au user de se deconnecter de l'app et d'etre redirect sur la page login
    */
   const disconnect = async () => {
+    // TODO: Request API pour supprimer les tokens du user
     await AsyncStorage.removeItem('kro_auth_token')
     navigation.reset({
       index: 0,

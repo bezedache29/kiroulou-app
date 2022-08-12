@@ -5,6 +5,8 @@ import { useTheme } from 'react-native-paper'
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
+import { useStoreState } from 'easy-peasy'
+
 import FadingEdge from 'react-native-fading-edge'
 
 import TabContainer from '../components/Navigation/TabContainer'
@@ -26,6 +28,9 @@ const HomeScreen = ({ navigation }) => {
   const [isFetching, setIsFetching] = useState(false)
   const [data, setData] = useState([])
 
+  const userStore = useStoreState((state) => state.user)
+  const { user } = userStore
+
   // Pour les tests
   const { createFakePost } = useFaker()
 
@@ -36,6 +41,9 @@ const HomeScreen = ({ navigation }) => {
     AsyncStorage.getItem('kro_auth_token').then((res) => {
       console.log(res)
     })
+    if (user) {
+      console.log('user', user)
+    }
     // for (let i = 0; i < 10; i++) {
     //   setData((oldData) => [...oldData, createFakePost(i + 1)])
     // }
