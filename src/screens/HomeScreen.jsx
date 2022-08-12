@@ -1,10 +1,4 @@
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native'
+import { FlatList, StyleSheet, Text, View } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
@@ -20,10 +14,11 @@ import CustomCard from '../components/Home/Card/CustomCard'
 import {
   defaultText,
   mb30,
+  px20,
   secondaryColor,
-  TitleH3,
 } from '../assets/styles/styles'
 import useFaker from '../hooks/useFaker'
+import CustomBigButton from '../components/CustomBigButton'
 
 const HomeScreen = ({ navigation }) => {
   const { colors } = useTheme()
@@ -41,9 +36,9 @@ const HomeScreen = ({ navigation }) => {
     AsyncStorage.getItem('kro_auth_token').then((res) => {
       console.log(res)
     })
-    for (let i = 0; i < 10; i++) {
-      setData((oldData) => [...oldData, createFakePost(i + 1)])
-    }
+    // for (let i = 0; i < 10; i++) {
+    //   setData((oldData) => [...oldData, createFakePost(i + 1)])
+    // }
   }, [])
 
   const onRefresh = useCallback(() => {
@@ -67,46 +62,38 @@ const HomeScreen = ({ navigation }) => {
           </View>
 
           {/* Les Posts */}
-          <View style={{ paddingTop: 10, backgroundColor: secondaryColor }}>
-            {data && data.length > 0 ? (
-              <FlatList
-                data={data}
-                renderItem={({ item }) => (
-                  <CustomCard
-                    item={item}
-                    onPress={() => navigation.navigate('Post', { post: item })}
-                  />
-                )}
-                keyExtractor={(item) => item.id}
-                onRefresh={onRefresh}
-                refreshing={isFetching}
-                ListFooterComponent={() => (
-                  <View style={{ marginVertical: 80 }} />
-                )}
-              />
-            ) : (
-              <View style={styles.containerNoFeed}>
-                <Text style={[defaultText, mb30, { color: colors.text }]}>
-                  Vous n'avez pas de fil d'acutalités. Suivez des clubs et des
-                  utilisateurs pour être aux courtant de leur dernières
-                  nouvelles !
-                </Text>
-                <TouchableOpacity
-                  onPress={() => {}}
-                  style={[
-                    styles.btn,
-                    {
-                      backgroundColor: colors.background,
-                      borderColor: colors.border,
-                    },
-                  ]}
-                >
-                  <Text style={[TitleH3, { color: colors.text, padding: 10 }]}>
-                    Rechercher des clubs
+          <View
+            style={{ paddingTop: 10, backgroundColor: secondaryColor, flex: 1 }}
+          >
+            <FlatList
+              data={data}
+              ListEmptyComponent={() => (
+                <View style={styles.containerNoFeed}>
+                  <Text style={[defaultText, mb30, { color: colors.text }]}>
+                    Vous n'avez pas de fil d'acutalités. Suivez des clubs et des
+                    utilisateurs pour être aux courtant de leur dernières
+                    nouvelles !
                   </Text>
-                </TouchableOpacity>
-              </View>
-            )}
+                  <CustomBigButton
+                    label="Rechercher des clubs"
+                    onPress={() => navigation.navigate('Clubs')}
+                    styleBtn={px20}
+                  />
+                </View>
+              )}
+              renderItem={({ item }) => (
+                <CustomCard
+                  item={item}
+                  onPress={() => navigation.navigate('Post', { post: item })}
+                />
+              )}
+              keyExtractor={(item) => item.id}
+              onRefresh={onRefresh}
+              refreshing={isFetching}
+              ListFooterComponent={() => (
+                <View style={{ marginVertical: 80 }} />
+              )}
+            />
           </View>
         </View>
       </FadingEdge>
@@ -115,24 +102,11 @@ const HomeScreen = ({ navigation }) => {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    flex: 1,
-  },
-  content: {
-    flex: 9,
-  },
-  footer: {
-    flex: 2,
-  },
   containerNoFeed: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
-  },
-  btn: {
-    borderWidth: 1,
-    borderRadius: 8,
   },
 })
 
