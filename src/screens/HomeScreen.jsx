@@ -9,6 +9,8 @@ import React, { useCallback, useEffect, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
 
+import AsyncStorage from '@react-native-async-storage/async-storage'
+
 import FadingEdge from 'react-native-fading-edge'
 
 import TabContainer from '../components/Navigation/TabContainer'
@@ -36,6 +38,9 @@ const HomeScreen = ({ navigation }) => {
    * Charge 10 posts fake
    */
   useEffect(() => {
+    AsyncStorage.getItem('kro_auth_token').then((res) => {
+      console.log(res)
+    })
     for (let i = 0; i < 10; i++) {
       setData((oldData) => [...oldData, createFakePost(i + 1)])
     }
