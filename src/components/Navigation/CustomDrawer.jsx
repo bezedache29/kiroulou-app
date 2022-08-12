@@ -31,10 +31,13 @@ import {
   whiteColor,
 } from '../../assets/styles/styles'
 
+import useConnection from '../../hooks/useConnection'
+
 const imageBackground = require('../../assets/images/png/navigation/drawer.png')
 
 const CustomDrawer = (props) => {
   const { colors } = useTheme()
+  const { disconnect } = useConnection()
 
   const navigation = useNavigation()
 
@@ -111,7 +114,7 @@ const CustomDrawer = (props) => {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => {}} style={py10}>
+        <TouchableOpacity onPress={() => disconnect()} style={py10}>
           <View style={styles.btnFooter}>
             <Ionicons name="exit-outline" size={22} color={dangerColor} />
             <Text style={[defaultText, { marginLeft: 5, color: dangerColor }]}>
