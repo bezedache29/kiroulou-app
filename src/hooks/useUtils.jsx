@@ -32,6 +32,9 @@ const useUtils = () => {
     return newDate
   }
 
+  // Permet de retourner l'index du mois avec le mois ecrit en text - Exemple : Septembre => 8
+  const formatMonthText = (monthText) => month.indexOf(monthText)
+
   const formatCompleteDate = (date) => {
     const newDate = `${days[date.getDay()]} ${date.getDate()} ${
       month[date.getMonth()]
@@ -99,6 +102,7 @@ const useUtils = () => {
     getDay,
     formatCompleteDate,
     getOneYear,
+    formatMonthText,
   }
 }
 

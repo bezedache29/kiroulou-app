@@ -17,6 +17,10 @@ import { useTheme } from 'react-native-paper'
 
 import Ionicons from 'react-native-vector-icons/Ionicons'
 
+import { URL_SERVER } from 'react-native-dotenv'
+
+import { useStoreState } from 'easy-peasy'
+
 import { DrawerActions, useNavigation } from '@react-navigation/native'
 
 import {
@@ -38,6 +42,9 @@ const imageBackground = require('../../assets/images/png/navigation/drawer.png')
 const CustomDrawer = (props) => {
   const { colors } = useTheme()
   const { disconnect } = useConnection()
+
+  const userStore = useStoreState((state) => state.user)
+  const { user } = userStore
 
   const navigation = useNavigation()
 
@@ -62,7 +69,7 @@ const CustomDrawer = (props) => {
         <ImageBackground source={imageBackground} style={p20}>
           <Image
             source={{
-              uri: 'http://lh3.ggpht.com/-OdRx9XAYxkc/TusHxirp8uI/AAAAAAAABpw/lk-2NDvmJY0/Banana%252520Alien%25255B3%25255D.jpg?imgmax=800',
+              uri: `${URL_SERVER}/storage/avatars/${user.avatar}`,
             }}
             style={[
               styles.avatar,
@@ -71,7 +78,11 @@ const CustomDrawer = (props) => {
               },
             ]}
           />
-          <Text style={[defaultText, styles.textHeader]}>Simon Strueux</Text>
+          <Text style={[defaultText, styles.textHeader]}>
+            {user.firstname === null || user.lastanme === null
+              ? user.email
+              : `${user.firstname} ${user.lastname}`}
+          </Text>
           <Text
             style={[
               defaultTextBold,

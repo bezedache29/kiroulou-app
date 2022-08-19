@@ -55,6 +55,13 @@ const SplashScreen = ({ navigation }) => {
               index: 0,
               routes: [{ name: 'Drawer' }],
             })
+          } else if (response.status === 401) {
+            // Si pas autorisé par sanctum, redirection vers le login
+            await AsyncStorage.removeItem('kro_auth_token')
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Login' }],
+            })
           }
         } else {
           navigation.reset({

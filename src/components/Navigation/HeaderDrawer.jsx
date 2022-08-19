@@ -9,10 +9,17 @@ import React from 'react'
 
 import { useTheme } from 'react-native-paper'
 
+import { useStoreState } from 'easy-peasy'
+
+import { URL_SERVER } from 'react-native-dotenv'
+
 import { textAlignCenter, TitleH3 } from '../../assets/styles/styles'
 
 const HeaderDrawer = ({ onPress, title }) => {
   const { colors } = useTheme()
+
+  const userStore = useStoreState((state) => state.user)
+  const { user } = userStore
 
   return (
     <View style={[styles.container, { borderBottomColor: colors.border }]}>
@@ -24,7 +31,7 @@ const HeaderDrawer = ({ onPress, title }) => {
       <TouchableOpacity onPress={onPress} style={styles.containerAvatar}>
         <ImageBackground
           source={{
-            uri: 'http://lh3.ggpht.com/-OdRx9XAYxkc/TusHxirp8uI/AAAAAAAABpw/lk-2NDvmJY0/Banana%252520Alien%25255B3%25255D.jpg?imgmax=800',
+            uri: `${URL_SERVER}/storage/avatars/${user.avatar}`,
           }}
           style={styles.avatar}
           imageStyle={{ borderRadius: 25 }}

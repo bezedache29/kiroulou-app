@@ -1,11 +1,13 @@
 import { useNavigation } from '@react-navigation/native'
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useStoreActions } from 'easy-peasy'
 import useAxios from './useAxios'
 
 const useConnection = () => {
   const navigation = useNavigation()
   const { axiosPostWithToken } = useAxios()
+  const userActions = useStoreActions((actions) => actions.user)
 
   /**
    * @description Permet de savoir s'il y a un item particulier dans le localStorage
@@ -55,6 +57,7 @@ const useConnection = () => {
     )
 
     if (response.status === 200) {
+      userActions.loadUser({})
       await AsyncStorage.removeItem('kro_auth_token')
       navigation.reset({
         index: 0,
