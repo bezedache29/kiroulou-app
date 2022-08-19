@@ -182,7 +182,7 @@ const myHikes = [
 
 const CalendarScreen = ({ navigation }) => {
   const { colors } = useTheme()
-  const { formatCompleteDate, getOneYear } = useUtils()
+  const { formatCompleteDate, getOneYear, formatMonthText } = useUtils()
 
   const [regions, setRegions] = useState([])
   const [region, setRegion] = useState(false)
@@ -193,6 +193,7 @@ const CalendarScreen = ({ navigation }) => {
   const [showModalDepartment, setShowModalDepartment] = useState(true)
   const [search, setSearch] = useState(false)
   const [showModalMonth, setShowModalMonth] = useState(false)
+  const [choiceMonth, setChoiceMonth] = useState(false)
 
   const [monthYear, setMonthYear] = useState([])
 
@@ -224,14 +225,29 @@ const CalendarScreen = ({ navigation }) => {
       setShowModalDepartment(false)
 
       console.log(
-        'recherche sur API les randos de se département du mois en cours'
+        "recherche sur API les randos de se départementCode à partir de la date d'ajourd'hui"
       )
+      console.log(departmentCode)
 
       setChoiceDepartment(department)
 
       // Ici on recharge les nouvelles randos venant de l'api
     }
   }, [search])
+
+  useEffect(() => {
+    if (choiceMonth) {
+      const str = choiceMonth.split(' ')
+      const month = formatMonthText(str[0]) + 1
+      const year = str[1]
+
+      console.log(departmentCode)
+
+      // Request API avec le mois "month", l'année "year" et le departmentCode
+
+      setShowModalMonth(false)
+    }
+  }, [choiceMonth])
 
   // Permet de rechercher les Regions sur l'api geo
   const loadRegions = async () => {
@@ -378,7 +394,7 @@ const CalendarScreen = ({ navigation }) => {
           >
             <ModalChoiceMonth
               monthYear={monthYear}
-              setShowModalMonth={setShowModalMonth}
+              setChoiceMonth={setChoiceMonth}
             />
           </CustomModal>
         </SafeAreaView>

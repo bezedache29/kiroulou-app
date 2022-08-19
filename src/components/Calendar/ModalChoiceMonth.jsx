@@ -14,7 +14,7 @@ import {
 
 import CustomButtonInfo from '../CustomButtonInfo'
 
-const ModalChoiceMonth = ({ monthYear, setShowModalMonth }) => {
+const ModalChoiceMonth = ({ monthYear, setChoiceMonth }) => {
   const { colors } = useTheme()
 
   return (
@@ -32,7 +32,7 @@ const ModalChoiceMonth = ({ monthYear, setShowModalMonth }) => {
                 key={index}
                 title={item}
                 colors={colors}
-                onPress={() => setShowModalMonth(false)}
+                onPress={() => setChoiceMonth(item)}
                 style={my10}
                 backgroundColor={primaryColor}
               />

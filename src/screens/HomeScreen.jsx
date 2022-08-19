@@ -44,9 +44,9 @@ const HomeScreen = ({ navigation }) => {
     if (user) {
       console.log('user', user)
     }
-    // for (let i = 0; i < 10; i++) {
-    //   setData((oldData) => [...oldData, createFakePost(i + 1)])
-    // }
+    for (let i = 0; i < 10; i++) {
+      setData((oldData) => [...oldData, createFakePost(i + 1)])
+    }
   }, [])
 
   const onRefresh = useCallback(() => {
