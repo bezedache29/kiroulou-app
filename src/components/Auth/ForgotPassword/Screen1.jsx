@@ -6,7 +6,7 @@ import {
   Text,
   View,
 } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import * as Animatable from 'react-native-animatable'
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
@@ -27,6 +27,7 @@ import ForgotPwdSVG from '../../../assets/images/svg/auth/pwd-forgot.svg'
 import useAxios from '../../../hooks/useAxios'
 import InputField from '../../InputField'
 import CustomBigButton from '../../CustomBigButton'
+import CustomLoader from '../../CustomLoader'
 
 const forgotPasswordSchema = yup.object().shape({
   email: yup
@@ -41,7 +42,10 @@ const Screen1 = ({ setEmail, setScreen }) => {
   const { colors } = useTheme()
   const { axiosPostWithoutToken } = useAxios()
 
+  const [loading, setLoading] = useState(false)
+
   const submitForm = async (values, resetForm) => {
+    setLoading(true)
     const data = {
       email: values.email,
     }
@@ -53,7 +57,18 @@ const Screen1 = ({ setEmail, setScreen }) => {
       setScreen(2)
       resetForm()
     }
+
+    if (response.status === 404) {
+      setScreen(1)
+    }
+
+    setLoading(false)
   }
+
+  if (loading) {
+    return <CustomLoader />
+  }
+
   return (
     <>
       <View style={{ alignItems: 'center' }}>
