@@ -1,27 +1,21 @@
-import { Text, SafeAreaView, ScrollView, View } from 'react-native'
-import React from 'react'
-
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
-
-import * as Animatable from 'react-native-animatable'
+import { SafeAreaView, View } from 'react-native'
+import React, { useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
 
-import {
-  defaultContainer,
-  defaultText,
-  mt50,
-  my50,
-  px25,
-} from '../../assets/styles/styles'
+import { defaultContainer } from '../../assets/styles/styles'
 
-import ForgotPwdSVG from '../../assets/images/svg/auth/pwd-forgot.svg'
-import InputField from '../../components/InputField'
-import CustomBigButton from '../../components/CustomBigButton'
 import CustomLabelNavigation from '../../components/CustomLabelNavigation'
+import Screen1 from '../../components/Auth/ForgotPassword/Screen1'
+import Screen2 from '../../components/Auth/ForgotPassword/Screen2'
+import Screen3 from '../../components/Auth/ForgotPassword/Screen3'
 
 const ForgotPasswordScreen = ({ navigation }) => {
   const { colors } = useTheme()
+
+  const [email, setEmail] = useState(false)
+  const [token, setToken] = useState(false)
+  const [screen, setScreen] = useState(1)
 
   return (
     <SafeAreaView
@@ -38,49 +32,15 @@ const ForgotPasswordScreen = ({ navigation }) => {
           })
         }}
       />
-
-      <ScrollView showsVerticalScrollIndicator={false} style={px25}>
-        <View style={{ flex: 1 }}>
-          <View style={{ alignItems: 'center' }}>
-            <View
-              style={{
-                borderRadius: 8,
-                overflow: 'hidden',
-                width: 350,
-                height: 250,
-                marginVertical: 20,
-              }}
-            >
-              <ForgotPwdSVG width={350} height={290} />
-            </View>
-          </View>
-        </View>
-
-        <Animatable.View
-          animation="fadeInUpBig"
-          style={{ flex: 3, backgroundColor: colors.background }}
-        >
-          <Text style={[defaultText, my50, { color: colors.text }]}>
-            Envoyez-moi un e-mail avec un lien pour redéfinir mon mot de passe.
-          </Text>
-
-          <InputField
-            label="Adresse e-mail"
-            icon={
-              <MaterialIcons
-                name="alternate-email"
-                size={20}
-                color={colors.icon}
-              />
-            }
-            keyboardType="email-address"
-            colors={colors}
-          />
-          <View style={mt50}>
-            <CustomBigButton label="Recevoir l'e-mail" onPress={() => {}} />
-          </View>
-        </Animatable.View>
-      </ScrollView>
+      <View style={{ flex: 1 }}>
+        {screen === 1 && <Screen1 setEmail={setEmail} setScreen={setScreen} />}
+        {screen === 2 && (
+          <Screen2 setScreen={setScreen} email={email} setToken={setToken} />
+        )}
+        {screen === 3 && (
+          <Screen3 setScreen={setScreen} token={token} email={email} />
+        )}
+      </View>
     </SafeAreaView>
   )
 }

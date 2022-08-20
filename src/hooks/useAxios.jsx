@@ -12,6 +12,8 @@ const useAxios = () => {
     const response = await axios.post(`${URL_API}/${url}`, data, {
       header: {
         'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+        Accept: 'application/json',
       },
       validateStatus: () => true,
     })
@@ -34,6 +36,8 @@ const useAxios = () => {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `${authToken.type} ${authToken.token}`,
+        'X-Requested-With': 'XMLHttpRequest',
+        Accept: 'application/json',
       },
       validateStatus: () => true,
     })
