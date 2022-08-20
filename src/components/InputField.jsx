@@ -30,6 +30,7 @@ const InputField = ({
   maxLength,
   multiline = false,
   numberOfLines = 1,
+  autoFocus = false,
 }) => (
   <>
     <View
@@ -46,6 +47,7 @@ const InputField = ({
         multiline={multiline}
         maxLength={maxLength}
         numberOfLines={numberOfLines}
+        autoFocus={autoFocus}
         value={value}
         placeholder={label}
         placeholderTextColor={colors.text}
