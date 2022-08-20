@@ -21,6 +21,7 @@ import {
   my30,
   px25,
 } from '../../../assets/styles/styles'
+import CustomLoader from '../../CustomLoader'
 
 const CODE_LENGTH = 4
 
@@ -31,6 +32,7 @@ const Screen2 = ({ setScreen, email, setToken }) => {
   const [code, setCode] = useState('')
   const [containerIsFocused, setContainerIsFocused] = useState(false)
   const [error, setError] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const ref = useRef(null)
 
@@ -70,6 +72,7 @@ const Screen2 = ({ setScreen, email, setToken }) => {
   }
 
   const checkToken = async () => {
+    setLoading(true)
     setError(false)
     const data = {
       email,
@@ -78,7 +81,7 @@ const Screen2 = ({ setScreen, email, setToken }) => {
 
     const response = await axiosPostWithoutToken('verifyResetPassword', data)
 
-    console.log(response.data)
+    console.log(response.status)
 
     if (response.status === 201) {
       setToken(code)
@@ -92,6 +95,12 @@ const Screen2 = ({ setScreen, email, setToken }) => {
     if (response.status === 422) {
       setError(response.data.errors.token[0])
     }
+
+    setLoading(false)
+  }
+
+  if (loading) {
+    return <CustomLoader />
   }
 
   return (

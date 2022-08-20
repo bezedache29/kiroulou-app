@@ -83,7 +83,7 @@ const LoginScreen = ({ navigation }) => {
     // Request API
     const response = await axiosPostWithoutToken('login', data)
 
-    console.log(response)
+    // console.log(response)
 
     switch (response.status) {
       case 422:
@@ -100,8 +100,7 @@ const LoginScreen = ({ navigation }) => {
         break
 
       case 200:
-        // navigation.navigate('Login')
-        console.log(response.data.auth_token)
+        // console.log(response.data.auth_token)
         await AsyncStorage.setItem(
           'kro_auth_token',
           JSON.stringify(response.data.auth_token)
@@ -117,18 +116,6 @@ const LoginScreen = ({ navigation }) => {
 
       default:
     }
-
-    // Request API des datas
-    // Retour erreur ?
-    // setError(response.message)
-    // Sinon
-
-    // JWT dans le localstorage
-
-    // navigation.reset({
-    //   index: 0,
-    //   routes: [{ name: 'Drawer' }],
-    // })
   }
 
   return (

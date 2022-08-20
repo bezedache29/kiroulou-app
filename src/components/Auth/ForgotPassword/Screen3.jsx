@@ -23,6 +23,7 @@ import useAxios from '../../../hooks/useAxios'
 
 import CustomBigButton from '../../CustomBigButton'
 import InputField from '../../InputField'
+import CustomLoader from '../../CustomLoader'
 
 const newPasswordSchema = yup.object().shape({
   password: yup
@@ -46,10 +47,12 @@ const Screen3 = ({ setScreen, email, token }) => {
   const { axiosPostWithoutToken } = useAxios()
 
   const [passwordError, setPasswordError] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const navigation = useNavigation()
 
   const submitForm = async (values, resetForm) => {
+    setLoading(true)
     const data = {
       email,
       token,
@@ -70,6 +73,12 @@ const Screen3 = ({ setScreen, email, token }) => {
     if (response.status === 422) {
       setPasswordError(response.data.errors.password[0])
     }
+
+    setLoading(false)
+  }
+
+  if (loading) {
+    return <CustomLoader />
   }
 
   return (
