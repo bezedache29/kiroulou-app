@@ -17,6 +17,8 @@ import BouncyCheckbox from 'react-native-bouncy-checkbox'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
+import { useStoreState } from 'easy-peasy'
+
 import { useTheme } from 'react-native-paper'
 
 import { DateTimePickerModal } from 'react-native-modal-datetime-picker'
@@ -43,19 +45,21 @@ import AddOrEditTripToHikeModal from '../../../components/Hikes/AddOrEditTripToH
 import TripCard from '../../../components/Hikes/TripCard'
 import CustomAlert from '../../../components/CustomAlert'
 import InputFieldButton from '../../../components/InputFieldButton'
-import useDatePicker from '../../../hooks/useDatePicker'
 import useUtils from '../../../hooks/useUtils'
 import CustomBSModal from '../../../components/CustomBSModal'
 import ButtonBS from '../../../components/ButtonBS'
 import CustomOverlay from '../../../components/CustomOverlay'
+import useAxios from '../../../hooks/useAxios'
 
 const AddHikeStep2Screen = ({ navigation, route }) => {
   const { dataStep1 } = route.params
+  const { axiosGetWithToken } = useAxios()
 
   const { colors } = useTheme()
-  const { datePickerVisibility, showDatePicker, hideDatePicker } =
-    useDatePicker()
-  const { formatDate, dateToTimestamp } = useUtils()
+  const { formatDate, dateToTimestamp, formatDateToSql } = useUtils()
+
+  const userStore = useStoreState((state) => state.user)
+  const { user } = userStore
 
   const [isClubAddress, setIsClubAddress] = useState(true)
   const [address, setAddress] = useState('')
@@ -74,6 +78,7 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
   const [dateError, setDateError] = useState(false)
   const [date, setDate] = useState(false)
   const [dateForDB, setDateForDB] = useState('')
+  const [datePickerVisibility, setDatePickerVisibility] = useState(false)
 
   const [overlay, setOverlay] = useState(false)
 
@@ -91,14 +96,14 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
         `${route.params.hikeEdit.address} ${route.params.hikeEdit.postCode} ${route.params.hikeEdit.city}`
       )
       setAddressToDB({
-        address: route.params.hikeEdit.address,
+        street_address: route.params.hikeEdit.address,
         city: route.params.hikeEdit.city,
-        postCode: route.params.hikeEdit.postCode,
+        zipcode: route.params.hikeEdit.postCode,
         lat: route.params.hikeEdit.lat,
         lng: route.params.hikeEdit.lng,
         region: route.params.hikeEdit.region,
         department: route.params.hikeEdit.department,
-        departmentCode: route.params.hikeEdit.departmentCode,
+        department_code: route.params.hikeEdit.departmentCode,
       })
       setTrips(route.params.hikeEdit.trips)
       setDateLabel(formatDate(route.params.hikeEdit.date))
@@ -155,14 +160,14 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
     setAddress(value.properties.label)
     const context = value.properties.context.split(',')
     const addressToDB = {
-      address: value.properties.name,
+      street_address: value.properties.name,
       city: value.properties.city,
-      postCode: value.properties.postcode,
+      zipcode: value.properties.postcode,
       lat: value.geometry.coordinates[1],
       lng: value.geometry.coordinates[0],
       region: context[2],
       department: context[1],
-      departmentCode: context[0],
+      department_code: context[0],
     }
 
     setProposals([])
@@ -185,6 +190,7 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
 
   // A la confirmation de la date du DatePicker
   const handleConfirmDate = (date) => {
+    setDatePickerVisibility(false)
     const timestampNow = dateToTimestamp(new Date())
     const timestampTrip = dateToTimestamp(date)
 
@@ -197,9 +203,7 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
       // On indique qu'on a bien une date pour eviter les erreurs de  formulaire
       setDate(true)
       setDateError(false)
-      hideDatePicker()
     } else {
-      hideDatePicker()
       setDateError('Veuillez sélectionner une date dans le futur')
     }
   }
@@ -231,8 +235,8 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
   }, [isEditTrip])
 
   // Au clic sur le bouton pour passer a l'étape 3
-  const goToNextStep = () => {
-    if (!addressToDB) {
+  const goToNextStep = async () => {
+    if (!addressToDB && !isClubAddress) {
       setAddressError('Vous devez renseigner une adresse')
     }
 
@@ -240,11 +244,37 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
       setDateError('Vous devez renseigner une date')
     }
 
-    if (addressToDB && date) {
-      const dataStep2 = {
-        address: isClubAddress ? "Adresse du club depuis l'api" : addressToDB,
-        trips: trips.length > 0 ? trips : null,
-        date: dateForDB,
+    if ((addressToDB || isClubAddress) && date) {
+      // On met la date et les parcours
+      const data = {
+        trips: trips.length > 0 ? trips : [],
+        date: formatDateToSql(dateForDB),
+      }
+
+      console.log('TRIPS', data.trips)
+
+      let dataStep2
+
+      // On check l'adresse pour savoir si c'est la rando est a l'adresse du club ou a un autre endroit
+      if (isClubAddress) {
+        // Fetch le club depuis l'id club du user
+        const response = await axiosGetWithToken(
+          `clubs/${user.club_id}/clubInformations`
+        )
+        // Récupérer l'adresse
+        dataStep2 = {
+          street_address: response.data.address.street_address,
+          city: response.data.address.city.name,
+          zipcode: response.data.address.zipcode.code,
+          lat: response.data.address.lat,
+          lng: response.data.address.lng,
+          region: response.data.address.region,
+          department: response.data.address.department,
+          department_code: response.data.address.department_code,
+          ...data,
+        }
+      } else {
+        dataStep2 = addressToDB
       }
 
       const dataSteps = {
@@ -271,7 +301,7 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
           step={2}
           subTitle="Inscrivez l'adresse ou se trouvera la randonnée, ainsi que les parcours
     disponible si vous le souhaitez."
-          nextStepCondition={addressToDB && date}
+          nextStepCondition={(addressToDB || isClubAddress) && date}
           buttonLabel="Passer à l'étape 3"
           buttonPress={goToNextStep}
         >
@@ -346,7 +376,7 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
                 Date de la rando
               </Text>
               <InputFieldButton
-                onPress={showDatePicker}
+                onPress={() => setDatePickerVisibility(true)}
                 label={dateLabel}
                 error={dateError}
                 icon={
@@ -429,7 +459,7 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
             isVisible={datePickerVisibility}
             mode="date"
             onConfirm={handleConfirmDate}
-            onCancel={hideDatePicker}
+            onCancel={() => setDatePickerVisibility(false)}
             date={
               route.params?.hikeEdit ? route.params?.hikeEdit?.date : new Date()
             }

@@ -50,11 +50,7 @@ const useConnection = () => {
    * @description Permet au user de se deconnecter de l'app et d'etre redirect sur la page login
    */
   const disconnect = async () => {
-    const authToken = await AsyncStorage.getItem('kro_auth_token')
-    const response = await axiosPostWithToken(
-      'disconnect',
-      JSON.parse(authToken)
-    )
+    const response = await axiosPostWithToken('disconnect')
 
     if (response.status === 200) {
       userActions.loadUser({})

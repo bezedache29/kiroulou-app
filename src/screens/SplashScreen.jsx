@@ -45,11 +45,18 @@ const SplashScreen = ({ navigation }) => {
         // Si le user a un auth_token
         if (authToken) {
           // On recherche le user depuis l'api
-          const response = await axiosPostWithToken('me', JSON.parse(authToken))
+          const response = await axiosPostWithToken(
+            'me',
+            {},
+            JSON.parse(authToken)
+          )
 
-          // On met le user dans le store
+          console.log(response)
+
+          // On met le user et son authToken dans le store
           if (response.status === 200) {
             userActions.loadUser(response.data)
+            userActions.loadAuthToken(JSON.parse(authToken))
             // Redirect sur la HomeScreen piloté par Drawer
             navigation.reset({
               index: 0,

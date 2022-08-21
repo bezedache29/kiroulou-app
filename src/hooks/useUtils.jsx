@@ -94,6 +94,9 @@ const useUtils = () => {
     return monthYear
   }
 
+  const formatDateToSql = (date) =>
+    new Date(date).toISOString().slice(0, 19).replace('T', ' ')
+
   return {
     formatDate,
     dateToTimestamp,
@@ -103,6 +106,7 @@ const useUtils = () => {
     formatCompleteDate,
     getOneYear,
     formatMonthText,
+    formatDateToSql,
   }
 }
 
