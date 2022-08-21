@@ -74,14 +74,14 @@ const AddOrEditTripToHikeModal = ({
             validationSchema={addTripSchema}
             initialValues={{
               distance: trip ? trip.distance : '',
-              heightDifference: trip ? trip.heightDifference : 0,
+              height_difference: trip ? trip.height_difference : 0,
               difficulty: trip ? trip.difficulty : 1,
               supplies: trip ? trip.supplies : 0,
             }}
             onSubmit={(values, { resetForm }) => {
               const data = {
                 distance: values.distance,
-                heightDifference: values.heightDifference,
+                height_difference: values.height_difference,
                 difficulty: values.difficulty,
                 supplies: values.supplies,
               }
@@ -139,7 +139,7 @@ const AddOrEditTripToHikeModal = ({
                       name="image-filter-hdr"
                       size={20}
                       color={
-                        touched.heightDifference && errors.heightDifference
+                        touched.height_difference && errors.height_difference
                           ? dangerColor
                           : colors.icon
                       }
@@ -147,11 +147,11 @@ const AddOrEditTripToHikeModal = ({
                     />
                   }
                   colors={colors}
-                  error={touched.heightDifference && errors.heightDifference}
-                  name="heightDifference"
-                  onChange={handleChange('heightDifference')}
-                  onBlur={handleBlur('heightDifference')}
-                  value={values.heightDifference}
+                  error={touched.height_difference && errors.height_difference}
+                  name="height_difference"
+                  onChange={handleChange('height_difference')}
+                  onBlur={handleBlur('height_difference')}
+                  value={values.height_difference}
                   keyboardType="numeric"
                   inputType="number"
                 />

@@ -77,11 +77,11 @@ const AddHikeStep1Screen = ({ navigation, route }) => {
                   name: values.name,
                   description: values.description,
                   // Remplace les virgules par des points, et on max 2 chiffres après la virgule arrondi au supérieur
-                  publicPrice: (
+                  public_price: (
                     Math.round(+values.publicPrice.replace(',', '.') * 100) /
                     100
                   ).toFixed(2),
-                  privatePrice: (
+                  private_price: (
                     Math.round(+values.privatePrice.replace(',', '.') * 100) /
                     100
                   ).toFixed(2),

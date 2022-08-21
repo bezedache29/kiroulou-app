@@ -10,6 +10,7 @@ import 'react-native-gesture-handler'
 // Utilisé pour le dev. Les dates seront placées dans le store en fin de dev
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
+  'new NativeEventEmitter',
 ])
 
 if (__DEV__) {
