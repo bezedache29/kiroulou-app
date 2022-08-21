@@ -10,6 +10,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@baronha/react-native-multiple-image-picker": "^0.4.10",
     "@gorhom/bottom-sheet": "^4",
     "@react-native-async-storage/async-storage": "^1.17.7",
     "@react-native-community/datetimepicker": "^6.3.0",
