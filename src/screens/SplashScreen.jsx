@@ -44,6 +44,12 @@ const SplashScreen = ({ navigation }) => {
 
         // Si le user a un auth_token
         if (authToken) {
+          // Permet de supprimer des tentatives incomplete de paiements (evite de ne plus avoir le status active premium)
+          await axiosPostWithToken(
+            'subscriptions/deleteFails',
+            {},
+            JSON.parse(authToken)
+          )
           // On recherche le user depuis l'api
           const response = await axiosPostWithToken(
             'me',
@@ -51,7 +57,7 @@ const SplashScreen = ({ navigation }) => {
             JSON.parse(authToken)
           )
 
-          console.log(response)
+          console.log('me', response.data)
 
           // On met le user et son authToken dans le store
           if (response.status === 200) {
@@ -69,6 +75,9 @@ const SplashScreen = ({ navigation }) => {
               index: 0,
               routes: [{ name: 'Login' }],
             })
+          } else {
+            // TODO Modal erreur
+            alert(`erreur ${response.status}`)
           }
         } else {
           navigation.reset({

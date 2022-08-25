@@ -41,6 +41,9 @@ import AddOrEditPostScreen from '../screens/posts/AddOrEditPostScreen'
 import PostScreen from '../screens/posts/PostScreen'
 import CommentsScreen from '../screens/comments/CommentsScreen'
 import EditCommentScreen from '../screens/comments/EditCommentScreen'
+import SubPaymentScreen from '../screens/subs/SubPaymentScreen'
+import SubSuccessScreen from '../screens/subs/SubSuccessScreen'
+import InvoicesScreen from '../screens/invoices/InvoicesScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -62,6 +65,11 @@ const AppStack = () => (
     {/* Abonnements */}
     <Stack.Screen name="Subs" component={SubsScreen} />
     <Stack.Screen name="SubsChoice" component={SubsChoiceScreen} />
+    <Stack.Screen name="SubPayment" component={SubPaymentScreen} />
+    <Stack.Screen name="SubSuccess" component={SubSuccessScreen} />
+
+    {/* Invoices */}
+    <Stack.Screen name="Invoices" component={InvoicesScreen} />
 
     {/* Legals */}
     <Stack.Screen name="LegalNotice" component={LegalNoticeScreen} />

@@ -7,11 +7,12 @@ import {
   defaultTextBold,
 } from '../assets/styles/styles'
 
-const ButtonBS = ({ onPress, children, cancel }) => {
+const ButtonBS = ({ onPress, children, cancel, disabled = false }) => {
   const { colors } = useTheme()
 
   return (
     <TouchableOpacity
+      disabled={disabled}
       onPress={onPress}
       style={[
         styles.button,
