@@ -8,12 +8,12 @@ import CheckLine from './CheckLine'
 const premium1 = require('../../assets/json/premium1.json')
 const premium2 = require('../../assets/json/premium2.json')
 
-const AdvantagesModal = ({ premium }) => {
+const AdvantagesModal = ({ premium, contentStyle, textStyle }) => {
   const { colors } = useTheme()
   const [advantages, setAdvantages] = useState(false)
 
   useEffect(() => {
-    if (premium === 'first') {
+    if (premium === 'first' || premium === 'Premium 1') {
       setAdvantages(premium1)
     } else {
       setAdvantages(premium2)
@@ -22,10 +22,17 @@ const AdvantagesModal = ({ premium }) => {
 
   return (
     <>
-      <Text style={[TitleH3, textAlignCenter, { color: colors.text, flex: 1 }]}>
+      <Text
+        style={[
+          TitleH3,
+          textAlignCenter,
+          { color: colors.text, flex: 1 },
+          textStyle,
+        ]}
+      >
         Liste des avantages
       </Text>
-      <View style={{ flex: 10 }}>
+      <View style={[{ flex: 10 }, contentStyle]}>
         {advantages &&
           advantages.map((advantage, index) => (
             // eslint-disable-next-line react/no-array-index-key

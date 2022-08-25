@@ -2,7 +2,10 @@ import React from 'react'
 
 import { Provider as PaperProvider } from 'react-native-paper'
 
+import { StripeProvider } from '@stripe/stripe-react-native'
+
 import { StoreProvider } from 'easy-peasy'
+import { STRIPE_TEST } from 'react-native-dotenv'
 import useMyTheme from './src/hooks/useMyTheme'
 
 import { AppContext } from './src/context/Context'
@@ -23,16 +26,18 @@ const App = () => {
   const theme = isDarkTheme ? CustomDarkTheme : CustomDefaultTheme
 
   return (
-    <StoreProvider store={GlobalStore}>
-      <PaperProvider theme={theme}>
-        <AppContext.Provider value={appContext}>
-          <TabContextProvider>
-            <CustomStatusBar isDarkTheme={isDarkTheme} />
-            <AppRouter theme={theme} />
-          </TabContextProvider>
-        </AppContext.Provider>
-      </PaperProvider>
-    </StoreProvider>
+    <StripeProvider publishableKey={STRIPE_TEST}>
+      <StoreProvider store={GlobalStore}>
+        <PaperProvider theme={theme}>
+          <AppContext.Provider value={appContext}>
+            <TabContextProvider>
+              <CustomStatusBar isDarkTheme={isDarkTheme} />
+              <AppRouter theme={theme} />
+            </TabContextProvider>
+          </AppContext.Provider>
+        </PaperProvider>
+      </StoreProvider>
+    </StripeProvider>
   )
 }
 

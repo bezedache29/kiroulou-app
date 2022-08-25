@@ -21,8 +21,9 @@ const CustomBox = ({
   backgroundColor,
   title,
   price,
+  disabled = false,
 }) => (
-  <TouchableWithoutFeedback onPress={onPress}>
+  <TouchableWithoutFeedback disabled={disabled} onPress={onPress}>
     <Animated.View
       style={[
         styles.boxContainer,

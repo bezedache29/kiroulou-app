@@ -26,6 +26,24 @@ const useAxios = () => {
   }
 
   /**
+   * @description Permet de faire une request GET sur un lien de l'API, sans auth_token
+   * @param {string} url
+   * @returns
+   */
+  const axiosGetWithoutToken = async (url) => {
+    const response = await axios.get(`${URL_API}/${url}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+        Accept: 'application/json',
+      },
+      validateStatus: () => true,
+    })
+
+    return response
+  }
+
+  /**
    * @description POST Request API avec le token Sanctum
    * @param {string} url
    * @param {object} data
@@ -65,6 +83,7 @@ const useAxios = () => {
 
   return {
     axiosPostWithoutToken,
+    axiosGetWithoutToken,
     axiosPostWithToken,
     axiosGetWithToken,
   }
