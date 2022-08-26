@@ -1,61 +1,130 @@
-import { FlatList, StyleSheet, Text, View } from 'react-native'
-import React, { useCallback, useEffect, useState } from 'react'
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
 
-import AsyncStorage from '@react-native-async-storage/async-storage'
-
-import { useStoreState } from 'easy-peasy'
-
 import FadingEdge from 'react-native-fading-edge'
 
-import TabContainer from '../components/Navigation/TabContainer'
-import HeaderDrawer from '../components/Navigation/HeaderDrawer'
-import CustomCard from '../components/Home/Card/CustomCard'
-
+import { useIsFocused } from '@react-navigation/native'
 import {
+  darkColor,
   defaultText,
   mb30,
   px20,
   secondaryColor,
 } from '../assets/styles/styles'
-import useFaker from '../hooks/useFaker'
+
+import useAxios from '../hooks/useAxios'
+import TabContainer from '../components/Navigation/TabContainer'
+import HeaderDrawer from '../components/Navigation/HeaderDrawer'
 import CustomBigButton from '../components/CustomBigButton'
+import CustomCardUser from '../components/Home/Card/CustomCardUser'
+import CustomCardClub from '../components/Home/Card/CustomCardClub'
 
 const HomeScreen = ({ navigation }) => {
   const { colors } = useTheme()
+  const { axiosGetWithToken } = useAxios()
+
+  const isFocused = useIsFocused()
+
+  const flatListPosts = useRef()
 
   const [isFetching, setIsFetching] = useState(false)
-  const [data, setData] = useState([])
+  const [posts, setPosts] = useState([])
+  const [page, setPage] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [moreLoading, setMoreLoading] = useState(false)
+  const [isListEnd, setIsListEnd] = useState(null)
 
-  const userStore = useStoreState((state) => state.user)
-  const { user } = userStore
-
-  // Pour les tests
-  const { createFakePost } = useFaker()
-
-  /**
-   * Charge 10 posts fake
-   */
   useEffect(() => {
-    AsyncStorage.getItem('kro_auth_token').then((res) => {
-      console.log(res)
-    })
-    if (user) {
-      console.log('user', user)
-    }
-    for (let i = 0; i < 10; i++) {
-      setData((oldData) => [...oldData, createFakePost(i + 1)])
-    }
+    setPage(1)
   }, [])
 
+  useEffect(() => {
+    if (isFocused) {
+      setLoading(true)
+      if (page !== 1) {
+        setPage(1)
+      } else {
+        loadPosts(1, true)
+      }
+    }
+  }, [isFocused])
+
+  useEffect(() => {
+    if (page) {
+      if (page === 1) {
+        loadPosts(page, true)
+      } else {
+        loadPosts(page)
+      }
+    }
+  }, [page])
+
+  useEffect(() => {
+    if (!loading) {
+      moveToTop()
+    }
+  }, [loading])
+
+  const moveToTop = () => {
+    if (posts.length - 1 > 0) {
+      flatListPosts.current.scrollToIndex({ index: 0 })
+    }
+  }
+
+  const loadPosts = async (page, refresh = false) => {
+    const response = await axiosGetWithToken(`posts?page=${page}`)
+
+    // console.log('posts', response.data.posts)
+
+    if (refresh) {
+      setPosts(response.data.posts)
+      setIsListEnd(false)
+    } else if (response.data.posts.length === 0) {
+      setIsListEnd(true)
+    } else {
+      setPosts((oldData) => [...oldData, ...response.data.posts])
+    }
+
+    setMoreLoading(false)
+    setLoading(false)
+  }
+
+  // Au refresh en haut de screen
   const onRefresh = useCallback(() => {
     setIsFetching(true)
-    setData((oldData) => [...oldData, createFakePost(data.length + 1)])
+    setPage(1)
     setTimeout(() => {
       setIsFetching(false)
     }, 2000)
   })
+
+  // Au refresh en bas de screen
+  const fetchMorePosts = async () => {
+    if (!isListEnd) {
+      setMoreLoading(true)
+      setPage(page + 1)
+    }
+  }
+
+  // S'il n'y a plus de pages a chercher lors d'un refresh en bas de screen
+  const renderFooter = () => (
+    <View style={styles.footer}>
+      {moreLoading && <ActivityIndicator />}
+      {isListEnd && (
+        <Text style={[defaultText, { color: darkColor }]}>
+          Plus d'articles pour le moment
+        </Text>
+      )}
+    </View>
+  )
 
   return (
     <TabContainer>
@@ -73,35 +142,59 @@ const HomeScreen = ({ navigation }) => {
           <View
             style={{ paddingTop: 10, backgroundColor: secondaryColor, flex: 1 }}
           >
-            <FlatList
-              data={data}
-              ListEmptyComponent={() => (
-                <View style={styles.containerNoFeed}>
-                  <Text style={[defaultText, mb30, { color: colors.text }]}>
-                    Vous n'avez pas de fil d'acutalités. Suivez des clubs et des
-                    utilisateurs pour être aux courtant de leur dernières
-                    nouvelles !
-                  </Text>
-                  <CustomBigButton
-                    label="Rechercher des clubs"
-                    onPress={() => navigation.navigate('Clubs')}
-                    styleBtn={px20}
-                  />
+            {loading ? (
+              <>
+                <View style={styles.loader}>
+                  <ActivityIndicator size="large" />
                 </View>
-              )}
-              renderItem={({ item }) => (
-                <CustomCard
-                  item={item}
-                  onPress={() => navigation.navigate('Post', { post: item })}
-                />
-              )}
-              keyExtractor={(item) => item.id}
-              onRefresh={onRefresh}
-              refreshing={isFetching}
-              ListFooterComponent={() => (
-                <View style={{ marginVertical: 80 }} />
-              )}
-            />
+                <View style={{ flex: 1 }} />
+              </>
+            ) : (
+              <FlatList
+                ref={flatListPosts}
+                data={posts}
+                ListEmptyComponent={() => (
+                  <View style={styles.containerNoFeed}>
+                    <Text style={[defaultText, mb30, { color: colors.text }]}>
+                      Vous n'avez pas de fil d'acutalités. Suivez des clubs et
+                      des utilisateurs pour être aux courtant de leur dernières
+                      nouvelles !
+                    </Text>
+                    <CustomBigButton
+                      label="Rechercher des clubs"
+                      onPress={() => navigation.navigate('Clubs')}
+                      styleBtn={px20}
+                    />
+                  </View>
+                )}
+                renderItem={({ item }) => {
+                  if (item.club_id) {
+                    return (
+                      <CustomCardClub
+                        item={item}
+                        onPress={() =>
+                          navigation.navigate('Hike', { hike: item })
+                        }
+                      />
+                    )
+                  }
+                  return (
+                    <CustomCardUser
+                      item={item}
+                      onPress={() =>
+                        navigation.navigate('Post', { post: item })
+                      }
+                    />
+                  )
+                }}
+                keyExtractor={(item) => item.id}
+                onRefresh={onRefresh}
+                refreshing={isFetching}
+                onEndReachedThreshold={0.5} // Formule (20 - (1.6666 * 6)) - Se declenche au 10 eme post
+                onEndReached={fetchMorePosts}
+                ListFooterComponent={renderFooter}
+              />
+            )}
           </View>
         </View>
       </FadingEdge>
@@ -115,6 +208,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
+  },
+  footer: {
+    marginBottom: 160,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loader: {
+    flex: 3,
+    justifyContent: 'center',
   },
 })
 

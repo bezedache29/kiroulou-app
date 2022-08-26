@@ -50,7 +50,7 @@ const useAxios = () => {
    * @returns
    */
   const axiosPostWithToken = async (url, data = {}, token = authToken) => {
-    console.log('authToken', authToken)
+    // console.log('authToken', authToken)
     // Cookies sanctum
     await axios.get(`${URL_SERVER}/sanctum/csrf-cookie`)
     // Request Post avec le token
@@ -81,11 +81,50 @@ const useAxios = () => {
     return response
   }
 
+  const axiosPutWithToken = async (url, data = {}, token = authToken) => {
+    // console.log('authToken', authToken)
+    // Cookies sanctum
+    await axios.get(`${URL_SERVER}/sanctum/csrf-cookie`)
+    // Request Post avec le token
+    const response = await axios.put(`${URL_API}/${url}`, data, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `${token.type} ${token.token}`,
+        'X-Requested-With': 'XMLHttpRequest',
+        Accept: 'application/json',
+      },
+      validateStatus: () => true,
+    })
+
+    return response
+  }
+
+  const axiosDeleteWithToken = async (url, data = {}, token = authToken) => {
+    // console.log('authToken', authToken)
+    // Cookies sanctum
+    await axios.get(`${URL_SERVER}/sanctum/csrf-cookie`)
+    // Request Post avec le token
+    const response = await axios.delete(`${URL_API}/${url}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `${token.type} ${token.token}`,
+        'X-Requested-With': 'XMLHttpRequest',
+        Accept: 'application/json',
+      },
+      data,
+      validateStatus: () => true,
+    })
+
+    return response
+  }
+
   return {
     axiosPostWithoutToken,
     axiosGetWithoutToken,
     axiosPostWithToken,
     axiosGetWithToken,
+    axiosPutWithToken,
+    axiosDeleteWithToken,
   }
 }
 

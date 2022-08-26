@@ -44,6 +44,7 @@ import EditCommentScreen from '../screens/comments/EditCommentScreen'
 import SubPaymentScreen from '../screens/subs/SubPaymentScreen'
 import SubSuccessScreen from '../screens/subs/SubSuccessScreen'
 import InvoicesScreen from '../screens/invoices/InvoicesScreen'
+import UserProfileScreen from '../screens/profile/user/UserProfileScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -84,6 +85,7 @@ const AppStack = () => (
     <Stack.Screen name="ImagesProfile" component={ImagesProfileScreen} />
 
     {/* Profil User */}
+    <Stack.Screen name="UserProfile" component={UserProfileScreen} />
     <Stack.Screen name="EditUserProfile" component={EditUserProfileScreen} />
     {/* Screens TabView Informations */}
     <Stack.Screen name="ClubsUserFollow" component={ClubsUserFollowScreen} />
