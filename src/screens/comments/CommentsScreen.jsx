@@ -33,9 +33,11 @@ import CustomAlert from '../../components/CustomAlert'
 import CustomOverlay from '../../components/CustomOverlay'
 import useAxios from '../../hooks/useAxios'
 import CustomCommentCard from '../../components/Comments/CustomCommentCard'
+import useCustomToast from '../../hooks/useCustomToast'
 
 const CommentsScreen = ({ navigation, route }) => {
   const { colors } = useTheme()
+  const { toastShow } = useCustomToast()
   const { axiosGetWithToken, axiosPostWithToken, axiosDeleteWithToken } =
     useAxios()
 
@@ -81,7 +83,6 @@ const CommentsScreen = ({ navigation, route }) => {
       } else {
         loadComments(1, true)
       }
-      // TODO Toast message updated
     }
   }, [isFocused])
 
@@ -195,7 +196,11 @@ const CommentsScreen = ({ navigation, route }) => {
         moveToTop()
         setComment('')
         setIsListEnd(false)
-        // TODO TOast
+
+        toastShow({
+          title: 'Commentaire ajouté !',
+          message: 'Ajout du commentaire avec succès',
+        })
       }
     }
   }
@@ -227,7 +232,10 @@ const CommentsScreen = ({ navigation, route }) => {
         loadComments(1, true)
       }
 
-      // TODO Toast Suppression success
+      toastShow({
+        title: 'Commentaire supprimé !',
+        message: 'Le commentaire a bien été supprimé',
+      })
     }
   }
 

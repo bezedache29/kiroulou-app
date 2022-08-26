@@ -6,6 +6,8 @@ import { StripeProvider } from '@stripe/stripe-react-native'
 
 import { StoreProvider } from 'easy-peasy'
 import { STRIPE_TEST } from 'react-native-dotenv'
+import { ToastProvider } from 'react-native-toast-notifications'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import useMyTheme from './src/hooks/useMyTheme'
 
 import { AppContext } from './src/context/Context'
@@ -16,6 +18,7 @@ import AppRouter from './src/router/AppRouter'
 import { TabContextProvider } from './src/context/TabContext'
 
 import GlobalStore from './src/store/store'
+import CustomToast from './src/components/Toast/CustomToast'
 
 const App = () => {
   // Hooks
@@ -28,14 +31,34 @@ const App = () => {
   return (
     <StripeProvider publishableKey={STRIPE_TEST}>
       <StoreProvider store={GlobalStore}>
-        <PaperProvider theme={theme}>
-          <AppContext.Provider value={appContext}>
-            <TabContextProvider>
-              <CustomStatusBar isDarkTheme={isDarkTheme} />
-              <AppRouter theme={theme} />
-            </TabContextProvider>
-          </AppContext.Provider>
-        </PaperProvider>
+        <ToastProvider
+          placement="top"
+          dangerIcon={<MaterialCommunityIcons name="close" color="#fff" />}
+          successIcon={
+            <MaterialCommunityIcons name="check" color="#fff" size={18} />
+          }
+          offset={10}
+          renderType={{
+            toast_success: (toast) => (
+              <CustomToast toast={toast} type="success" />
+            ),
+            toast_warning: (toast) => (
+              <CustomToast toast={toast} type="warning" />
+            ),
+            toast_danger: (toast) => (
+              <CustomToast toast={toast} type="danger" />
+            ),
+          }}
+        >
+          <PaperProvider theme={theme}>
+            <AppContext.Provider value={appContext}>
+              <TabContextProvider>
+                <CustomStatusBar isDarkTheme={isDarkTheme} />
+                <AppRouter theme={theme} />
+              </TabContextProvider>
+            </AppContext.Provider>
+          </PaperProvider>
+        </ToastProvider>
       </StoreProvider>
     </StripeProvider>
   )

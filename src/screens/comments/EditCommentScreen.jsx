@@ -8,9 +8,11 @@ import { defaultText, grayColor, p20 } from '../../assets/styles/styles'
 import CustomContainer from '../../components/CustomContainer'
 import CustomBigButton from '../../components/CustomBigButton'
 import useAxios from '../../hooks/useAxios'
+import useCustomToast from '../../hooks/useCustomToast'
 
 const EditCommentScreen = ({ navigation, route }) => {
   const { colors } = useTheme()
+  const { toastShow } = useCustomToast()
   const { axiosPutWithToken } = useAxios()
 
   const [comment, setComment] = useState(false)
@@ -45,6 +47,11 @@ const EditCommentScreen = ({ navigation, route }) => {
           message,
         })
       }
+
+      toastShow({
+        title: 'Commentaire modifié !',
+        message: 'Commentaire mis à jour avec succès',
+      })
 
       navigation.goBack()
     }
