@@ -12,8 +12,10 @@ import LayoutProfile from '../../../components/Profile/LayoutProfile'
 import UserInformationsScene from './scenes/informations/UserInformationsScene'
 import UserPostsScene from './scenes/posts/UserPostsScene'
 
-const UserProfileScreen = ({ navigation }) => {
+const UserProfileScreen = ({ navigation, route }) => {
   const { colors } = useTheme()
+
+  const { userId } = route.params // TODO load user
 
   // Les titres de la TabView
   const [routes] = useState([
@@ -33,10 +35,11 @@ const UserProfileScreen = ({ navigation }) => {
         label="Mon Profil"
         colors={colors}
         onPress={() => {
-          navigation.reset({
-            index: 0,
-            routes: [{ name: 'Drawer' }],
-          })
+          // navigation.reset({
+          //   index: 0,
+          //   routes: [{ name: 'Drawer' }],
+          // })
+          navigation.goBack()
         }}
       />
 

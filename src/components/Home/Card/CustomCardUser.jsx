@@ -71,14 +71,14 @@ const CustomCardUser = ({ onPress, item }) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={onPress} disabled={user.id === item.user.id}>
+      <TouchableOpacity onPress={onPress}>
         <View style={styles.header}>
           {
             // TODO Mettre le lien de l'avatar du user
           }
           <TouchableOpacity
             onPress={() =>
-              navigation.navigate('UserProfile', { user: item.user })
+              navigation.navigate('UserProfile', { user: item.user.id })
             }
           >
             <ImageBackground

@@ -8,12 +8,15 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+
+import { URL_SERVER } from 'react-native-dotenv'
 
 import { useTheme } from 'react-native-paper'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
+import { useIsFocused } from '@react-navigation/native'
 import {
   darkColor,
   defaultText,
@@ -30,14 +33,118 @@ import {
 import CustomContainer from '../../components/CustomContainer'
 import useUtils from '../../hooks/useUtils'
 import CustomIconButton from '../../components/CustomIconButton'
+import useAxios from '../../hooks/useAxios'
+import useCustomToast from '../../hooks/useCustomToast'
+import CustomImageViewer from '../../components/CustomImageViewer'
+import RenderHeaderImageViewer from '../profile/images/renders/RenderHeaderImageViewer'
 
 const { width, height } = Dimensions.get('window')
 
 const PostScreen = ({ navigation, route }) => {
   const { colors } = useTheme()
-  const { formatDate } = useUtils()
+  const { toastShow } = useCustomToast()
+  const { axiosGetWithToken, axiosPostWithToken } = useAxios()
+  const { formatDate, convertDateSQL } = useUtils()
 
-  const { post } = route.params
+  const isFocused = useIsFocused()
+
+  const { postId, type } = route.params
+
+  const [post, setPost] = useState(false)
+  const [follow, setFollow] = useState(false)
+  const [likesCount, setLikesCount] = useState(0)
+  const [commentsCount, setCommentsCount] = useState(0)
+  const [liked, setLiked] = useState(false)
+  const [imageViewer, setImageViewer] = useState(false)
+
+  useEffect(() => {
+    if (postId && type) {
+      loadPost()
+      checkIfUserFollowed()
+    }
+  }, [postId, type])
+
+  useEffect(() => {
+    if (isFocused) {
+      loadPost()
+      checkIfUserFollowed()
+    }
+  }, [isFocused])
+
+  const loadPost = async () => {
+    const response = await axiosGetWithToken(`posts/${postId}/${type}/show`)
+
+    setLikesCount(response.data.post_user_likes_count)
+    setCommentsCount(response.data.post_user_comments_count)
+    setPost(response.data)
+  }
+
+  const checkIfUserFollowed = async () => {
+    const response = await axiosGetWithToken(
+      `users/${post.user_id}/isUserFollowed`
+    )
+
+    if (response.status === 200) {
+      setFollow(true)
+    }
+  }
+
+  const followPressed = async () => {
+    setFollow(!follow)
+
+    const response = await axiosPostWithToken(
+      `users/${post.user_id}/followOrUnfollow`
+    )
+
+    if (response.status === 201) {
+      toastShow({
+        title: 'Utilisateur follow !',
+        message: `Vous suiviez désormais ${post.user_name}`,
+      })
+    }
+
+    if (response.status === 202) {
+      toastShow({
+        title: 'Utilisateur unfollow !',
+        message: `Vous ne suiviez plus désormais ${post.user_name}`,
+      })
+    }
+  }
+
+  const checkUserLikePost = async () => {
+    const response = await axiosGetWithToken(
+      `users/posts/${post.id}/isPostLiked`
+    )
+
+    if (response.status === 200) {
+      toastShow({
+        title: 'Article aimé !',
+        message: `Vous avez aimé l'article ${post.title}`,
+      })
+      setLiked(true)
+    } else {
+      toastShow({
+        title: 'Article plus aimé !',
+        message: `Vous n'aimez plus l'article ${post.title}`,
+      })
+      setLiked(false)
+    }
+  }
+
+  const like = async () => {
+    setLiked(!liked)
+
+    const response = await axiosPostWithToken(
+      `users/posts/${post.id}/likeOrUnlike`
+    )
+
+    setLikesCount(response.data.post.post_user_likes_count)
+    await checkUserLikePost()
+  }
+
+  if (!post) {
+    return null
+  }
 
   return (
     <CustomContainer label={post.title} pressBack={() => navigation.goBack()}>
@@ -45,25 +152,35 @@ const PostScreen = ({ navigation, route }) => {
         {/* HEADER */}
         <View style={[rowCenter, mb10]}>
           <TouchableOpacity onPress={() => {}} style={rowCenter}>
-            <ImageBackground
-              source={{
-                uri: post.avatar,
-              }}
-              style={styles.avatar}
-              imageStyle={styles.avatarStyle}
-            />
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('UserProfile', { userId: post.user_id })
+              }
+            >
+              <ImageBackground
+                source={{
+                  uri: post.user.avatar,
+                  // uri: `${URL_SERVER}/storage/${post.user.avatar}`,
+                }}
+                style={styles.avatar}
+                imageStyle={styles.avatarStyle}
+              />
+            </TouchableOpacity>
             <View style={ml20}>
               <Text style={[littleTitle, { color: darkColor }]}>
-                Prénom Nom
+                {post.user_name}
               </Text>
               <Text style={[defaultText, { color: darkColor }]}>
-                {post.club ? post.club : post.hike}
+                {post.user.club_name}
               </Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => {}} style={{ marginLeft: 'auto' }}>
+          <TouchableOpacity
+            onPress={followPressed}
+            style={{ marginLeft: 'auto' }}
+          >
             <MaterialCommunityIcons
-              name="star-outline"
+              name={follow ? 'star' : 'star-outline'}
               size={30}
               color={colors.text}
             />
@@ -72,13 +189,14 @@ const PostScreen = ({ navigation, route }) => {
 
         <View style={[rowCenter, { justifyContent: 'space-between' }]}>
           <CustomIconButton
-            text={`J'aime (${post.likes})`}
+            isText
+            text={`J'aime (${likesCount})`}
             size="45%"
-            onPress={() => {}}
+            onPress={like}
             textStyle={{ fontSize: 16 }}
             iconLeft={
               <MaterialCommunityIcons
-                name="thumb-up-outline"
+                name={liked ? 'thumb-up' : 'thumb-up-outline'}
                 size={22}
                 color={whiteColor}
                 style={mr10}
@@ -87,9 +205,10 @@ const PostScreen = ({ navigation, route }) => {
           />
 
           <CustomIconButton
-            text={`Commenter (${post.comments})`}
+            isText
+            text={`Commenter (${commentsCount})`}
             size="45%"
-            onPress={() => navigation.navigate('Comments', { data: post })}
+            onPress={() => navigation.navigate('Comments', { item: post })}
             textStyle={{ fontSize: 16 }}
             iconLeft={
               <MaterialCommunityIcons
@@ -106,24 +225,38 @@ const PostScreen = ({ navigation, route }) => {
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={{ flex: 1 }}>
             <Text style={[my10, defaultText, { color: colors.text }]}>
-              Article créé le : {formatDate(post.date)}
+              Article créé le : {formatDate(convertDateSQL(post.created_at))}
             </Text>
-            <View style={styles.imageContainer}>
-              <Image
-                source={{
-                  // uri: 'https://www.hautbugey-tourisme.com/wp-content/uploads/wpetourisme/12021513-diaporama-1023x682.jpg',
-                  uri: 'https://www.cycletyres.fr/blog/wp-content/uploads/2018/06/assegai-og-spot3-e1528644947129.jpg',
-                }}
-                style={styles.image}
-              />
-            </View>
+            {post.images.length > 0 && (
+              <TouchableOpacity
+                onPress={() => setImageViewer(true)}
+                style={styles.imageContainer}
+              >
+                <Image
+                  source={{
+                    uri: `${URL_SERVER}/storage/${post.images[0].image}`,
+                  }}
+                  style={styles.image}
+                />
+              </TouchableOpacity>
+            )}
 
             <Text style={[defaultText, my10, { color: colors.text }]}>
-              {post.message}
+              {post.description}
             </Text>
           </View>
         </ScrollView>
       </View>
+
+      {/* Permet de voir l'image en fullScreen */}
+      <CustomImageViewer
+        showModal={imageViewer}
+        setShowModal={setImageViewer}
+        imageUrls={[{ url: `${URL_SERVER}/storage/${post.images[0].image}` }]}
+        renderHeader={() => (
+          <RenderHeaderImageViewer setImageViewer={setImageViewer} />
+        )}
+      />
     </CustomContainer>
   )
 }
