@@ -32,6 +32,13 @@ const useUtils = () => {
     return newDate
   }
 
+  // Convertir une date SQL en une date js => 2022-08-25T17:12:47.000000Z -> 2022-08-25
+  const convertDateSQL = (dateSQL) => {
+    const date = new Date(dateSQL)
+    date.toISOString().substring(0, 10)
+    return date
+  }
+
   // Permet de retourner l'index du mois avec le mois ecrit en text - Exemple : Septembre => 8
   const formatMonthText = (monthText) => month.indexOf(monthText)
 
@@ -107,6 +114,7 @@ const useUtils = () => {
     getOneYear,
     formatMonthText,
     formatDateToSql,
+    convertDateSQL,
   }
 }
 

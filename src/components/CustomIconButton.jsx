@@ -18,10 +18,16 @@ const CustomIconButton = ({
   onPress,
   textStyle,
   size = '30%',
-  text = false,
+  text,
+  isText = false,
   cancel = false,
+  disabled = false,
 }) => (
-  <TouchableOpacity onPress={onPress} style={{ width: size }}>
+  <TouchableOpacity
+    onPress={onPress}
+    style={{ width: size }}
+    disabled={disabled}
+  >
     <LinearGradient
       colors={
         cancel ? [cancelColor, dangerColor] : [primaryColor, darkPrimaryColor]
@@ -29,7 +35,7 @@ const CustomIconButton = ({
       style={styles.box}
     >
       {iconLeft}
-      {text && (
+      {isText && (
         <Text
           style={[defaultText, { color: whiteColor, fontSize: 20 }, textStyle]}
         >

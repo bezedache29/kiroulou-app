@@ -1,13 +1,13 @@
 import {
+  ActivityIndicator,
   FlatList,
-  ImageBackground,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
 
@@ -16,49 +16,82 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
+import { useIsFocused } from '@react-navigation/native'
 import {
+  darkColor,
   darkPrimaryColor,
   defaultText,
   littleTitle,
-  ml20,
-  my10,
   rowCenter,
   textAlignCenter,
 } from '../../assets/styles/styles'
 
 import CustomContainer from '../../components/CustomContainer'
-import useFaker from '../../hooks/useFaker'
-import useUtils from '../../hooks/useUtils'
 import CustomBSModal from '../../components/CustomBSModal'
 import ButtonBS from '../../components/ButtonBS'
 import CustomAlert from '../../components/CustomAlert'
 import CustomOverlay from '../../components/CustomOverlay'
+import useAxios from '../../hooks/useAxios'
+import CustomCommentCard from '../../components/Comments/CustomCommentCard'
 
 const CommentsScreen = ({ navigation, route }) => {
   const { colors } = useTheme()
-  const { formatDate } = useUtils()
-  const { createFakeComment } = useFaker()
+  const { axiosGetWithToken, axiosPostWithToken, axiosDeleteWithToken } =
+    useAxios()
 
-  const { data } = route.params
+  const { item } = route.params
+  const isFocused = useIsFocused()
 
   const [comments, setComments] = useState([])
   const [comment, setComment] = useState('')
-  const [myPost, setMyPost] = useState(true) // Pour intégration / tests
   const [overlay, setOverlay] = useState(false)
   const [showDeleteComment, setShowDeleteComment] = useState(false)
   const [commentBS, setCommentBS] = useState(false)
+  const [postBelongUser, setPostBelongUser] = useState(null)
+  const [page, setPage] = useState(null)
+  const [moreLoading, setMoreLoading] = useState(false)
+  const [isListEnd, setIsListEnd] = useState(null)
+  const [isFetching, setIsFetching] = useState(false)
 
   useEffect(() => {
-    for (let i = 0; i < 3; i++) {
-      setComments((oldData) => [...oldData, createFakeComment(i + 1)])
-    }
+    // console.log('item on comments', item)
+    setPostBelongUser(!item.club_id)
   }, [])
+
+  useEffect(() => {
+    if (postBelongUser !== null) {
+      setPage(1)
+    }
+  }, [postBelongUser])
+
+  useEffect(() => {
+    if (page !== null) {
+      if (page === 1) {
+        loadComments(page, true)
+      } else {
+        loadComments(page)
+      }
+    }
+  }, [page])
+
+  useEffect(() => {
+    if (isFocused) {
+      if (page !== 1) {
+        setPage(1)
+      } else {
+        loadComments(1, true)
+      }
+      // TODO Toast message updated
+    }
+  }, [isFocused])
 
   // Ref pour la bottomSheet
   const bottomSheetRef = useRef(null)
+  const flatList = useRef()
 
   // Permet d'ouvrir et fermer la bottomSheet pour afficher les options de l'article
   const toggleBottomSheet = (item) => {
+    // console.log('item toggle', item)
     if (overlay) {
       setOverlay(false)
       setCommentBS(false)
@@ -70,6 +103,134 @@ const CommentsScreen = ({ navigation, route }) => {
     }
   }
 
+  const moveToTop = () => {
+    if (comments.length - 1 > 0) {
+      flatList.current.scrollToIndex({ index: 0 })
+    }
+  }
+
+  const loadComments = async (page, refresh = false) => {
+    if (postBelongUser !== null) {
+      let response
+
+      if (postBelongUser) {
+        response = await axiosGetWithToken(
+          `users/posts/${item.id}/comments?page=${page}`
+        )
+      } else {
+        response = await axiosGetWithToken(
+          `clubs/${item.club_id}/posts/${item.id}/comments?page=${page}`
+        )
+      }
+
+      if (response.status === 200) {
+        if (refresh) {
+          setComments(response.data)
+          setIsListEnd(false)
+        } else if (response.data.length === 0) {
+          setIsListEnd(true)
+        } else {
+          setComments((oldData) => [...oldData, ...response.data])
+        }
+      }
+    }
+
+    setMoreLoading(false)
+  }
+
+  // Au refresh en haut de screen
+  const onRefresh = useCallback(() => {
+    setIsFetching(true)
+    setPage(1)
+    setTimeout(() => {
+      setIsFetching(false)
+    }, 2000)
+  })
+
+  // Au refresh en bas de screen
+  const fetchMoreComments = async () => {
+    if (!isListEnd) {
+      setMoreLoading(true)
+      setPage(page + 1)
+    }
+  }
+
+  // S'il n'y a plus de pages a chercher lors d'un refresh en bas de screen
+  const renderFooter = () => (
+    <View style={styles.footer}>
+      {moreLoading && <ActivityIndicator />}
+      {isListEnd && (
+        <Text style={[defaultText, { color: darkColor }]}>
+          Pas d'autres commentaires
+        </Text>
+      )}
+    </View>
+  )
+
+  const sendComment = async () => {
+    if (comment !== '' && comment.length > 0) {
+      let response
+
+      if (postBelongUser) {
+        response = await axiosPostWithToken(`users/posts/${item.id}/comments`, {
+          message: comment,
+        })
+      } else {
+        response = await axiosPostWithToken(
+          `clubs/${item.club_id}/posts/${item.id}/comments`,
+          {
+            message: comment,
+          }
+        )
+      }
+
+      // console.log('resp comment', response.data)
+
+      if (response.status === 201) {
+        if (page !== 1) {
+          setPage(1)
+        } else {
+          loadComments(1, true)
+        }
+        moveToTop()
+        setComment('')
+        setIsListEnd(false)
+        // TODO TOast
+      }
+    }
+  }
+
+  const deleteComment = async (comment) => {
+    setShowDeleteComment(false)
+    let response
+
+    if (postBelongUser) {
+      response = await axiosDeleteWithToken(
+        `users/posts/comments/${comment.id}`
+      )
+
+      // console.log('response delete comment user', response.data)
+    } else {
+      response = await axiosDeleteWithToken(`comments/${comment.id}`)
+
+      // console.log('response delete comment club', response.data)
+    }
+
+    if (response.status === 201) {
+      setOverlay(false)
+      setCommentBS(false)
+      bottomSheetRef?.current?.closeBottomSheet()
+
+      if (page !== 1) {
+        setPage(1)
+      } else {
+        loadComments(1, true)
+      }
+
+      // TODO Toast Suppression success
+    }
+  }
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <BottomSheetModalProvider>
@@ -77,10 +238,11 @@ const CommentsScreen = ({ navigation, route }) => {
           label="Commentaires"
           pressBack={() => navigation.goBack()}
         >
-          {overlay && <CustomOverlay />}
-
           <View style={{ flex: 1, backgroundColor: colors.backgroundNav }}>
+            {overlay && <CustomOverlay />}
+
             <FlatList
+              ref={flatList}
               style={styles.flatlist}
               data={comments}
               showsVerticalScrollIndicator={false}
@@ -98,75 +260,17 @@ const CommentsScreen = ({ navigation, route }) => {
                 </View>
               )}
               renderItem={({ item }) => (
-                <View
-                  style={[
-                    styles.renderItem,
-                    {
-                      backgroundColor: colors.backgroundBox,
-                    },
-                  ]}
-                >
-                  <View style={[rowCenter]}>
-                    <TouchableOpacity onPress={() => {}} style={styles.header}>
-                      <ImageBackground
-                        source={{
-                          uri: item.avatar,
-                        }}
-                        style={styles.avatar}
-                        imageStyle={styles.avatarStyle}
-                      />
-                      <View style={ml20}>
-                        <Text style={[littleTitle, { color: colors.text }]}>
-                          {item.firstname} {item.lastname}
-                        </Text>
-                        <Text style={[defaultText, { color: colors.text }]}>
-                          {item.club ? item.club : item.hike}
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-
-                    {/* Icon et fonction différente si c'est mon commentaire ou non */}
-                    {myPost ? (
-                      <TouchableOpacity
-                        onPress={() => toggleBottomSheet(item)}
-                        style={{ marginLeft: 'auto' }}
-                      >
-                        <MaterialCommunityIcons
-                          name="cog-outline"
-                          size={30}
-                          color={colors.text}
-                        />
-                      </TouchableOpacity>
-                    ) : (
-                      <TouchableOpacity
-                        onPress={() => {}}
-                        style={{ marginLeft: 'auto' }}
-                      >
-                        <MaterialCommunityIcons
-                          name="star-outline"
-                          size={30}
-                          color={colors.text}
-                        />
-                      </TouchableOpacity>
-                    )}
-                  </View>
-
-                  <Text
-                    style={[
-                      defaultText,
-                      my10,
-                      { color: colors.text, fontSize: 16 },
-                    ]}
-                  >
-                    {formatDate(item.date)}
-                  </Text>
-
-                  <Text style={[defaultText, { color: colors.text }]}>
-                    {item.message}
-                  </Text>
-                </View>
+                <CustomCommentCard
+                  item={item}
+                  toggleBottomSheet={() => toggleBottomSheet(item)}
+                />
               )}
               keyExtractor={(item) => item.id}
+              onEndReachedThreshold={0.5} // Formule (20 - (1.6666 * 6)) - Se declenche au 10 eme post
+              onEndReached={fetchMoreComments}
+              ListFooterComponent={renderFooter}
+              onRefresh={onRefresh}
+              refreshing={isFetching}
             />
 
             {/* Input pour ajouter un commentaire */}
@@ -189,7 +293,7 @@ const CommentsScreen = ({ navigation, route }) => {
                 />
 
                 {/* IconSend Commentaire */}
-                <TouchableOpacity onPress={() => {}} style={styles.iconSend}>
+                <TouchableOpacity onPress={sendComment} style={styles.iconSend}>
                   <MaterialCommunityIcons
                     name="send"
                     size={33}
@@ -220,6 +324,7 @@ const CommentsScreen = ({ navigation, route }) => {
                 setOverlay(false)
                 navigation.navigate('EditComment', {
                   editComment: commentBS,
+                  postBelongUser,
                 })
               }}
             >
@@ -234,7 +339,7 @@ const CommentsScreen = ({ navigation, route }) => {
             message="Etes vous sur de vouloir supprimer le commentaire ?"
             onDismiss={() => setShowDeleteComment(false)}
             onCancelPressed={() => setShowDeleteComment(false)}
-            onConfirmPressed={() => setShowDeleteComment(false)}
+            onConfirmPressed={() => deleteComment(commentBS)}
           />
         </CustomContainer>
       </BottomSheetModalProvider>
@@ -259,14 +364,6 @@ const styles = StyleSheet.create({
   flatlist: {
     marginBottom: 50,
   },
-  renderItem: {
-    borderWidth: 1,
-    marginHorizontal: 10,
-    marginVertical: 5,
-    padding: 10,
-    borderRadius: 8,
-    elevation: 5,
-  },
   inputContainer: {
     position: 'absolute',
     bottom: 0,
@@ -282,5 +379,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 8,
     right: 5,
+  },
+  footer: {
+    marginBottom: 30,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 })

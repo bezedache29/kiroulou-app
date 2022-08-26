@@ -7,26 +7,48 @@ import { defaultText, grayColor, p20 } from '../../assets/styles/styles'
 
 import CustomContainer from '../../components/CustomContainer'
 import CustomBigButton from '../../components/CustomBigButton'
+import useAxios from '../../hooks/useAxios'
 
 const EditCommentScreen = ({ navigation, route }) => {
   const { colors } = useTheme()
+  const { axiosPutWithToken } = useAxios()
 
   const [comment, setComment] = useState(false)
+  const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
+  const [postBelongUser, setPostBelongUser] = useState(null)
 
   useEffect(() => {
     if (route.params?.editComment) {
       setLoading(true)
       setComment(route.params.editComment)
+      setMessage(route.params.editComment.message)
+      setPostBelongUser(route.params.postBelongUser)
     }
   }, [route.params?.editComment])
 
   useEffect(() => {
     if (comment) {
       setLoading(false)
-      console.log('comment', comment)
+      // console.log('comment', comment)
     }
   }, [comment])
+
+  const sendComment = async () => {
+    if (message !== '' && message.length > 0) {
+      if (postBelongUser) {
+        await axiosPutWithToken(`users/posts/comments/${comment.id}`, {
+          message,
+        })
+      } else {
+        await axiosPutWithToken(`comments/${comment.id}`, {
+          message,
+        })
+      }
+
+      navigation.goBack()
+    }
+  }
 
   if (loading) {
     return null
@@ -44,13 +66,13 @@ const EditCommentScreen = ({ navigation, route }) => {
             numberOfLines={10}
             underlineColorAndroid="transparent"
             placeholder="Votre commentaire ici"
-            onChangeText={setComment}
-            value={comment.message}
+            onChangeText={setMessage}
+            value={message}
             style={[defaultText, styles.textArea, { color: colors.text }]}
           />
         </View>
 
-        <CustomBigButton label="Modifier Commentaire" onPress={() => {}} />
+        <CustomBigButton label="Modifier Commentaire" onPress={sendComment} />
       </View>
     </CustomContainer>
   )
