@@ -182,7 +182,10 @@ const HomeScreen = ({ navigation }) => {
                     <CustomCardUser
                       item={item}
                       onPress={() =>
-                        navigation.navigate('Post', { post: item })
+                        navigation.navigate('Post', {
+                          postId: item.id,
+                          type: 'user',
+                        })
                       }
                     />
                   )

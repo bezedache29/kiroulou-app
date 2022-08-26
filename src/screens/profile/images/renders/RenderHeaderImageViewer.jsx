@@ -19,13 +19,15 @@ const RenderHeaderImageViewer = ({ setImageViewer, onDelete }) => {
       />
 
       {/* Icone en haut a droite qui permet de modifier son profil */}
-      <TouchableOpacity onPress={onDelete} style={styles.trashIcon}>
-        <MaterialCommunityIcons
-          name="trash-can"
-          size={28}
-          color={colors.text}
-        />
-      </TouchableOpacity>
+      {onDelete && (
+        <TouchableOpacity onPress={onDelete} style={styles.trashIcon}>
+          <MaterialCommunityIcons
+            name="trash-can"
+            size={28}
+            color={colors.text}
+          />
+        </TouchableOpacity>
+      )}
     </View>
   )
 }

@@ -46,8 +46,8 @@ export default CustomToast
 
 const styles = StyleSheet.create({
   container: {
-    maxWidth: '85%',
-    paddingHorizontal: 15,
+    width: '90%',
+    paddingHorizontal: 25,
     paddingVertical: 10,
     backgroundColor: secondaryColor,
     marginVertical: 4,
