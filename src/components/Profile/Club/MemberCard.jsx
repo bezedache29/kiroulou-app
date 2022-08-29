@@ -19,8 +19,6 @@ import {
   secondaryColor,
 } from '../../../assets/styles/styles'
 
-import useUtils from '../../../hooks/useUtils'
-
 import CustomDivider from '../../CustomDivider'
 import CustomButton from '../../CustomButton'
 import useAxios from '../../../hooks/useAxios'
@@ -33,7 +31,6 @@ const MembersCard = ({
   onPressRightBtn,
   disabled,
 }) => {
-  const { formatDate } = useUtils()
   const { axiosGetWithToken, axiosPostWithToken } = useAxios()
   const { toastShow } = useCustomToast()
 

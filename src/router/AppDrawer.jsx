@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 
 import { createDrawerNavigator } from '@react-navigation/drawer'
 
@@ -10,6 +10,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { useTheme } from 'react-native-paper'
 import { useStoreState } from 'easy-peasy'
 import {
+  dangerColor,
   darkPrimaryColor,
   defaultText,
   whiteColor,
@@ -68,20 +69,39 @@ const AppDrawer = () => {
         }}
       />
 
-      <Drawer.Screen
-        name="Mon Club"
-        component={ClubProfileScreen}
-        initialParams={{ params: 'my-club-profile' }}
-        options={{
-          drawerIcon: ({ color }) => (
-            <MaterialCommunityIcons
-              name="account-group-outline"
-              size={22}
-              color={color}
-            />
-          ),
-        }}
-      />
+      {user.club_id !== null && (
+        <Drawer.Screen
+          name="Mon Club"
+          component={ClubProfileScreen}
+          initialParams={{ clubId: user.club_id }}
+          options={{
+            drawerIcon: ({ color }) => (
+              <MaterialCommunityIcons
+                name="account-group-outline"
+                size={22}
+                color={color}
+              />
+            ),
+            drawerLabel: ({ color }) => (
+              <View
+                style={{
+                  marginLeft: -25,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}
+              >
+                <Text style={[defaultText, { color }]}>Mon Club</Text>
+                {user.user_join_requests_count !== null &&
+                  user.user_join_requests_count !== 0 && (
+                    <Text style={[defaultText, styles.badge]}>
+                      {user.user_join_requests_count}
+                    </Text>
+                  )}
+              </View>
+            ),
+          }}
+        />
+      )}
 
       <Drawer.Screen
         name="Tarifs"
@@ -113,6 +133,13 @@ const AppDrawer = () => {
 const styles = StyleSheet.create({
   label: {
     marginLeft: -25,
+  },
+  badge: {
+    marginLeft: 10,
+    backgroundColor: dangerColor,
+    paddingHorizontal: 6,
+    borderRadius: 50,
+    color: whiteColor,
     fontSize: 15,
   },
 })

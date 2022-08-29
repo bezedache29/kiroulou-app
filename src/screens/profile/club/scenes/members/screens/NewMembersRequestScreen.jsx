@@ -3,6 +3,7 @@ import React, { useCallback, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
 
+import { useStoreActions } from 'easy-peasy'
 import {
   darkColor,
   defaultText,
@@ -23,6 +24,8 @@ const NewMembersRequestScreen = ({ navigation, route }) => {
   const { axiosGetWithToken, axiosDeleteWithToken, axiosPostWithToken } =
     useAxios()
   const { toastShow } = useCustomToast()
+
+  const userActions = useStoreActions((actions) => actions.user)
 
   const { club, pendingUsers } = route.params
 
@@ -78,6 +81,10 @@ const NewMembersRequestScreen = ({ navigation, route }) => {
 
       setUsers(users)
     }
+
+    const res = await axiosPostWithToken('me')
+
+    userActions.loadUser(res.data)
   }
 
   // Accpet la demande d'adhésion au club
@@ -111,6 +118,10 @@ const NewMembersRequestScreen = ({ navigation, route }) => {
       }
 
       setUsers(users)
+
+      const res = await axiosPostWithToken('me')
+
+      userActions.loadUser(res.data)
     }
   }
 
