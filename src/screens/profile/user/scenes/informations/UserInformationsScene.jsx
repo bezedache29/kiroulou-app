@@ -5,13 +5,17 @@ import {
   Text,
   View,
 } from 'react-native'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
 
 import { useNavigation } from '@react-navigation/native'
 
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+
 import { URL_SERVER } from 'react-native-dotenv'
+
+import { useStoreState } from 'easy-peasy'
 
 import {
   darkColor,
@@ -29,13 +33,69 @@ import {
 } from '../../../../../assets/styles/styles'
 
 import CustomButtonInfo from '../../../../../components/CustomButtonInfo'
+import useAxios from '../../../../../hooks/useAxios'
+import useCustomToast from '../../../../../hooks/useCustomToast'
 
 const UserInformationsScene = ({ userProfile }) => {
   const { colors } = useTheme()
+  const { axiosPostWithToken, axiosGetWithToken } = useAxios()
+  const { toastShow } = useCustomToast()
 
   const navigation = useNavigation()
 
-  console.log('userProfile', userProfile)
+  const userStore = useStoreState((state) => state.user)
+  const { user } = userStore
+
+  // console.log('userProfile', userProfile)
+
+  const [follow, setFollow] = useState(false)
+  const [username, setUsername] = useState('')
+
+  useEffect(() => {
+    checkIfUserFollowed()
+
+    setUsername(
+      userProfile.firstname
+        ? `${userProfile.firstname} ${userProfile.lastname}`
+        : userProfile.email
+    )
+  }, [])
+
+  const pressFollow = async () => {
+    setFollow(!follow)
+
+    const response = await axiosPostWithToken(
+      `users/${userProfile.id}/followOrUnfollow`
+    )
+
+    if (response.status === 201) {
+      toastShow({
+        title: 'Utilisateur Follow !',
+        message: `Vous suiviez désormais ${username}`,
+      })
+
+      // TODO Notification
+    }
+
+    if (response.status === 202) {
+      toastShow({
+        title: 'Utilisateur Unfollow !',
+        message: `Vous ne suiviez plus ${username}`,
+      })
+
+      // TODO Notification
+    }
+  }
+
+  const checkIfUserFollowed = async () => {
+    const response = await axiosGetWithToken(
+      `users/${userProfile.id}/isUserFollowed`
+    )
+
+    if (response.status === 200) {
+      setFollow(true)
+    }
+  }
 
   return (
     <ScrollView style={{ backgroundColor: secondaryColor }}>
@@ -101,9 +161,23 @@ const UserInformationsScene = ({ userProfile }) => {
           backgroundColor={primaryColor}
           style={mt20}
         />
-        {
-          // TODO Bouton follow / Unfollow
-        }
+
+        {userProfile.id !== user.id && (
+          <CustomButtonInfo
+            title={follow ? `Ne plus suivre ${username}` : `Suivre ${username}`}
+            colors={colors}
+            onPress={pressFollow}
+            backgroundColor={primaryColor}
+            style={mt20}
+            iconRight={
+              <MaterialIcons
+                name={follow ? 'star' : 'star-outline'}
+                size={30}
+                color={darkColor}
+              />
+            }
+          />
+        )}
       </View>
     </ScrollView>
   )

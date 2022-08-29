@@ -155,20 +155,22 @@ const ClubInformationsScene = ({ club }) => {
             backgroundColor={primaryColor}
           />
 
-          <CustomButtonInfo
-            title={follow ? 'Ne plus suivre le club' : 'Suivre le club'}
-            colors={colors}
-            onPress={pressFollow}
-            backgroundColor={primaryColor}
-            style={mt20}
-            iconRight={
-              <MaterialIcons
-                name={follow ? 'star' : 'star-outline'}
-                size={30}
-                color={darkColor}
-              />
-            }
-          />
+          {user.club_id !== club.id && (
+            <CustomButtonInfo
+              title={follow ? 'Ne plus suivre le club' : 'Suivre le club'}
+              colors={colors}
+              onPress={pressFollow}
+              backgroundColor={primaryColor}
+              style={mt20}
+              iconRight={
+                <MaterialIcons
+                  name={follow ? 'star' : 'star-outline'}
+                  size={30}
+                  color={darkColor}
+                />
+              }
+            />
+          )}
         </View>
       </View>
 

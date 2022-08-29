@@ -1,8 +1,11 @@
 import { ImageBackground, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
+import { URL_SERVER } from 'react-native-dotenv'
+
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
+import { useNavigation } from '@react-navigation/native'
 import {
   cancelColor,
   dangerColor,
@@ -15,63 +18,75 @@ import {
 import CustomDivider from '../../CustomDivider'
 import CustomButton from '../../CustomButton'
 
-const UsersFollowCard = ({ user }) => (
-  <View style={styles.container}>
-    {/* Icon */}
-    <View style={styles.header}>
-      <ImageBackground
-        source={{
-          uri: user.avatar,
-        }}
-        style={styles.avatar}
-        imageStyle={{ borderRadius: 25 }}
-      />
-      <View>
-        {/* Nom du user */}
-        <Text style={[defaultTextBold, { color: darkColor }]}>
-          {user.firstname} {user.lastname}
+const UsersFollowCard = ({ user, unfollow }) => {
+  const navigation = useNavigation()
+
+  return (
+    <View style={styles.container}>
+      {/* Icon */}
+      <View style={styles.header}>
+        <ImageBackground
+          source={{
+            uri: `${URL_SERVER}/storage/${user.avatar}`,
+          }}
+          style={styles.avatar}
+          imageStyle={{ borderRadius: 25 }}
+        />
+        <View>
+          {/* Nom du user */}
+          <Text style={[defaultTextBold, { color: darkColor }]}>
+            {user.firstname ? `${user.firstname} ${user.lastname}` : user.email}
+          </Text>
+          {/* club du user */}
+          <Text style={[defaultText, { color: darkColor, fontSize: 14 }]}>
+            {user.club_name}
+          </Text>
+        </View>
+      </View>
+
+      <CustomDivider addStyle={{ borderTopColor: darkColor }} />
+
+      <View style={styles.content}>
+        {/* Département du user */}
+        <Text style={[defaultText, { color: darkColor }]}>
+          {user.address !== null
+            ? `${user.address.city.name} (${user.address.department_code})`
+            : 'Ville non rensigné'}
         </Text>
-        {/* club du user */}
-        <Text style={[defaultText, { color: darkColor, fontSize: 14 }]}>
-          {user.club}
+        <MaterialCommunityIcons
+          name="circle-small"
+          size={20}
+          color={darkColor}
+        />
+        {/* Nombre de followers */}
+        <Text style={[defaultText, { color: darkColor }]}>
+          {user.followers_count} followers
         </Text>
       </View>
+
+      <View style={styles.buttons}>
+        {/* Btn unfollow */}
+        <CustomButton
+          onPress={() => unfollow(user)}
+          btnStyle={{ width: '49%' }}
+          gradient={[cancelColor, dangerColor]}
+        >
+          Ne plus suivre
+        </CustomButton>
+
+        {/* Btn voir détails */}
+        <CustomButton
+          onPress={() =>
+            navigation.navigate('UserProfile', { userId: user.id })
+          }
+          btnStyle={{ width: '49%' }}
+        >
+          Voir détails
+        </CustomButton>
+      </View>
     </View>
-
-    <CustomDivider addStyle={{ borderTopColor: darkColor }} />
-
-    <View style={styles.content}>
-      {/* Département du user */}
-      <Text style={[defaultText, { color: darkColor }]}>{user.country}</Text>
-      <MaterialCommunityIcons name="circle-small" size={20} color={darkColor} />
-      {/* Nombre de publications */}
-      <Text style={[defaultText, { color: darkColor }]}>
-        {user.posts} publications
-      </Text>
-    </View>
-
-    <View style={styles.buttons}>
-      {/* Btn unfollow */}
-      <CustomButton
-        onPress={() => {}}
-        btnStyle={{ width: '49%' }}
-        gradient={[cancelColor, dangerColor]}
-      >
-        Ne plus suivre
-      </CustomButton>
-
-      {/* Btn voir détails */}
-      <CustomButton
-        onPress={() => {
-          alert(user.id)
-        }}
-        btnStyle={{ width: '49%' }}
-      >
-        Voir détails
-      </CustomButton>
-    </View>
-  </View>
-)
+  )
+}
 
 export default UsersFollowCard
 
