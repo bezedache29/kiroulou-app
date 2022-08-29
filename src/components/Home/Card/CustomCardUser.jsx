@@ -73,17 +73,14 @@ const CustomCardUser = ({ onPress, item }) => {
     <View style={styles.container}>
       <TouchableOpacity onPress={onPress}>
         <View style={styles.header}>
-          {
-            // TODO Mettre le lien de l'avatar du user
-          }
           <TouchableOpacity
             onPress={() =>
-              navigation.navigate('UserProfile', { user: item.user.id })
+              navigation.navigate('UserProfile', { userId: item.user.id })
             }
           >
             <ImageBackground
               source={{
-                uri: `${URL_SERVER}/storage/avatars/${item.user.avatar}`,
+                uri: `${URL_SERVER}/storage/${item.user.avatar}`,
               }}
               style={styles.avatar}
               imageStyle={styles.avatarStyle}
@@ -94,7 +91,9 @@ const CustomCardUser = ({ onPress, item }) => {
               {item.title}
             </Text>
             <Text style={[defaultText, textAlignCenter, { color: darkColor }]}>
-              {item.user.club_name}
+              {item.user.firstname
+                ? `${item.user.firstname} ${item.user.lastname}`
+                : item.user.email}
             </Text>
           </View>
         </View>

@@ -5,8 +5,8 @@ const addPostSchema = yup.object().shape({
     .string()
     .min(5, 'trop petit')
     .max(40, 'trop long!')
-    .required('Le titres est obligatoire'),
-  message: yup
+    .required('Le titre est obligatoire'),
+  description: yup
     .string()
     .min(6, 'trop petit')
     .max(500, 'trop long!')

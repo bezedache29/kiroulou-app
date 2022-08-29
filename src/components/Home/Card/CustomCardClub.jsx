@@ -60,13 +60,13 @@ const CustomCardClub = ({ onPress, item }) => {
   }, [])
 
   const like = async () => {
+    setLiked(!liked)
     const response = await axiosPostWithToken(
       `clubs/${item.club_id}/posts/${item.id}/likeOrUnlike`
     )
     const { post } = response.data
 
-    checkUserLike()
-    setLikesCount(post.postlikes_count)
+    setLikesCount(post.post_likes_count)
   }
 
   const checkUserLike = async () => {
@@ -96,19 +96,19 @@ const CustomCardClub = ({ onPress, item }) => {
       >
         <TouchableOpacity onPress={onPress} style={{ padding: 10 }}>
           <View style={styles.header}>
-            {
-              // TODO Changer l'avatar
-            }
             <TouchableOpacity
               onPress={() =>
                 navigation.navigate('ClubProfile', { club: item.club })
               }
             >
+              {
+                // TODO enlver le check null avatar
+              }
               <ImageBackground
                 source={
-                  item.club.avatar !== null
+                  item.club_avatar !== null
                     ? {
-                        uri: `${URL_SERVER}/storage/images/clubs/${item.club_id}/avatars/${item.club.avatar}`,
+                        uri: `${URL_SERVER}/storage/${item.club_avatar}`,
                       }
                     : require('../../../assets/images/png/default-avatar.png')
                 }

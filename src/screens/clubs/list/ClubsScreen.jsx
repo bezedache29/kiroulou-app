@@ -67,6 +67,7 @@ const ClubsScreen = ({ navigation }) => {
             renderTabBar={renderTabBar}
             onIndexChange={handleIndexChange}
             initialLayout={{ width: layout.width }}
+            lazy
           />
         </View>
       </View>

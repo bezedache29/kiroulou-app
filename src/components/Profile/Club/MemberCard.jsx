@@ -5,10 +5,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
+import { URL_SERVER } from 'react-native-dotenv'
 import {
   cancelColor,
   dangerColor,
@@ -22,22 +23,74 @@ import useUtils from '../../../hooks/useUtils'
 
 import CustomDivider from '../../CustomDivider'
 import CustomButton from '../../CustomButton'
+import useAxios from '../../../hooks/useAxios'
+import useCustomToast from '../../../hooks/useCustomToast'
 
 const MembersCard = ({
   member,
   redBtn,
   onPressLeftBtn,
   onPressRightBtn,
-  toggleFollow,
+  disabled,
 }) => {
   const { formatDate } = useUtils()
+  const { axiosGetWithToken, axiosPostWithToken } = useAxios()
+  const { toastShow } = useCustomToast()
+
+  const [follow, setFollow] = useState(false)
+  const [userName, setUserName] = useState('')
+
+  useEffect(() => {
+    if (member.firstname) {
+      setUserName(`${member.firstname} ${member.lastname}`)
+    } else {
+      setUserName(member.email)
+    }
+    checkIfUserFollowed()
+  }, [])
+
+  const checkIfUserFollowed = async () => {
+    const response = await axiosGetWithToken(
+      `users/${member.id}/isUserFollowed`
+    )
+
+    if (response.status === 200) {
+      setFollow(true)
+    }
+  }
+
+  const followPressed = async () => {
+    setFollow(!follow)
+
+    const response = await axiosPostWithToken(
+      `users/${member.id}/followOrUnfollow`
+    )
+
+    if (response.status === 201) {
+      toastShow({
+        title: 'Utilisateur follow !',
+        message: `Vous suiviez désormais ${userName}`,
+      })
+
+      // TODO Notification
+    }
+
+    if (response.status === 202) {
+      toastShow({
+        title: 'Utilisateur unfollow !',
+        message: `Vous ne suiviez plus désormais ${userName}`,
+      })
+
+      // TODO Notification
+    }
+  }
 
   return (
     <View style={styles.container}>
       {/* Ajout favoris */}
-      <TouchableOpacity onPress={toggleFollow} style={styles.editIcon}>
+      <TouchableOpacity onPress={followPressed} style={styles.editIcon}>
         <MaterialCommunityIcons
-          name="star-outline" // star
+          name={follow ? 'star' : 'star-outline'}
           size={25}
           color={darkColor}
         />
@@ -47,7 +100,7 @@ const MembersCard = ({
       <View style={styles.header}>
         <ImageBackground
           source={{
-            uri: member.avatar,
+            uri: `${URL_SERVER}/storage/${member.avatar}`,
           }}
           style={styles.avatar}
           imageStyle={{ borderRadius: 25 }}
@@ -56,11 +109,15 @@ const MembersCard = ({
         <View>
           {/* Nom du member */}
           <Text style={[defaultTextBold, { color: darkColor }]}>
-            {member.firstname} {member.lastname}
+            {member.firstname
+              ? `${member.firstname} ${member.lastname}`
+              : member.email}
           </Text>
           {/* Ville du member */}
           <Text style={[defaultText, { color: darkColor, fontSize: 14 }]}>
-            {member.country}
+            {member.address
+              ? member.address.ccity.name
+              : 'Ville non renseignée'}
           </Text>
         </View>
       </View>
@@ -70,7 +127,7 @@ const MembersCard = ({
       <View style={styles.content}>
         {/* Date membre */}
         <Text style={[defaultText, { color: darkColor }]}>
-          membre depuis : {formatDate(member.dateMember)}
+          Premium : {member.premium === 'active' ? 'Oui' : 'Non'}
         </Text>
       </View>
 
@@ -81,6 +138,7 @@ const MembersCard = ({
 
         <CustomButton
           onPress={onPressLeftBtn}
+          disabled={disabled}
           btnStyle={{ width: '49%' }}
           gradient={[cancelColor, dangerColor]}
         >

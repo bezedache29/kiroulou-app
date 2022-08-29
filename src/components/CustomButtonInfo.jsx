@@ -10,6 +10,7 @@ const CustomButtonInfo = ({
   route,
   backgroundColor,
   style,
+  disabled = false,
 }) => (
   <TouchableOpacity
     style={[
@@ -23,7 +24,7 @@ const CustomButtonInfo = ({
       style,
     ]}
     onPress={onPress}
-    disabled={!!route}
+    disabled={!!route || disabled}
   >
     <View style={styles.containerText}>
       <Text

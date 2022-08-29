@@ -15,6 +15,8 @@ import { Formik } from 'formik'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
+import { URL_SERVER } from 'react-native-dotenv'
+
 import MultipleImagePicker from '@baronha/react-native-multiple-image-picker'
 
 import {
@@ -30,8 +32,8 @@ import {
   rowCenter,
 } from '../../assets/styles/styles'
 
-import CustomContainer from '../../components/CustomContainer'
 import addPostSchema from '../../validationSchemas/addPostSchema'
+import CustomContainer from '../../components/CustomContainer'
 import InputField from '../../components/InputField'
 import CustomBigButton from '../../components/CustomBigButton'
 import CustomIconButton from '../../components/CustomIconButton'
@@ -39,6 +41,7 @@ import useImages from '../../hooks/useImages'
 import useAxios from '../../hooks/useAxios'
 import CustomAlert from '../../components/CustomAlert'
 import useCustomToast from '../../hooks/useCustomToast'
+import CustomLoader from '../../components/CustomLoader'
 
 const { width, height } = Dimensions.get('window')
 
@@ -46,11 +49,11 @@ const AddOrEditPostScreen = ({ navigation, route }) => {
   const { colors } = useTheme()
   const { toastShow } = useCustomToast()
   const { sendImageToServer, compressImage, checkExtension } = useImages()
-  const { axiosPostWithToken } = useAxios()
+  const { axiosPostWithToken, axiosPutWithToken } = useAxios()
 
-  const [images, setImages] = useState([])
-  const [editPost, setEditPost] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [loader, setLoader] = useState(false)
+  const [editPost, setEditPost] = useState(false)
   const [image, setImage] = useState(false)
   const [showDeleteImage, setShowDeleteImage] = useState(false)
 
@@ -58,10 +61,10 @@ const AddOrEditPostScreen = ({ navigation, route }) => {
     if (route.params?.editPost) {
       setLoading(true)
       setEditPost(route.params.editPost)
-
-      // TODO Revoir l'edit avec une seule image
-      if (route.params.editPost.images) {
-        setImages(route.params.editPost.images)
+      if (route.params.editPost.images.length > 0) {
+        setImage(
+          `${URL_SERVER}/storage/${route.params.editPost.images[0].image}`
+        )
       }
     }
   }, [route.params?.editPost])
@@ -76,6 +79,10 @@ const AddOrEditPostScreen = ({ navigation, route }) => {
     return null
   }
 
+  if (loader) {
+    return <CustomLoader />
+  }
+
   const openPicker = async () => {
     try {
       const response = await MultipleImagePicker.openPicker({
@@ -85,12 +92,10 @@ const AddOrEditPostScreen = ({ navigation, route }) => {
         cancelTitle: 'Annuler',
         selectedColor: darkPrimaryColor,
       })
-      console.log('response: ', response)
 
       // On check que ce sont bien des images qui sont upload (jpeg / jpg / png only)
       if (checkExtension(response.mime)) {
         const compress = await compressImage(`file://${response.realPath}`)
-        console.log('compress', compress)
         setImage(compress)
       }
     } catch (e) {
@@ -98,52 +103,70 @@ const AddOrEditPostScreen = ({ navigation, route }) => {
     }
   }
 
-  const createPost = async (data) => {
-    const response = await axiosPostWithToken('users/posts', data)
-
-    console.log('post created', response.data)
+  const sendDataToApi = async (data, resetForm) => {
+    setLoader(true)
+    let response
+    if (editPost) {
+      response = await axiosPutWithToken(`users/posts/${editPost.id}`, data)
+    } else {
+      response = await axiosPostWithToken('users/posts', data)
+    }
 
     if (response.status !== 201) {
-      // TODO Toast Error
+      toastShow({
+        title: 'Action impossible',
+        message: `Une erreur s'est produite, réessayer plus tard (${response.status})`,
+        type: 'toast_danger',
+      })
 
       return
     }
 
     if (image) {
-      // On met l'extension du fichier
-      const title = `${image.split('.').pop()}`
-      // On envoie l'image pour stockage
-      const isSend = await sendImageToServer(
-        `users/posts/${response.data.post_user_id}/storeImage`,
-        {
-          name: 'image',
-          uri: image,
-          title,
+      const checkOrigin = image.substring(0, 4)
+
+      if (checkOrigin === 'file') {
+        // On met l'extension du fichier
+        const title = `${image.split('.').pop()}`
+        // On envoie l'image pour stockage
+        const isSend = await sendImageToServer(
+          `users/posts/${response.data.post_user_id}/storeImage`,
+          {
+            name: 'image',
+            uri: image,
+            title,
+          }
+        )
+
+        if (isSend.respInfo.status !== 201) {
+          toastShow({
+            title: 'Oops !',
+            message: "Une erreur avec votre image s'est opéré",
+            type: 'toast_danger',
+          })
+          return
         }
-      )
-
-      console.log('resp image', isSend.respInfo.status)
-
-      if (isSend.respInfo.status !== 201) {
-        // TODO Toast Erreur
-        toastShow({
-          title: 'Oops !',
-          message: "Une erreur avec votre image s'est opéré",
-          type: 'toast_danger',
-        })
-        return
       }
     }
 
+    setLoader(false)
+    resetForm()
+
     toastShow({
-      title: 'Article créé avec succès !',
-      message: 'Votre article a été créé et publié avec succès',
+      title: `Article ${editPost ? 'modifié' : 'créé'} avec succès !`,
+      message: `Votre article a été ${
+        editPost ? 'modifié' : 'créé et publié'
+      } avec succès`,
     })
 
-    navigation.navigate('Post', {
-      postId: response.data.post_user_id,
-      type: 'user',
-    })
+    if (editPost) {
+      navigation.goBack()
+    } else {
+      navigation.navigate('Post', {
+        postId: response.data.post_user_id,
+        type: 'user',
+      })
+    }
   }
 
   const deleteImage = () => {
@@ -151,11 +174,9 @@ const AddOrEditPostScreen = ({ navigation, route }) => {
     setShowDeleteImage(false)
   }
 
-  // users/posts/{post}/storeImage
-
   return (
     <CustomContainer
-      label="Créer un article"
+      label={`${editPost ? 'Modifier' : 'Créer'} un article`}
       pressBack={() => navigation.goBack()}
     >
       <ScrollView>
@@ -171,19 +192,16 @@ const AddOrEditPostScreen = ({ navigation, route }) => {
               validationSchema={addPostSchema}
               initialValues={{
                 title: editPost ? editPost.title : '',
-                message: editPost ? editPost.message : '',
+                description: editPost ? editPost.description : '',
               }}
               onSubmit={(values, { resetForm }) => {
                 const data = {
                   title: values.title,
-                  description: values.message,
+                  description: values.description,
                 }
 
-                console.log('DATA', data)
-                // resetForm()
-
                 // Envoie des datas a l'API
-                createPost(data)
+                sendDataToApi(data, resetForm)
               }}
             >
               {({
@@ -218,7 +236,7 @@ const AddOrEditPostScreen = ({ navigation, route }) => {
                     value={values.title}
                   />
 
-                  {/* MESSAGE */}
+                  {/* DESCRIPTION */}
                   <InputField
                     label="Message de l'article"
                     maxLength={250}
@@ -229,7 +247,7 @@ const AddOrEditPostScreen = ({ navigation, route }) => {
                         name="message-processing-outline"
                         size={20}
                         color={
-                          touched.message && errors.message
+                          touched.description && errors.description
                             ? dangerColor
                             : colors.icon
                         }
@@ -237,11 +255,11 @@ const AddOrEditPostScreen = ({ navigation, route }) => {
                       />
                     }
                     colors={colors}
-                    error={touched.message && errors.message}
-                    name="message"
-                    onChange={handleChange('message')}
-                    onBlur={handleBlur('message')}
-                    value={values.message}
+                    error={touched.description && errors.description}
+                    name="description"
+                    onChange={handleChange('description')}
+                    onBlur={handleBlur('description')}
+                    value={values.description}
                   />
 
                   {/* IMAGES */}

@@ -14,9 +14,10 @@ const CustomButton = ({
   onPress,
   btnStyle,
   textStyle,
+  disabled = false,
   gradient = [primaryColor, darkPrimaryColor],
 }) => (
-  <TouchableOpacity onPress={onPress} style={btnStyle}>
+  <TouchableOpacity onPress={onPress} style={btnStyle} disabled={disabled}>
     <LinearGradient colors={gradient} style={styles.btn}>
       <Text style={[defaultText, textAlignCenter, styles.text, textStyle]}>
         {children}
