@@ -12,12 +12,15 @@ import { useTheme } from 'react-native-paper'
 
 import { URL_SERVER } from 'react-native-dotenv'
 
+import { useStoreState } from 'easy-peasy'
+
 import { TabView, TabBar } from 'react-native-tab-view'
 
 import { useNavigation } from '@react-navigation/native'
 
 import {
   blackColor,
+  dangerColor,
   darkColor,
   defaultText,
   mt10,
@@ -26,6 +29,7 @@ import {
   TitleH3,
   TitleH4,
   warningColor,
+  whiteColor,
 } from '../../assets/styles/styles'
 
 import useUtils from '../../hooks/useUtils'
@@ -43,6 +47,9 @@ const LayoutProfile = ({
   const { axiosGetWithToken } = useAxios()
 
   const navigation = useNavigation()
+
+  const userStore = useStoreState((state) => state.user)
+  const { user } = userStore
 
   // Sert pour la TabView
   const layout = useWindowDimensions()
@@ -109,6 +116,26 @@ const LayoutProfile = ({
         <Text style={[defaultText, { color }]}>{route.title}</Text>
       )}
       style={{ backgroundColor: primaryColor }}
+      renderBadge={({ route }) => {
+        if (profile === 'clubs') {
+          if (route.key === 'members') {
+            if (user.club_id === data.id && user.is_club_admin === 1) {
+              if (
+                user.user_join_requests_count !== null &&
+                user.user_join_requests_count !== 0
+              ) {
+                return (
+                  <Text style={[defaultText, styles.badge]}>
+                    {user.user_join_requests_count}
+                  </Text>
+                )
+              }
+            }
+          }
+        }
+
+        return null
+      }}
     />
   )
 
@@ -202,5 +229,14 @@ const styles = StyleSheet.create({
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  badge: {
+    marginRight: 5,
+    marginTop: 3,
+    backgroundColor: dangerColor,
+    paddingHorizontal: 6,
+    borderRadius: 50,
+    color: whiteColor,
+    fontSize: 15,
   },
 })
