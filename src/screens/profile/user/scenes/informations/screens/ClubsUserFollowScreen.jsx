@@ -9,8 +9,10 @@ import CustomLabelNavigation from '../../../../../../components/CustomLabelNavig
 import ClubsFollowCard from '../../../../../../components/Profile/User/ClubsFollowCard'
 import CustomSearchInput from '../../../../../../components/CustomSearchInput'
 
-const ClubsUserFollowScreen = ({ navigation }) => {
+const ClubsUserFollowScreen = ({ navigation, route }) => {
   const { colors } = useTheme()
+
+  const { userId } = route.params
 
   const [search, setSearch] = useState('')
 

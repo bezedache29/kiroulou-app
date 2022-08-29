@@ -1,6 +1,8 @@
 import {
+  FlatList,
   ImageBackground,
   ScrollView,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -9,8 +11,13 @@ import React, { useEffect, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
 
+import { URL_SERVER } from 'react-native-dotenv'
+
+import { useStoreState } from 'easy-peasy'
+
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
+import { useIsFocused } from '@react-navigation/native'
 import {
   cancelColor,
   dangerColor,
@@ -22,6 +29,7 @@ import {
   mt30,
   mt5,
   mx20,
+  px20,
   rowCenter,
   textAlignCenter,
   TitleH3,
@@ -29,24 +37,38 @@ import {
 
 import CustomLabelNavigation from '../../../../../../../components/CustomLabelNavigation'
 import BikeLi from '../../../../../../../components/Profile/User/Bike/BikeLi'
-import useFaker from '../../../../../../../hooks/useFaker'
 import CustomModal from '../../../../../../../components/CustomModal'
 import CustomDivider from '../../../../../../../components/CustomDivider'
 import CustomBigButton from '../../../../../../../components/CustomBigButton'
 import useUtils from '../../../../../../../hooks/useUtils'
 import CustomAlert from '../../../../../../../components/CustomAlert'
+import useAxios from '../../../../../../../hooks/useAxios'
+import useCustomToast from '../../../../../../../hooks/useCustomToast'
+import CustomLoader from '../../../../../../../components/CustomLoader'
 
-const BikesUserScreen = ({ navigation }) => {
+const BikesUserScreen = ({ navigation, route }) => {
   const { colors } = useTheme()
+  const { axiosGetWithToken, axiosDeleteWithToken } = useAxios()
+  const { toastShow } = useCustomToast()
+
+  const { userId } = route.params
+
+  const userStore = useStoreState((state) => state.user)
+  const { user } = userStore
+
+  const isFocused = useIsFocused()
 
   const [open, setOpen] = useState(false)
+  const [bikes, setBikes] = useState([])
   const [bike, setBike] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   const [showDeleteBike, setShowDeleteBike] = useState(false)
 
   const { formatDate } = useUtils()
 
   const openModal = (bike) => {
+    console.log('bike', bike)
     setBike(bike)
     setOpen(true)
   }
@@ -56,19 +78,49 @@ const BikesUserScreen = ({ navigation }) => {
     setBike(null)
   }
 
-  const { createFakeBike } = useFaker()
-  const [bikes, setBikes] = useState([])
   useEffect(() => {
-    for (let i = 0; i < 6; i++) {
-      setBikes((oldData) => [...oldData, createFakeBike()])
-    }
+    loadBikes()
   }, [])
+
+  useEffect(() => {
+    if (isFocused) {
+      loadBikes()
+    }
+  }, [isFocused])
+
+  const loadBikes = async () => {
+    const response = await axiosGetWithToken(`users/${userId}/bikes`)
+
+    setBikes(response.data.reverse())
+    setLoading(false)
+  }
 
   const goToEditBike = (bike) => {
     closeModal()
     navigation.navigate('EditBike', {
       bike,
     })
+  }
+
+  const deleteBike = async () => {
+    const response = await axiosDeleteWithToken(`users/bikes/${bike.id}`)
+
+    if (response.status === 201) {
+      setLoading(true)
+      setShowDeleteBike(false)
+      setOpen(false)
+
+      toastShow({
+        title: 'Vélo supprimé !',
+        message: 'Votre vélo a bien été supprimé',
+      })
+
+      loadBikes()
+    }
+  }
+
+  if (loading) {
+    return <CustomLoader />
   }
 
   return (
@@ -83,36 +135,57 @@ const BikesUserScreen = ({ navigation }) => {
 
       <View style={[rowCenter, mb30, { margin: 20 }]}>
         <Text style={[littleTitle, { color: colors.text }]}>
-          Nombre de vélo : 6
+          Nombre de vélo : {bikes.length}
         </Text>
-        <TouchableOpacity
-          style={{ marginLeft: 'auto' }}
-          onPress={() => navigation.navigate('AddBike')}
-        >
-          <MaterialCommunityIcons
-            name="plus-circle"
-            size={35}
-            color={darkPrimaryColor}
-          />
-        </TouchableOpacity>
+        {userId === user.id && (
+          <TouchableOpacity
+            style={{ marginLeft: 'auto' }}
+            onPress={() => navigation.navigate('AddBike')}
+          >
+            <MaterialCommunityIcons
+              name="plus-circle"
+              size={35}
+              color={darkPrimaryColor}
+            />
+          </TouchableOpacity>
+        )}
       </View>
 
-      <ScrollView
+      <FlatList
+        data={bikes}
+        ListEmptyComponent={() => (
+          <View style={styles.containerNoFeed}>
+            {userId === user.id ? (
+              <>
+                <Text style={[defaultText, mb30, { color: colors.text }]}>
+                  Vous n'avez pas de vélos pour le moment. Cliquez sur le bouton
+                  ci-dessous pour en ajouter un.
+                </Text>
+                <CustomBigButton
+                  label="Ajouter un vélo"
+                  onPress={() => navigation.navigate('AddBike')}
+                  styleBtn={px20}
+                />
+              </>
+            ) : (
+              <Text style={[defaultText, mb30, { color: colors.text }]}>
+                Aucun vélo dans la collection
+              </Text>
+            )}
+          </View>
+        )}
+        renderItem={({ item }) => (
+          <BikeLi
+            onPress={() => {
+              openModal(item)
+            }}
+            bike={item}
+          />
+        )}
+        keyExtractor={(item) => item.id}
         style={{ marginHorizontal: 10 }}
         showsVerticalScrollIndicator={false}
-      >
-        {bikes &&
-          bikes.length > 0 &&
-          bikes.map((bike) => (
-            <BikeLi
-              onPress={() => {
-                openModal(bike)
-              }}
-              bike={bike}
-              key={bike.id}
-            />
-          ))}
-      </ScrollView>
+      />
 
       {/* Modal détails d'un vélo */}
       <CustomModal showModal={open} closeModal={closeModal}>
@@ -124,10 +197,10 @@ const BikesUserScreen = ({ navigation }) => {
         {/* Details */}
         <ScrollView style={[mx20, mt30]}>
           {/* Image / photo du vélo */}
-          {bike?.image && (
+          {bike?.image !== null && (
             <ImageBackground
               style={{ width: '100%', height: 150, marginBottom: 20 }}
-              source={{ uri: bike?.image }}
+              source={{ uri: `${URL_SERVER}/storage/${bike?.image}` }}
               imageStyle={{ borderRadius: 8 }}
             />
           )}
@@ -136,7 +209,7 @@ const BikesUserScreen = ({ navigation }) => {
             Type de vélo
           </Text>
           <Text style={[defaultText, { color: colors.text }]}>
-            {bike?.type}
+            {bike?.bike_type.name}
           </Text>
 
           <CustomDivider addStyle={[mt5, mb10]} />
@@ -157,14 +230,14 @@ const BikesUserScreen = ({ navigation }) => {
 
           <Text style={[littleTitle, { color: colors.text }]}>Poids</Text>
           <Text style={[defaultText, { color: colors.text }]}>
-            {bike?.weight} kg
+            {bike?.weight !== null ? `${bike?.weight} kd` : 'Non renseigné'}
           </Text>
 
           <CustomDivider addStyle={[mt5, mb10]} />
 
           <Text style={[littleTitle, { color: colors.text }]}>Date</Text>
           <Text style={[defaultText, { color: colors.text }]}>
-            {bike?.date ? formatDate(bike?.date) : 'Pas de date'}
+            {bike?.date ? formatDate(new Date(bike?.date)) : 'Pas de date'}
           </Text>
 
           <CustomDivider addStyle={[mt5]} />
@@ -194,11 +267,19 @@ const BikesUserScreen = ({ navigation }) => {
           message={`Etes vous sur de vouloir supprimer le vélo : ${bike?.name} ?\n\nSes données seront perdues !`}
           onDismiss={() => setShowDeleteBike(false)}
           onCancelPressed={() => setShowDeleteBike(false)}
-          onConfirmPressed={() => setShowDeleteBike(false)}
+          onConfirmPressed={deleteBike}
         />
       </CustomModal>
     </View>
   )
 }
+const styles = StyleSheet.create({
+  containerNoFeed: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+})
 
 export default BikesUserScreen

@@ -5,11 +5,13 @@ import {
   Text,
   View,
 } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import { useTheme } from 'react-native-paper'
 
 import { useNavigation } from '@react-navigation/native'
+
+import { URL_SERVER } from 'react-native-dotenv'
 
 import {
   darkColor,
@@ -28,10 +30,12 @@ import {
 
 import CustomButtonInfo from '../../../../../components/CustomButtonInfo'
 
-const UserInformationsScene = () => {
+const UserInformationsScene = ({ userProfile }) => {
   const { colors } = useTheme()
 
   const navigation = useNavigation()
+
+  console.log('userProfile', userProfile)
 
   return (
     <ScrollView style={{ backgroundColor: secondaryColor }}>
@@ -39,59 +43,67 @@ const UserInformationsScene = () => {
         <View style={[mx20, mt40, styles.header]}>
           <ImageBackground
             source={{
-              uri: 'http://lh3.ggpht.com/-OdRx9XAYxkc/TusHxirp8uI/AAAAAAAABpw/lk-2NDvmJY0/Banana%252520Alien%25255B3%25255D.jpg?imgmax=800',
+              uri: `${URL_SERVER}/storage/${userProfile.avatar}`,
             }}
             style={[mr20, styles.avatar]}
             imageStyle={styles.avatarStyle}
           />
           <View style={{ flex: 4 }}>
-            <Text style={[littleTitle, { color: darkColor }]}>Prénom Nom</Text>
+            <Text style={[littleTitle, { color: darkColor }]}>
+              {userProfile.firstame
+                ? `${userProfile.firstame} ${userProfile.lastname}`
+                : userProfile.email}
+            </Text>
             <Text style={[defaultText, mt10, { color: darkColor }]}>
-              Ville, DEPARTEMENT
+              {userProfile.address
+                ? `${userProfile.address.city.name} ${userProfile.address.department}`
+                : 'Adresse non renseigné'}
             </Text>
           </View>
         </View>
-
         {/* Si le user est membre d'un club */}
         <CustomButtonInfo
-          title="Club : Nom du Club"
+          title={`Club : ${userProfile.club_name}`}
           colors={colors}
-          onPress={() => {}}
+          onPress={() =>
+            navigation.navigate('ClubProfile', { clubId: userProfile.club_id })
+          }
+          disabled={userProfile.club_id === null}
           backgroundColor={primaryColor}
           style={mt50}
         />
-
         {/* Liste des vélos du user, qui serviront pour l'algo des entretiens / recherches de pièces */}
         <CustomButtonInfo
           title="Mes vélos"
           colors={colors}
           onPress={() => {
-            navigation.navigate('BikesUser')
+            navigation.navigate('BikesUser', { userId: userProfile.id })
           }}
           backgroundColor={primaryColor}
           style={mt20}
         />
-
         {/* Liste les randos que le user hype, pour avoir un aperçu */}
         <CustomButtonInfo
           title="Les clubs que je suis"
           colors={colors}
           onPress={() => {
-            navigation.navigate('ClubsUserFollow')
+            navigation.navigate('ClubsUserFollow', { userId: userProfile.id })
           }}
           backgroundColor={primaryColor}
           style={mt20}
         />
-
         <CustomButtonInfo
           title="Les personnes que je suis"
           colors={colors}
           onPress={() => {
-            navigation.navigate('UsersUserFollow')
+            navigation.navigate('UsersUserFollow', { userId: userProfile.id })
           }}
           backgroundColor={primaryColor}
           style={mt20}
         />
+        {
+          // TODO Bouton follow / Unfollow
+        }
       </View>
     </ScrollView>
   )

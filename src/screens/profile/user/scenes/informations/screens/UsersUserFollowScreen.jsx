@@ -9,8 +9,10 @@ import CustomLabelNavigation from '../../../../../../components/CustomLabelNavig
 import UsersFollowCard from '../../../../../../components/Profile/User/UsersFollowCard'
 import CustomSearchInput from '../../../../../../components/CustomSearchInput'
 
-const UsersUserFollowScreen = ({ navigation }) => {
+const UsersUserFollowScreen = ({ navigation, route }) => {
   const { colors } = useTheme()
+
+  const { userId } = route.params
 
   const [search, setSearch] = useState('')
 

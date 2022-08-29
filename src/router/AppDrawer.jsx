@@ -8,6 +8,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
 import { useTheme } from 'react-native-paper'
+import { useStoreState } from 'easy-peasy'
 import {
   darkPrimaryColor,
   defaultText,
@@ -26,6 +27,9 @@ const Drawer = createDrawerNavigator()
 
 const AppDrawer = () => {
   const { colors } = useTheme()
+
+  const userStore = useStoreState((state) => state.user)
+  const { user } = userStore
 
   return (
     <Drawer.Navigator
@@ -52,7 +56,7 @@ const AppDrawer = () => {
       <Drawer.Screen
         name="Mon Profil"
         component={UserProfileScreen}
-        initialParams={{ params: 'my-profile' }}
+        initialParams={{ userId: user.id }}
         options={{
           drawerIcon: ({ color }) => (
             <MaterialCommunityIcons

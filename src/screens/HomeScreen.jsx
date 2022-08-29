@@ -37,7 +37,7 @@ const HomeScreen = ({ navigation }) => {
 
   const [isFetching, setIsFetching] = useState(false)
   const [posts, setPosts] = useState([])
-  const [page, setPage] = useState(false)
+  const [page, setPage] = useState(null)
   const [loading, setLoading] = useState(true)
   const [moreLoading, setMoreLoading] = useState(false)
   const [isListEnd, setIsListEnd] = useState(null)
@@ -48,17 +48,19 @@ const HomeScreen = ({ navigation }) => {
 
   useEffect(() => {
     if (isFocused) {
-      setLoading(true)
-      if (page !== 1) {
-        setPage(1)
-      } else {
-        loadPosts(1, true)
+      if (page !== null) {
+        setLoading(true)
+        if (page !== 1) {
+          setPage(1)
+        } else {
+          loadPosts(1, true)
+        }
       }
     }
   }, [isFocused])
 
   useEffect(() => {
-    if (page) {
+    if (page !== null) {
       if (page === 1) {
         loadPosts(page, true)
       } else {

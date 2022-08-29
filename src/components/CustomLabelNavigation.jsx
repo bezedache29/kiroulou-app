@@ -18,6 +18,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     paddingVertical: 10,
+    paddingRight: 85,
   },
   icon: {
     paddingLeft: 10,

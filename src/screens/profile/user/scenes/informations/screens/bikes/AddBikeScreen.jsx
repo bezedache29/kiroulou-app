@@ -1,8 +1,16 @@
 /**
  * Formulaire pour qu'un user ajoute un de ses vélos
  */
-import { ScrollView, View } from 'react-native'
-import React, { useRef, useState } from 'react'
+import {
+  ActivityIndicator,
+  Dimensions,
+  Image,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
 
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 
@@ -15,10 +23,13 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
 
+import MultipleImagePicker from '@baronha/react-native-multiple-image-picker'
+
 import addBikeSchema from '../../../../../../../validationSchemas/addBikeSchema'
 
 import {
   dangerColor,
+  darkPrimaryColor,
   mr5,
   mt20,
   mx20,
@@ -33,23 +44,43 @@ import CustomBSModal from '../../../../../../../components/CustomBSModal'
 import CustomOverlay from '../../../../../../../components/CustomOverlay'
 
 import useUtils from '../../../../../../../hooks/useUtils'
-import useDatePicker from '../../../../../../../hooks/useDatePicker'
+import CustomIconButton from '../../../../../../../components/CustomIconButton'
+import useImages from '../../../../../../../hooks/useImages'
+import useAxios from '../../../../../../../hooks/useAxios'
+import useCustomToast from '../../../../../../../hooks/useCustomToast'
+
+const { width, height } = Dimensions.get('window')
 
 const AddBikeScreen = ({ navigation }) => {
   // Hooks
-  const { formatDate } = useUtils()
+  const { formatDate, formatDateToSql } = useUtils()
   const { colors } = useTheme()
-  const { datePickerVisibility, showDatePicker, hideDatePicker } =
-    useDatePicker()
+  const { axiosGetWithToken, axiosPostWithToken } = useAxios()
+  const { sendImageToServer, compressImage, checkExtension } = useImages()
+  const { toastShow } = useCustomToast()
 
   // Variables
   const [overlay, setOverlay] = useState(false)
+  const [datePickerVisibility, setDatePickerVisibility] = useState(false)
   const [dateLabel, setDateLabel] = useState('Date du vélo')
   const [date, setDate] = useState(false)
   const [dateForDB, setDateForDB] = useState('')
   const [dateError, setDateError] = useState(false)
-  const [type, setType] = useState(false)
+  const [types, setTypes] = useState([])
+  const [type, setType] = useState({ name: 'Type de vélo' })
+  // const [typeName, setTypeName] = useState('Type de vélo')
   const [typeError, setTypeError] = useState(false)
+  const [image, setImage] = useState(false)
+
+  useEffect(() => {
+    loadTypes()
+  }, [])
+
+  // Permet de récupérer les types de vélo pour etre listé
+  const loadTypes = async () => {
+    const response = await axiosGetWithToken('users/bikes/types')
+    setTypes(response.data)
+  }
 
   // Ref pour la bottomSheet Type
   const bottomSheetRef = useRef(null)
@@ -70,10 +101,10 @@ const AddBikeScreen = ({ navigation }) => {
     // Modifie le label pour afficher la date formater en français dans le bouton
     setDateLabel(formatDate(date))
     // Date pour ajout en DB
-    setDateForDB(date)
+    setDateForDB(formatDateToSql(date))
     setDate(true)
     setDateError(false)
-    hideDatePicker()
+    setDatePickerVisibility(false)
   }
 
   const validForm = (handleSubmit) => {
@@ -90,18 +121,92 @@ const AddBikeScreen = ({ navigation }) => {
     }
   }
 
+  // Ouvre les photos du téléphone
+  const openPicker = async () => {
+    try {
+      const response = await MultipleImagePicker.openPicker({
+        mediaType: 'image',
+        singleSelectedMode: true,
+        doneTitle: 'Valider',
+        cancelTitle: 'Annuler',
+        selectedColor: darkPrimaryColor,
+      })
+
+      // On check que ce sont bien des images qui sont upload (jpeg / jpg / png only)
+      if (checkExtension(response.mime)) {
+        const compress = await compressImage(`file://${response.realPath}`)
+        setImage(compress)
+      }
+    } catch (e) {
+      console.log(e.code, e.message)
+    }
+  }
+
+  // Permet de choisir le type de vélo
+  const chooseType = (type) => {
+    setType(type)
+    setOverlay(false)
+    bottomSheetRef?.current?.closeBottomSheet()
+  }
+
   // Permet de valider le formulaire
-  const submitForm = (values, resetForm) => {
+  const submitForm = async (values, resetForm) => {
     const data = {
       name: values.name,
       brand: values.brand,
       model: values.model,
-      type,
+      bike_type_id: type.id,
       date: dateForDB,
-      weight: values.weight,
+      weight: values.weight !== '' ? values.weight : null,
     }
-    console.log(data)
-    resetForm()
+
+    // Création du vélo en DB
+    const response = await axiosPostWithToken('users/bikes', data)
+
+    if (response.status === 201) {
+      if (image) {
+        // On met l'extension du fichier
+        const title = `${image.split('.').pop()}`
+        // On envoie l'image pour stockage
+
+        // Création de l'image et envoie en DB
+        const isSend = await sendImageToServer(
+          `users/bikes/${response.data.bike.id}/storeImageBike`,
+          {
+            name: 'image',
+            uri: image,
+            title,
+          }
+        )
+
+        if (isSend.respInfo.status !== 201) {
+          toastShow({
+            title: 'Oops !',
+            message: 'Il y a un problème avec votre image',
+            type: 'toast_danger',
+          })
+        }
+      } else {
+        toastShow({
+          title: 'Ajout du vélo avec succès !',
+          message: 'Un nouveau vélo fait maintenant partie de votre collection',
+        })
+
+        // TODO Notifications aux followers
+      }
+
+      resetForm()
+
+      navigation.goBack()
+    }
+
+    if (response.status === 422) {
+      toastShow({
+        title: 'Action impossible !',
+        message: 'Réessayer plus tard...',
+        type: 'toast_danger',
+      })
+    }
   }
 
   return (
@@ -118,7 +223,10 @@ const AddBikeScreen = ({ navigation }) => {
             {/* Change la couleur de l'arriere plan et le zindex */}
             {overlay && <CustomOverlay />}
 
-            <ScrollView style={[mt20, mx20]}>
+            <ScrollView
+              style={[mt20, mx20]}
+              showsVerticalScrollIndicator={false}
+            >
               <Formik
                 validationSchema={addBikeSchema}
                 initialValues={{
@@ -209,7 +317,7 @@ const AddBikeScreen = ({ navigation }) => {
                     {/* Type de vélo */}
                     <InputFieldButton
                       onPress={toggleBottomSheet}
-                      label="Type de vélo"
+                      label={type.name}
                       error={typeError}
                       icon={
                         <MaterialCommunityIcons
@@ -246,7 +354,7 @@ const AddBikeScreen = ({ navigation }) => {
 
                     {/* Date du vélo */}
                     <InputFieldButton
-                      onPress={showDatePicker}
+                      onPress={() => setDatePickerVisibility(true)}
                       label={dateLabel}
                       error={dateError}
                       icon={
@@ -259,7 +367,32 @@ const AddBikeScreen = ({ navigation }) => {
                       }
                     />
 
-                    {/* !! Input Image ICI !! */}
+                    <View style={mt20} />
+
+                    {/* Photo du vélo */}
+                    {!image ? (
+                      <CustomIconButton
+                        isText
+                        text="Ajouter une image/photo"
+                        size="100%"
+                        onPress={() => openPicker()}
+                      />
+                    ) : (
+                      <TouchableOpacity
+                        onPress={() => openPicker()}
+                        style={styles.imageBtn}
+                      >
+                        <Image
+                          source={{ uri: image }}
+                          style={[
+                            {
+                              borderRadius: 8,
+                            },
+                            styles.image,
+                          ]}
+                        />
+                      </TouchableOpacity>
+                    )}
 
                     <CustomBigButton
                       label="Ajouter le vélo"
@@ -276,13 +409,28 @@ const AddBikeScreen = ({ navigation }) => {
             title="Choisir le type de vélo"
             SP={['25%', '40%']}
             ref={bottomSheetRef}
-            onDismiss={toggleBottomSheet}
+            onDismiss={() => {
+              setOverlay(false)
+              bottomSheetRef?.current?.closeBottomSheet()
+            }}
           >
-            <ButtonBS onPress={() => {}}>Vélo Tout Terrain (VTT)</ButtonBS>
-            <ButtonBS onPress={() => {}}>Vélo de route</ButtonBS>
-            <ButtonBS onPress={toggleBottomSheet}>
-              Vélo à assistance électrique (VAE)
-            </ButtonBS>
+            {types.length > 0 ? (
+              types.map((type) => (
+                <ButtonBS key={type.id} onPress={() => chooseType(type)}>
+                  {type.name}
+                </ButtonBS>
+              ))
+            ) : (
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <ActivityIndicator />
+              </View>
+            )}
           </CustomBSModal>
 
           {/* Modal DatePicker */}
@@ -290,12 +438,26 @@ const AddBikeScreen = ({ navigation }) => {
             isVisible={datePickerVisibility}
             mode="date"
             onConfirm={handleConfirm}
-            onCancel={hideDatePicker}
+            onCancel={() => setDatePickerVisibility(false)}
           />
         </View>
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
   )
 }
+
+const styles = StyleSheet.create({
+  imageBtn: {
+    flex: 1,
+    width,
+    height: height / 2.2,
+    alignSelf: 'center',
+    marginTop: 20,
+  },
+  image: {
+    height: '100%',
+    width: '100%',
+  },
+})
 
 export default AddBikeScreen

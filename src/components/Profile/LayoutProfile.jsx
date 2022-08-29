@@ -10,6 +10,8 @@ import React, { useEffect, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
 
+import { URL_SERVER } from 'react-native-dotenv'
+
 import { TabView, TabBar } from 'react-native-tab-view'
 
 import { useNavigation } from '@react-navigation/native'
@@ -26,18 +28,20 @@ import {
   warningColor,
 } from '../../assets/styles/styles'
 
-import useFaker from '../../hooks/useFaker'
 import useUtils from '../../hooks/useUtils'
+import useAxios from '../../hooks/useAxios'
 
 const LayoutProfile = ({
   renderScene,
   routes,
   profile,
   hikeDate = false,
-  // data = {}, Ici on peut passer le club pour le profil du club ou le user pour le user
+  data = {}, // Ici on peut passer le club pour le profil du club ou le user pour le user
 }) => {
   const { colors } = useTheme()
-  const { formatDate } = useUtils()
+  const { formatDate, dateToTimestamp, timestampToDate } = useUtils()
+  const { axiosGetWithToken } = useAxios()
+
   const navigation = useNavigation()
 
   // Sert pour la TabView
@@ -45,32 +49,51 @@ const LayoutProfile = ({
   const [index, setIndex] = useState(0)
 
   const [dateHike, setDateHike] = useState('')
-
-  // Pour les tests
   const [images, setImages] = useState([])
-  const { createFakeAlbum } = useFaker()
+  const [imagesNb, setImagesNb] = useState(0)
+
+  // charges les 4 images pour afficher sur le profile
   useEffect(() => {
-    for (let i = 0; i < 4; i++) {
-      setImages((oldData) => [...oldData, createFakeAlbum()])
-    }
+    console.log('data', data)
+    loadImagesProfile()
   }, [])
 
-  /**
-   * On récupère la date de la rando du club
-   * Si pas de date, ou date passé par rapport a celle d'aujourd'hui : On indique pas de rando
-   * Sinon : On indique la date de la futur rando, formatée
-   * Sert uniquement pour le profil des clubs
-   */
+  // Va chercher la date de la prochaine rando pour le profile club
   useEffect(() => {
-    if (hikeDate) {
-      console.log(hikeDate)
-      if (hikeDate >= Date.now()) {
-        setDateHike(formatDate(hikeDate))
-      } else {
-        setDateHike('Pas de encore de date')
+    if (data.next_hike && data.next_hike !== null) {
+      if (hikeDate) {
+        setDateHike(formatDate(new Date(hikeDate)))
       }
+    } else {
+      setDateHike('Pas encore de date')
     }
   }, [hikeDate])
+
+  // Permet de récupérer les 4 images du profile
+  const loadImagesProfile = async () => {
+    const response = await axiosGetWithToken(
+      `${profile}/${data.id}/profileImages`
+    )
+
+    console.log('images profile', response.data)
+
+    setImages(response.data)
+  }
+
+  // ? Inutile vu la verif ce fait déjà en back -> Renvoie null si date < date du jour
+  // Permet de check si la date de la rando est plus récente que la date du jour
+  // const checkHikeDate = () => {
+  //   if (data.next_hike !== null) {
+  //     const dateNow = timestampToDate(Date.now()).toDateString()
+  //     const hikeDate = new Date(data.next_hike.date).toDateString()
+
+  //     if (hikeDate >= dateNow) {
+  //       setDateHike(formatDate(new Date(data.next_hike.date)))
+  //     } else {
+  //       setDateHike('Pas encore de date')
+  //     }
+  //   }
+  // }
 
   // Change l'index a quand on clic sur le btn
   const handleIndexChange = (index) => setIndex(index)
@@ -92,15 +115,15 @@ const LayoutProfile = ({
   return (
     <View style={{ flex: 1 }}>
       {/* Les 4 dernière images du user/club. La denière est un bouton pour voir toutes les autres images */}
-      <View style={styles.imagesContainer}>
-        {images &&
-          images.map((image, index) =>
+      {images.length > 0 && (
+        <View style={styles.imagesContainer}>
+          {images.map((image, index) =>
             images.length !== index + 1 ? (
               <ImageBackground
                 // eslint-disable-next-line react/no-array-index-key
                 key={index}
                 style={styles.imageContainer}
-                source={{ uri: image.url }}
+                source={{ uri: `${URL_SERVER}/storage/${image.image}` }}
               />
             ) : (
               <TouchableOpacity
@@ -116,16 +139,19 @@ const LayoutProfile = ({
                   source={{ uri: image.uri }}
                 >
                   <View style={styles.darkness}>
-                    <Text style={[defaultText, { color: darkColor }]}>+XX</Text>
+                    <Text style={[defaultText, { color: darkColor }]}>
+                      +{imagesNb}
+                    </Text>
                   </View>
                 </ImageBackground>
               </TouchableOpacity>
             )
           )}
-      </View>
+        </View>
+      )}
 
       {/* Si le profile est un club on affiche une information pour la date de la rando */}
-      {profile && profile === 'club' && (
+      {profile && profile === 'clubs' && (
         <View
           style={{
             backgroundColor: warningColor,
@@ -143,13 +169,14 @@ const LayoutProfile = ({
       )}
 
       {/* TabView (informations / articles) pour le user - (informations / articles / membres) pour le club */}
-      <View style={{ flex: profile && profile === 'club' ? 5 : 6 }}>
+      <View style={{ flex: profile && profile === 'clubs' ? 5 : 6 }}>
         <TabView
           navigationState={{ index, routes }}
           renderScene={renderScene}
           renderTabBar={renderTabBar}
           onIndexChange={handleIndexChange}
           initialLayout={{ width: layout.width }}
+          lazy
         />
       </View>
     </View>

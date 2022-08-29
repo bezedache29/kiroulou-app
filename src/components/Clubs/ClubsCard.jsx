@@ -1,9 +1,14 @@
 import { ImageBackground, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
+import { useStoreState, useStoreActions } from 'easy-peasy'
+
+import { URL_SERVER } from 'react-native-dotenv'
+
 import { useTheme } from 'react-native-paper'
+import { useNavigation } from '@react-navigation/native'
 import {
   cancelColor,
   dangerColor,
@@ -14,9 +19,75 @@ import {
 
 import CustomDivider from '../CustomDivider'
 import CustomButton from '../CustomButton'
+import useAxios from '../../hooks/useAxios'
+import useCustomToast from '../../hooks/useCustomToast'
+import CustomAlert from '../CustomAlert'
 
-const ClubsCard = ({ club, user = { membership: false } }) => {
+const ClubsCard = ({ club, refresh }) => {
   const { colors } = useTheme()
+  const { toastShow } = useCustomToast()
+  const { axiosPostWithToken, axiosPutWithToken } = useAxios()
+
+  const navigation = useNavigation()
+
+  const userActions = useStoreActions((actions) => actions.user)
+  const userStore = useStoreState((state) => state.user)
+  const { user } = userStore
+
+  const [showLeaveClub, setShowLeaveClub] = useState(false)
+
+  // useEffect(() => {
+  //   console.log('club', club)
+  //   console.log('user', user)
+  // }, [])
+
+  const requestToJoin = async () => {
+    const response = await axiosPostWithToken(`clubs/${club.id}/requestToJoin`)
+
+    if (response.status === 201) {
+      toastShow({
+        title: 'Demande effectuée !',
+        message: `${club.name} a bien reçu ta demande d'adhésion`,
+      })
+    }
+
+    if (response.status === 403) {
+      toastShow({
+        title: 'Demande dejà effectué !',
+        message: response.data.message,
+        type: 'toast_danger',
+      })
+    }
+  }
+
+  const noLongerJoin = async () => {
+    setShowLeaveClub(false)
+    const response = await axiosPutWithToken('users/leaveClub')
+
+    if (response.status === 201) {
+      toastShow({
+        title: 'Club quitté !',
+        message: "Vous ne faites plus parti d'un club",
+      })
+      userActions.loadUser(response.data.user)
+      refresh(true)
+
+      // TODO envoie d'une notification à tous les membres pour informer le leave ?
+    }
+  }
+
+  const checkIfAdmin = () => {
+    if (user.club_id === club.id && user.is_club_admin === 1) {
+      toastShow({
+        title: 'Action impossible !',
+        message:
+          'Vous ne pouvez pas quitter un club en étant administrateur de celui ci',
+        type: 'toast_danger',
+      })
+    } else {
+      setShowLeaveClub(true)
+    }
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: colors.card }]}>
@@ -24,7 +95,7 @@ const ClubsCard = ({ club, user = { membership: false } }) => {
       <View style={styles.header}>
         <ImageBackground
           source={{
-            uri: club.uri,
+            uri: `${URL_SERVER}/storage/${club.avatar}`,
           }}
           style={styles.avatar}
           imageStyle={{ borderRadius: 25 }}
@@ -36,57 +107,75 @@ const ClubsCard = ({ club, user = { membership: false } }) => {
           </Text>
           {/* Ville du club */}
           <Text style={[defaultText, { color: colors.text, fontSize: 14 }]}>
-            {club.city}
+            {club.address.city.name}
           </Text>
         </View>
       </View>
 
       <CustomDivider addStyle={{ borderTopColor: colors.border }} />
 
-      <View style={styles.content}>
-        {/* Nombre de membres */}
-        <Text style={[defaultText, { color: colors.text }]}>
-          {club.members} membres
-        </Text>
-        <MaterialCommunityIcons
-          name="circle-small"
-          size={20}
-          color={colors.text}
-        />
-        {/* Nombre de publications */}
-        <Text style={[defaultText, { color: colors.text }]}>
-          {club.posts} publications
-        </Text>
-      </View>
+      {/* Les users premium peuvent voir le nb de membres et de followers */}
+      {user.premium === 'active' ||
+        (user.club_id === club.id && (
+          <>
+            <View style={styles.content}>
+              {/* Nombre de membres */}
+              <Text style={[defaultText, { color: colors.text }]}>
+                {club.members_count} membres
+              </Text>
+              <MaterialCommunityIcons
+                name="circle-small"
+                size={20}
+                color={colors.text}
+              />
+              {/* Nombre de followers */}
+              <Text style={[defaultText, { color: colors.text }]}>
+                {club.user_follows_count} followers
+              </Text>
+            </View>
 
-      <CustomDivider addStyle={{ borderTopColor: colors.border }} />
+            <CustomDivider addStyle={{ borderTopColor: colors.border }} />
+          </>
+        ))}
 
       <View style={styles.buttons}>
         {/* Btn demande adhesion */}
-        {user.membership ? (
+        {
+          // TODO Fonction ne plus adhérer. Alert quand c'est l'admin du club qui essaye de se desinscire
+        }
+        {user.club_id !== null && user.club_id === club.id ? (
           <CustomButton
-            onPress={() => {}}
+            onPress={checkIfAdmin}
             btnStyle={{ width: '49%' }}
             gradient={[cancelColor, dangerColor]}
           >
             Ne plus adhérer
           </CustomButton>
         ) : (
-          <CustomButton onPress={() => {}} btnStyle={{ width: '49%' }}>
+          <CustomButton onPress={requestToJoin} btnStyle={{ width: '49%' }}>
             Adhésion
           </CustomButton>
         )}
 
         {/* Btn voir détails */}
         <CustomButton
-          onPress={() => {
-            alert(club.id)
-          }}
+          onPress={() =>
+            navigation.navigate('ClubProfile', { clubId: club.id })
+          }
           btnStyle={{ width: '49%' }}
         >
           Voir détails
         </CustomButton>
       </View>
+
+      <CustomAlert
+        showAlert={showLeaveClub}
+        title="Attention !"
+        message={`Etes vous sur de vouloir quitter ${club.name} ?`}
+        onDismiss={() => setShowLeaveClub(false)}
+        onCancelPressed={() => setShowLeaveClub(false)}
+        onConfirmPressed={() => noLongerJoin()}
+      />
     </View>
   )
 }

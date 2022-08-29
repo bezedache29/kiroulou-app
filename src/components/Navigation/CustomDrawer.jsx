@@ -69,7 +69,7 @@ const CustomDrawer = (props) => {
         <ImageBackground source={imageBackground} style={p20}>
           <Image
             source={{
-              uri: `${URL_SERVER}/storage/avatars/${user.avatar}`,
+              uri: `${URL_SERVER}/storage/${user.avatar}`,
             }}
             style={[
               styles.avatar,

@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
@@ -12,16 +12,8 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 import AwesomeAlert from 'react-native-awesome-alerts'
 
-import CustomLabelNavigation from '../../../components/CustomLabelNavigation'
-import LayoutProfile from '../../../components/Profile/LayoutProfile'
-import ClubInformationsScene from './scenes/informations/ClubInformationsScene'
-import ClubPostsScene from './scenes/posts/ClubPostsScene'
-import CustomBSModal from '../../../components/CustomBSModal'
-import ButtonBS from '../../../components/ButtonBS'
-import CustomOverlay from '../../../components/CustomOverlay'
-import useFaker from '../../../hooks/useFaker'
-import ClubMembersScene from './scenes/members/ClubMembersScene'
-import useDatePicker from '../../../hooks/useDatePicker'
+import { useStoreState } from 'easy-peasy'
+
 import {
   cancelColor,
   darkPrimaryColor,
@@ -29,20 +21,37 @@ import {
   TitleH3,
 } from '../../../assets/styles/styles'
 
-const ClubProfileScreen = ({ navigation }) => {
+import CustomLabelNavigation from '../../../components/CustomLabelNavigation'
+import LayoutProfile from '../../../components/Profile/LayoutProfile'
+import ClubInformationsScene from './scenes/informations/ClubInformationsScene'
+import ClubPostsScene from './scenes/posts/ClubPostsScene'
+import CustomBSModal from '../../../components/CustomBSModal'
+import ButtonBS from '../../../components/ButtonBS'
+import CustomOverlay from '../../../components/CustomOverlay'
+import ClubMembersScene from './scenes/members/ClubMembersScene'
+import useCustomToast from '../../../hooks/useCustomToast'
+import useAxios from '../../../hooks/useAxios'
+import useUtils from '../../../hooks/useUtils'
+
+const ClubProfileScreen = ({ navigation, route }) => {
   // Hooks
   const { colors } = useTheme()
-  const { createFakeClub } = useFaker()
-  const { datePickerVisibility, showDatePicker, hideDatePicker } =
-    useDatePicker()
+  const { toastShow } = useCustomToast()
+  const { dateToTimestamp, formatDateToSql } = useUtils()
+  const { axiosPutWithToken, axiosGetWithToken } = useAxios()
+
+  const { clubId } = route.params
+
+  const userStore = useStoreState((state) => state.user)
+  const { user } = userStore
 
   // Variables
+  const [club, setClub] = useState(false)
   const [overlay, setOverlay] = useState(false)
-  const [club, setClub] = useState([])
-  const [hikeDate, setHikeDate] = useState()
-  const [loader, setLoader] = useState(false)
-  const [change, setChange] = useState(false)
+  const [hikeDate, setHikeDate] = useState(new Date(Date.now()))
+  const [loader, setLoader] = useState(true)
   const [showAlertDeleteClub, setShowAlertDeleteClub] = useState(false)
+  const [datePickerVisibility, setDatePickerVisibility] = useState(false)
 
   // Les titres de la TabView
   const [routes] = useState([
@@ -51,29 +60,47 @@ const ClubProfileScreen = ({ navigation }) => {
     { key: 'members', title: 'Membres' },
   ])
 
-  // Les trois vues du tabView
-  const renderScene = ({ route }) => {
-    switch (route.key) {
-      case 'informations':
-        return <ClubInformationsScene club={club} />
-
-      case 'posts':
-        return <ClubPostsScene />
-
-      case 'members':
-        return <ClubMembersScene />
-
-      default:
-        return null
-    }
-  }
-
   useEffect(() => {
-    setClub(createFakeClub())
+    loadClub()
   }, [])
 
+  const loadClub = async () => {
+    const response = await axiosGetWithToken(`clubs/${clubId}/clubInformations`)
+
+    console.log('response', response.data)
+
+    setClub(response.data)
+    setLoader(false)
+  }
+
+  const renderScene = ({ route }) => {
+    if (route.key === 'informations' && club) {
+      return <ClubInformationsScene club={club} />
+    }
+    if (route.key === 'posts' && club) {
+      return <ClubPostsScene club={club} />
+    }
+    if (
+      route.key === 'members' &&
+      club &&
+      (user.club_id === club.id || user.premium === 'active')
+    ) {
+      return <ClubMembersScene item={club} />
+    }
+    // TODO Srcreen informant qu'il faut etre premium et lien vers achat premium
+    return (
+      <View>
+        <Text>dqzd</Text>
+      </View>
+    )
+  }
+
+  // On format la date pour qu'elle soit prise ne compte avec DateTimePickerModal
   useEffect(() => {
-    setHikeDate(club.dateHike)
+    if (club && club.next_hike !== null) {
+      // console.log('date new date', new Date(club.next_hike.date))
+      setHikeDate(new Date(club.next_hike.date))
+    }
   }, [club])
 
   // Ref pour la bottomSheet Type
@@ -105,30 +132,55 @@ const ClubProfileScreen = ({ navigation }) => {
 
   // A la confirmation de la date du DatePicker
   const handleConfirm = (date) => {
-    setLoader(true)
-    setHikeDate(date)
-    setChange(true)
+    setDatePickerVisibility(false)
 
-    // !! Modifier la date en DB !!
+    const timestampNow = dateToTimestamp(new Date())
+    const timestampHike = dateToTimestamp(date)
 
-    hideDatePicker()
+    console.log('timestampNow', timestampNow)
+    console.log('timestampHike', timestampHike)
+
+    // Si pas de rando futur
+    if (club.next_hike === null) {
+      toastShow({
+        title: 'Action impossible',
+        message: "Vous devez d'abord créer un rando avant de changer sa date",
+        type: 'toast_danger',
+      })
+    } else if (timestampNow > timestampHike) {
+      // Si la date saise est une date passé
+      toastShow({
+        title: 'Action impossible',
+        message: 'Vous devez choisir une date dans le futur',
+        type: 'toast_danger',
+      })
+    } else {
+      // Sinon on chnage la date d'affichage et la date en DB
+      setHikeDate(date)
+      changeDateOnDB(date)
+    }
   }
 
-  useEffect(() => {
-    if (!datePickerVisibility) {
-      setLoader(false)
-    }
-  }, [datePickerVisibility])
+  const changeDateOnDB = async (date) => {
+    const response = await axiosPutWithToken(
+      `hikes/vtt/${club.next_hike.id}/changeDate`,
+      { date: formatDateToSql(date) }
+    )
 
-  useEffect(() => {
-    if (change) {
-      alert('La date a bien été changée !')
-      setChange(false)
+    if (response.status === 201) {
+      toastShow({
+        title: 'Date changée avec succès !',
+        message: 'La date de votre rando a bien été changée',
+      })
     }
-  }, [change])
+
+    // TODO Si club en store, il faut recharger le club
+
+    // console.log('response date', response.data)
+  }
 
   if (loader) {
-    return <View />
+    return null
   }
 
   return (
@@ -136,29 +188,33 @@ const ClubProfileScreen = ({ navigation }) => {
       <BottomSheetModalProvider>
         <View style={{ flex: 1, backgroundColor: colors.background }}>
           <CustomLabelNavigation
-            label="Mon club"
+            label={
+              // eslint-disable-next-line no-nested-ternary
+              user && user.is_club_admin !== 0 && user.club_id === club.id
+                ? 'Mon Club'
+                : club.short_name !== null
+                ? club.short_name
+                : club.name
+            }
             colors={colors}
-            onPress={() => {
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'Drawer' }],
-              })
-            }}
+            onPress={() => navigation.goBack()}
           />
 
           {/* Icone en haut a droite qui permet de modifier son profil */}
-          <TouchableOpacity
-            onPress={() => {
-              toggleBottomSheet()
-            }}
-            style={styles.editIcon}
-          >
-            <MaterialCommunityIcons
-              name="account-edit"
-              size={28}
-              color={colors.text}
-            />
-          </TouchableOpacity>
+          {user && user.is_club_admin !== 0 && user.club_id === club.id && (
+            <TouchableOpacity
+              onPress={() => {
+                toggleBottomSheet()
+              }}
+              style={styles.editIcon}
+            >
+              <MaterialCommunityIcons
+                name="account-edit"
+                size={28}
+                color={colors.text}
+              />
+            </TouchableOpacity>
+          )}
 
           <View style={{ flex: 1 }}>
             {/* Change la couleur de l'arriere plan et le zindex */}
@@ -168,7 +224,7 @@ const ClubProfileScreen = ({ navigation }) => {
             <LayoutProfile
               renderScene={renderScene}
               routes={routes}
-              profile="club"
+              profile="clubs"
               data={club}
               hikeDate={hikeDate}
             />
@@ -179,7 +235,7 @@ const ClubProfileScreen = ({ navigation }) => {
             title="Que souhaitez vous modifier ?"
             SP={['25%', '48%']}
             ref={optionsProfile}
-            onDismiss={toggleBottomSheet}
+            onDismiss={closeBottomSheet}
           >
             <ButtonBS
               onPress={() => {
@@ -206,7 +262,7 @@ const ClubProfileScreen = ({ navigation }) => {
             <ButtonBS
               onPress={() => {
                 closeBottomSheet()
-                showDatePicker()
+                setDatePickerVisibility(true)
               }}
             >
               Changer la date de la randonnée
@@ -217,9 +273,9 @@ const ClubProfileScreen = ({ navigation }) => {
           <DateTimePickerModal
             isVisible={datePickerVisibility}
             mode="date"
-            date={hikeDate}
+            date={hikeDate} // La date doit etre au format : new Date(xxxx-xx-xx)
             onConfirm={handleConfirm}
-            onCancel={hideDatePicker}
+            onCancel={() => setDatePickerVisibility(false)}
           />
 
           {/* Alert avant de changer de supprimer le club */}

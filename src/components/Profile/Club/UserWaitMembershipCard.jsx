@@ -11,6 +11,10 @@ import { useTheme } from 'react-native-paper'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
+import { URL_SERVER } from 'react-native-dotenv'
+
+import { useNavigation } from '@react-navigation/native'
+
 import {
   cancelColor,
   darkColor,
@@ -22,30 +26,32 @@ import {
   secondaryColor,
 } from '../../../assets/styles/styles'
 
-const UserWaitMembershipCard = ({ user }) => {
+const UserWaitMembershipCard = ({ user, refuse, accept }) => {
   const { colors } = useTheme()
+
+  const navigation = useNavigation()
 
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        onPress={() => alert('go to profile')}
+        onPress={() => navigation.navigate('UserProfile', { userId: user.id })}
         style={[rowCenter, { flex: 1, marginRight: 30 }]}
       >
         <ImageBackground
           source={{
-            uri: user.avatar,
+            uri: `${URL_SERVER}/storage/${user.avatar}`,
           }}
           style={styles.avatar}
           imageStyle={{ borderRadius: 25 }}
         />
 
         <Text style={[defaultText, ml10, styles.text]}>
-          {user.firstname} {user.lastname}
+          {user.firstname ? `${user.firstname} ${user.lastname}` : user.email}
         </Text>
       </TouchableOpacity>
 
       <View style={[rowCenter, mr5]}>
-        <TouchableOpacity style={mr5}>
+        <TouchableOpacity style={mr5} onPress={accept}>
           <MaterialCommunityIcons
             name="checkbox-marked"
             size={30}
@@ -53,7 +59,7 @@ const UserWaitMembershipCard = ({ user }) => {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity style={ml5}>
+        <TouchableOpacity style={ml5} onPress={refuse}>
           <MaterialCommunityIcons
             name="close-box"
             size={30}
