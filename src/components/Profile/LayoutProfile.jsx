@@ -87,21 +87,6 @@ const LayoutProfile = ({
     setImages(response.data)
   }
 
-  // ? Inutile vu la verif ce fait déjà en back -> Renvoie null si date < date du jour
-  // Permet de check si la date de la rando est plus récente que la date du jour
-  // const checkHikeDate = () => {
-  //   if (data.next_hike !== null) {
-  //     const dateNow = timestampToDate(Date.now()).toDateString()
-  //     const hikeDate = new Date(data.next_hike.date).toDateString()
-
-  //     if (hikeDate >= dateNow) {
-  //       setDateHike(formatDate(new Date(data.next_hike.date)))
-  //     } else {
-  //       setDateHike('Pas encore de date')
-  //     }
-  //   }
-  // }
-
   // Change l'index a quand on clic sur le btn
   const handleIndexChange = (index) => setIndex(index)
 
@@ -121,6 +106,7 @@ const LayoutProfile = ({
           if (route.key === 'members') {
             if (user.club_id === data.id && user.is_club_admin === 1) {
               if (
+                user.user_join_requests_count &&
                 user.user_join_requests_count !== null &&
                 user.user_join_requests_count !== 0
               ) {

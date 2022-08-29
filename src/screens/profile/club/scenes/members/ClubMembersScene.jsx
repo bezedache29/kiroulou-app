@@ -178,19 +178,22 @@ const ClubMembersScene = ({ item }) => {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <Text
-        style={[
-          textAlignCenter,
-          defaultLink,
-          my10,
-          { flex: 1, color: darkPrimaryColor },
-        ]}
-        onPress={() =>
-          navigation.navigate('NewMembersRequest', { club, pendingUsers })
-        }
-      >
-        Demandes en attentes : {pendingUsers.length}
-      </Text>
+      {user.club_id === club.id && user.is_club_admin === 1 && (
+        <Text
+          style={[
+            textAlignCenter,
+            defaultLink,
+            my10,
+            { flex: 1, color: darkPrimaryColor },
+          ]}
+          onPress={() =>
+            navigation.navigate('NewMembersRequest', { club, pendingUsers })
+          }
+        >
+          Demandes en attentes : {pendingUsers.length}
+        </Text>
+      )}
+
       <View style={{ flex: 20 }}>
         <FlatList
           ref={flatListMembers}
@@ -206,6 +209,7 @@ const ClubMembersScene = ({ item }) => {
           renderItem={({ item }) => (
             <MembersCard
               member={item}
+              club={club}
               redBtn="Expulser"
               disabled={item.id === user.id && user.is_club_admin === 1}
               onPressLeftBtn={() => {

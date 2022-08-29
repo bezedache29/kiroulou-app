@@ -1,8 +1,13 @@
 import { ImageBackground, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
+import { URL_SERVER } from 'react-native-dotenv'
+
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
+import { useStoreState } from 'easy-peasy'
+
+import { useNavigation } from '@react-navigation/native'
 import {
   cancelColor,
   dangerColor,
@@ -14,72 +19,97 @@ import {
 
 import CustomDivider from '../../CustomDivider'
 import CustomButton from '../../CustomButton'
+import useUtils from '../../../hooks/useUtils'
 
-const ClubsFollowCard = ({ club }) => (
-  <View style={styles.container}>
-    {/* Icon */}
-    <View style={styles.header}>
-      <ImageBackground
-        source={{
-          uri: club.uri,
-        }}
-        style={styles.avatar}
-        imageStyle={{ borderRadius: 25 }}
-      />
-      <View>
-        {/* Nom du club */}
-        <Text style={[defaultTextBold, { color: darkColor }]}>{club.name}</Text>
-        {/* Ville du club */}
-        <Text style={[defaultText, { color: darkColor, fontSize: 14 }]}>
-          {club.city}
+const ClubsFollowCard = ({ club, unfollow }) => {
+  const { formatDate } = useUtils()
+
+  const navigation = useNavigation()
+
+  const userStore = useStoreState((state) => state.user)
+  const { user } = userStore
+
+  return (
+    <View style={styles.container}>
+      {/* Icon */}
+      <View style={styles.header}>
+        {
+          // TODO Avatar
+        }
+        {/* <ImageBackground
+          source={{
+            uri: `${URL_SERVER}/storage/${club.avatar}`,
+          }}
+          style={styles.avatar}
+          imageStyle={{ borderRadius: 25 }}
+        /> */}
+        <View>
+          {/* Nom du club */}
+          <Text style={[defaultTextBold, { color: darkColor }]}>
+            {club.short_name !== null ? club.short_name : club.name}
+          </Text>
+          {/* Ville du club */}
+          <Text style={[defaultText, { color: darkColor, fontSize: 14 }]}>
+            {club.address.city.name} ({club.address.department_code})
+          </Text>
+        </View>
+      </View>
+
+      <CustomDivider addStyle={{ borderTopColor: darkColor }} />
+
+      {user.premium === 'active' ||
+        (user.club_id === club.id && user.is_club_admin === 1 && (
+          <View style={styles.content}>
+            {/* Nombre de membres */}
+            <Text style={[defaultText, { color: darkColor }]}>
+              {club.members_count} membres
+            </Text>
+            <MaterialCommunityIcons
+              name="circle-small"
+              size={20}
+              color={darkColor}
+            />
+            {/* Nombre de publications */}
+            <Text style={[defaultText, { color: darkColor }]}>
+              {club.user_follows_count} followers
+            </Text>
+          </View>
+        ))}
+
+      <CustomDivider addStyle={{ borderTopColor: darkColor }} />
+
+      <View style={styles.content}>
+        <Text style={[defaultText, { color: darkColor }]}>
+          Prochaine rando :{' '}
+          {club.next_hike
+            ? formatDate(new Date(club.next_hike.date))
+            : 'Pas encore de date'}
         </Text>
       </View>
+
+      <View style={styles.buttons}>
+        {/* Btn demande adhesion */}
+        <CustomButton
+          onPress={() => unfollow(club)}
+          btnStyle={{ width: '49%' }}
+          gradient={[cancelColor, dangerColor]}
+        >
+          Ne plus suivre
+        </CustomButton>
+
+        {/* Btn voir détails */}
+        <CustomButton
+          onPress={() =>
+            navigation.navigate('ClubProfile', { clubId: club.id })
+          }
+          btnStyle={{ width: '49%' }}
+        >
+          Voir détails
+        </CustomButton>
+      </View>
     </View>
-
-    <CustomDivider addStyle={{ borderTopColor: darkColor }} />
-
-    <View style={styles.content}>
-      {/* Nombre de membres */}
-      <Text style={[defaultText, { color: darkColor }]}>
-        {club.members} membres
-      </Text>
-      <MaterialCommunityIcons name="circle-small" size={20} color={darkColor} />
-      {/* Nombre de publications */}
-      <Text style={[defaultText, { color: darkColor }]}>
-        {club.posts} publications
-      </Text>
-    </View>
-
-    <CustomDivider addStyle={{ borderTopColor: darkColor }} />
-
-    <View style={styles.content}>
-      <Text style={[defaultText, { color: darkColor }]}>
-        Prochaine rando : 16-12-2023
-      </Text>
-    </View>
-
-    <View style={styles.buttons}>
-      {/* Btn demande adhesion */}
-      <CustomButton
-        onPress={() => {}}
-        btnStyle={{ width: '49%' }}
-        gradient={[cancelColor, dangerColor]}
-      >
-        Ne plus suivre
-      </CustomButton>
-
-      {/* Btn voir détails */}
-      <CustomButton
-        onPress={() => {
-          alert(club.id)
-        }}
-        btnStyle={{ width: '49%' }}
-      >
-        Voir détails
-      </CustomButton>
-    </View>
-  </View>
-)
+  )
+}
 
 export default ClubsFollowCard
 
