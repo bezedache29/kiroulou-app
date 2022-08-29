@@ -6,9 +6,11 @@ import {
   Text,
   View,
 } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
+
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 
 import { useNavigation } from '@react-navigation/native'
 
@@ -36,21 +38,66 @@ import {
 } from '../../../../../assets/styles/styles'
 
 import CustomButtonInfo from '../../../../../components/CustomButtonInfo'
+import CustomAlert from '../../../../../components/CustomAlert'
+import useAxios from '../../../../../hooks/useAxios'
+import useCustomToast from '../../../../../hooks/useCustomToast'
 
 const ClubInformationsScene = ({ club }) => {
   const { colors } = useTheme()
+  const { axiosPostWithToken, axiosGetWithToken } = useAxios()
+  const { toastShow } = useCustomToast()
 
   const navigation = useNavigation()
 
   const userStore = useStoreState((state) => state.user)
   const { user } = userStore
 
+  const [showAlertPremium, setShowAlertPremium] = useState(false)
+  const [follow, setFollow] = useState(false)
+
+  useEffect(() => {
+    checkIfClubFollowed()
+  }, [])
+
   const goToHikesClub = () => {
     if (user.premium === 'active') {
       navigation.navigate('HikesClub')
     } else {
-      // TODO Alert avec lien premium
-      alert('achetez un premium pour voir cette page')
+      setShowAlertPremium(true)
+    }
+  }
+
+  const pressFollow = async () => {
+    setFollow(!follow)
+
+    const response = await axiosPostWithToken(
+      `clubs/${club.id}/followOrUnfollow`
+    )
+
+    if (response.status === 201) {
+      toastShow({
+        title: 'Club Follow !',
+        message: `Vous suiviez désormais ${club.name}`,
+      })
+
+      // TODO Notification
+    }
+
+    if (response.status === 202) {
+      toastShow({
+        title: 'Club Unfollow !',
+        message: `Vous ne suiviez plus ${club.name}`,
+      })
+
+      // TODO Notification
+    }
+  }
+
+  const checkIfClubFollowed = async () => {
+    const response = await axiosGetWithToken(`clubs/${club.id}/isClubFollowed`)
+
+    if (response.status === 200) {
+      setFollow(true)
     }
   }
 
@@ -107,8 +154,37 @@ const ClubInformationsScene = ({ club }) => {
             onPress={goToHikesClub}
             backgroundColor={primaryColor}
           />
+
+          <CustomButtonInfo
+            title={follow ? 'Ne plus suivre le club' : 'Suivre le club'}
+            colors={colors}
+            onPress={pressFollow}
+            backgroundColor={primaryColor}
+            style={mt20}
+            iconRight={
+              <MaterialIcons
+                name={follow ? 'star' : 'star-outline'}
+                size={30}
+                color={darkColor}
+              />
+            }
+          />
         </View>
       </View>
+
+      <CustomAlert
+        showAlert={showAlertPremium}
+        title="Accès refusé !"
+        message="Vous devez avoir un compte Premium de niveau 1 minimum pour accéder a cette page"
+        onDismiss={() => setShowAlertPremium(false)}
+        onCancelPressed={() => setShowAlertPremium(false)}
+        onConfirmPressed={() => {
+          setShowAlertPremium(false)
+          navigation.navigate('Subs')
+        }}
+        confirmText="Voir les premiums"
+        cancelText="Fermer"
+      />
     </ScrollView>
   )
 }

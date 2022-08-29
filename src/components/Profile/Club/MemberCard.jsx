@@ -9,6 +9,8 @@ import React, { useEffect, useState } from 'react'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
+import { useStoreState } from 'easy-peasy'
+
 import { URL_SERVER } from 'react-native-dotenv'
 import {
   cancelColor,
@@ -16,6 +18,8 @@ import {
   darkColor,
   defaultText,
   defaultTextBold,
+  ml10,
+  mr10,
   secondaryColor,
 } from '../../../assets/styles/styles'
 
@@ -30,9 +34,14 @@ const MembersCard = ({
   onPressLeftBtn,
   onPressRightBtn,
   disabled,
+  club,
 }) => {
+  console.log('member', member)
   const { axiosGetWithToken, axiosPostWithToken } = useAxios()
   const { toastShow } = useCustomToast()
+
+  const userStore = useStoreState((state) => state.user)
+  const { user } = userStore
 
   const [follow, setFollow] = useState(false)
   const [userName, setUserName] = useState('')
@@ -85,13 +94,15 @@ const MembersCard = ({
   return (
     <View style={styles.container}>
       {/* Ajout favoris */}
-      <TouchableOpacity onPress={followPressed} style={styles.editIcon}>
-        <MaterialCommunityIcons
-          name={follow ? 'star' : 'star-outline'}
-          size={25}
-          color={darkColor}
-        />
-      </TouchableOpacity>
+      {user.id !== member.id && (
+        <TouchableOpacity onPress={followPressed} style={styles.editIcon}>
+          <MaterialCommunityIcons
+            name={follow ? 'star' : 'star-outline'}
+            size={25}
+            color={darkColor}
+          />
+        </TouchableOpacity>
+      )}
 
       {/* Icon */}
       <View style={styles.header}>
@@ -123,8 +134,11 @@ const MembersCard = ({
 
       <View style={styles.content}>
         {/* Date membre */}
-        <Text style={[defaultText, { color: darkColor }]}>
+        <Text style={[defaultText, mr10, { color: darkColor }]}>
           Premium : {member.premium === 'active' ? 'Oui' : 'Non'}
+        </Text>
+        <Text style={[defaultText, ml10, { color: darkColor }]}>
+          Followers : {member.followers_count}
         </Text>
       </View>
 
@@ -133,17 +147,27 @@ const MembersCard = ({
       <View style={styles.buttons}>
         {/* Btn demande adhesion */}
 
-        <CustomButton
-          onPress={onPressLeftBtn}
-          disabled={disabled}
-          btnStyle={{ width: '49%' }}
-          gradient={[cancelColor, dangerColor]}
-        >
-          {redBtn}
-        </CustomButton>
+        {user.is_club_admin === 1 && user.club_id === club.id && (
+          <CustomButton
+            onPress={onPressLeftBtn}
+            disabled={disabled}
+            btnStyle={{ width: '49%' }}
+            gradient={[cancelColor, dangerColor]}
+          >
+            {redBtn}
+          </CustomButton>
+        )}
 
         {/* Btn voir détails */}
-        <CustomButton onPress={onPressRightBtn} btnStyle={{ width: '49%' }}>
+        <CustomButton
+          onPress={onPressRightBtn}
+          btnStyle={{
+            width:
+              user.is_club_admin === 1 && user.club_id === club.id
+                ? '49%'
+                : '100%',
+          }}
+        >
           Voir détails
         </CustomButton>
       </View>

@@ -38,6 +38,7 @@ const App = () => {
             <MaterialCommunityIcons name="check" color="#fff" size={18} />
           }
           offset={10}
+          swipeEnabled
           renderType={{
             toast_success: (toast) => (
               <CustomToast toast={toast} type="success" />

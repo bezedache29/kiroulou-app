@@ -130,7 +130,7 @@ const LayoutPosts = ({ data, profile = 'users' }) => {
         return (
           <View style={styles.containerNoFeed}>
             <Text style={[defaultText, mb30, { color: colors.text }]}>
-              Aucuns articles disponibles. Créez une randonnée pour créer un
+              Aucun articles disponibles. Créez une randonnée pour créer un
               article et le proposer à la communauté
             </Text>
             <CustomBigButton
@@ -145,7 +145,7 @@ const LayoutPosts = ({ data, profile = 'users' }) => {
         <View style={styles.containerNoFeed}>
           <Text style={[defaultText, mb30, { color: colors.text }]}>
             Le club n'a pas encore proposé de randonnées, et par conséquents
-            aucuns articles n'est disponible. Revenez plus tard
+            aucun articles n'est disponible. Revenez plus tard
           </Text>
         </View>
       )
@@ -155,7 +155,7 @@ const LayoutPosts = ({ data, profile = 'users' }) => {
         return (
           <View style={styles.containerNoFeed}>
             <Text style={[defaultText, mb30, { color: colors.text }]}>
-              Aucuns articles disponibles. Cliquez sur le bouton ci dessous pour
+              Aucun articles disponibles. Cliquez sur le bouton ci dessous pour
               créer un article afin de le partager a la communauté
             </Text>
             <CustomBigButton
@@ -169,7 +169,7 @@ const LayoutPosts = ({ data, profile = 'users' }) => {
       return (
         <View style={styles.containerNoFeed}>
           <Text style={[defaultText, mb30, { color: colors.text }]}>
-            Aucun articles disponible de cet utilisateur
+            Cet utilisateur n'a pas créé d'articles pour le moment.
           </Text>
         </View>
       )

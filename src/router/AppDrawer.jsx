@@ -92,6 +92,7 @@ const AppDrawer = () => {
               >
                 <Text style={[defaultText, { color }]}>Mon Club</Text>
                 {user.user_join_requests_count !== null &&
+                  user.user_join_requests_count !== null &&
                   user.user_join_requests_count !== 0 && (
                     <Text style={[defaultText, styles.badge]}>
                       {user.user_join_requests_count}

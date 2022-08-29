@@ -10,6 +10,7 @@ const CustomButtonInfo = ({
   route,
   backgroundColor,
   style,
+  iconRight = false,
   disabled = false,
 }) => (
   <TouchableOpacity
@@ -37,11 +38,13 @@ const CustomButtonInfo = ({
       </Text>
     </View>
     <View style={styles.icon}>
-      <MaterialIcons
-        name="keyboard-arrow-right"
-        size={30}
-        color={route ? colors.textBtnActive : darkColor}
-      />
+      {iconRight || (
+        <MaterialIcons
+          name="keyboard-arrow-right"
+          size={30}
+          color={route ? colors.textBtnActive : darkColor}
+        />
+      )}
     </View>
   </TouchableOpacity>
 )

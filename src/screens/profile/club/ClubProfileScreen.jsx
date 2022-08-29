@@ -18,6 +18,12 @@ import {
   cancelColor,
   darkPrimaryColor,
   defaultText,
+  mb10,
+  mb30,
+  mt20,
+  mt40,
+  mx10,
+  textAlignCenter,
   TitleH3,
 } from '../../../assets/styles/styles'
 
@@ -32,6 +38,7 @@ import ClubMembersScene from './scenes/members/ClubMembersScene'
 import useCustomToast from '../../../hooks/useCustomToast'
 import useAxios from '../../../hooks/useAxios'
 import useUtils from '../../../hooks/useUtils'
+import CustomBigButton from '../../../components/CustomBigButton'
 
 const ClubProfileScreen = ({ navigation, route }) => {
   // Hooks
@@ -89,8 +96,22 @@ const ClubProfileScreen = ({ navigation, route }) => {
     }
     // TODO Srcreen informant qu'il faut etre premium et lien vers achat premium
     return (
-      <View>
-        <Text>dqzd</Text>
+      <View style={mx10}>
+        <Text style={[TitleH3, mt20, textAlignCenter, { color: colors.text }]}>
+          Accès Refusé !
+        </Text>
+        <Text style={[defaultText, mb10, mt40, { color: colors.text }]}>
+          Cette page est reservé aux utilisateurs ayant un compte premium de
+          niveau 1 minimum
+        </Text>
+        <Text style={[defaultText, mb30, { color: colors.text }]}>
+          Vous pouvez mettre à niveau votre compte en cliquant sur le bouton
+          ci-dessous
+        </Text>
+        <CustomBigButton
+          label="Voir les premiums"
+          onPress={() => navigation.navigate('Subs')}
+        />
       </View>
     )
   }
@@ -137,9 +158,6 @@ const ClubProfileScreen = ({ navigation, route }) => {
     const timestampNow = dateToTimestamp(new Date())
     const timestampHike = dateToTimestamp(date)
 
-    console.log('timestampNow', timestampNow)
-    console.log('timestampHike', timestampHike)
-
     // Si pas de rando futur
     if (club.next_hike === null) {
       toastShow({
@@ -173,10 +191,6 @@ const ClubProfileScreen = ({ navigation, route }) => {
         message: 'La date de votre rando a bien été changée',
       })
     }
-
-    // TODO Si club en store, il faut recharger le club
-
-    // console.log('response date', response.data)
   }
 
   if (loader) {
