@@ -3,40 +3,112 @@
  * On récupère le club via un request API depuis l'id du user (si le user est admin on affiche les images/photos)
  */
 import {
+  ActivityIndicator,
   FlatList,
   Pressable,
   StyleSheet,
+  Text,
   TouchableOpacity,
   View,
 } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
-import useFaker from '../../../hooks/useFaker'
+import { URL_SERVER } from 'react-native-dotenv'
 
 import CustomContainer from '../../../components/CustomContainer'
 import RenderHeaderImageViewer from './renders/RenderHeaderImageViewer'
 import RenderItemImages from './renders/RenderItemImages'
 import ListHeaderComponent from './renders/ListHeaderComponent'
-import { cancelColor, darkColor } from '../../../assets/styles/styles'
+import {
+  cancelColor,
+  darkColor,
+  defaultText,
+} from '../../../assets/styles/styles'
 import CustomAlert from '../../../components/CustomAlert'
 import CustomImageViewer from '../../../components/CustomImageViewer'
+import useAxios from '../../../hooks/useAxios'
+import useCustomToast from '../../../hooks/useCustomToast'
 
 const ImagesProfileScreen = ({ navigation, route }) => {
-  const { createFakeUser, createFakeClub, createFakeAlbum } = useFaker()
+  const { axiosGetWithToken, axiosDeleteWithToken } = useAxios()
+  const { toastShow } = useCustomToast()
 
-  const [profile, setProfile] = useState('')
-  const [data, setData] = useState({})
+  const { profile, data } = route.params
+
+  const flatListImages = useRef()
+
   const [images, setImages] = useState([])
   const [image, setImage] = useState('')
   // Permet d'ouvrir la modal pour afficher l'image en fullscreen
   const [imageViewer, setImageViewer] = useState(false)
   const [selectedItems, setSelectedItems] = useState([])
   const [deleteBtn, setDeleteBtn] = useState(false)
-
   const [showDelete, setShowDelete] = useState(false)
   const [showDeleteSeveralImages, setShowDeleteSeveralImages] = useState(false)
+  const [page, setPage] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [moreLoading, setMoreLoading] = useState(false)
+  const [isListEnd, setIsListEnd] = useState(null)
+
+  useEffect(() => {
+    setPage(1)
+  }, [])
+
+  useEffect(() => {
+    if (page !== null) {
+      if (page === 1) {
+        loadImages(page, true)
+      } else {
+        loadImages(page)
+      }
+    }
+  }, [page])
+
+  useEffect(() => {
+    if (!loading) {
+      moveToTop()
+    }
+  }, [loading])
+
+  const moveToTop = () => {
+    if (images.length - 1 > 0) {
+      flatListImages.current.scrollToIndex({ index: 0 })
+    }
+  }
+
+  const loadImages = async (page, refresh) => {
+    const response = await axiosGetWithToken(
+      `${profile}/${data.id}/allImages?page=${page}`
+    )
+
+    console.log('responses images', response.data)
+
+    if (refresh) {
+      setImages(response.data)
+      setIsListEnd(false)
+    } else if (response.data.length === 0) {
+      setIsListEnd(true)
+    } else {
+      setImages((oldData) => [...oldData, ...response.data])
+    }
+
+    setMoreLoading(false)
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    console.log('data', data)
+  }, [data])
+
+  useEffect(() => {
+    if (selectedItems.length) {
+      setDeleteBtn(true)
+    } else {
+      setDeleteBtn(false)
+    }
+  }, [selectedItems])
 
   // Fonction quand on press longtemps sur l'image
   const handleLongPress = (image) => {
@@ -52,14 +124,6 @@ const ImagesProfileScreen = ({ navigation, route }) => {
       setImageViewer(true)
     }
   }
-
-  useEffect(() => {
-    if (selectedItems.length) {
-      setDeleteBtn(true)
-    } else {
-      setDeleteBtn(false)
-    }
-  }, [selectedItems])
 
   // récupère l'image sélectionnée
   const getSelected = (image) => selectedItems.includes(image.id)
@@ -78,32 +142,56 @@ const ImagesProfileScreen = ({ navigation, route }) => {
     return setSelectedItems([...selectedItems, item.id])
   }
 
-  useEffect(() => {
-    for (let i = 0; i < 10; i++) {
-      setImages((oldData) => [...oldData, createFakeAlbum()])
-    }
-  }, [])
+  const deleteImage = async () => {
+    setShowDelete(false)
+    const response = await axiosDeleteWithToken(
+      `${profile}/posts/deleteImage`,
+      { image }
+    )
 
-  // On check si c'est le profil d'un club ou celui d'un user
-  useEffect(() => {
-    if (route.params.profile) {
-      setProfile(route.params.profile)
-    }
-  }, [route.params])
+    if (response.status === 201) {
+      toastShow({
+        title: 'Image supprimée !',
+        message: "L'image de l'article a bien été supprimée",
+      })
 
-  useEffect(() => {
-    if (profile === 'user') {
-      setData(createFakeUser())
-    } else if (profile === 'club') {
-      setData(createFakeClub())
+      if (page === 1) {
+        loadImages(1, true)
+      } else {
+        setPage(1)
+      }
+
+      setImageViewer(false)
     } else {
-      setData({})
+      toastShow({
+        title: 'Action impossible !',
+        message: `L'image ne s'est pas supprimée (${response.status})`,
+        type: 'toast_danger',
+      })
     }
-  }, [profile])
 
-  useEffect(() => {
-    console.log('data', data)
-  }, [data])
+    console.log('response delete', response.data)
+  }
+
+  // Au refresh en bas de screen
+  const fetchMorePosts = async () => {
+    if (!isListEnd) {
+      setMoreLoading(true)
+      setPage(page + 1)
+    }
+  }
+
+  // S'il n'y a plus de pages a chercher lors d'un refresh en bas de screen
+  const renderFooter = () => (
+    <View style={styles.footer}>
+      {moreLoading && <ActivityIndicator />}
+      {isListEnd && (
+        <Text style={[defaultText, { color: darkColor }]}>
+          Toutes les images / photos sont listées
+        </Text>
+      )}
+    </View>
+  )
 
   return (
     <CustomContainer
@@ -111,14 +199,12 @@ const ImagesProfileScreen = ({ navigation, route }) => {
       label="Images / Photos"
     >
       <View style={{ flex: 1 }}>
-        {data && Object.keys(data).length > 0 && (
+        {images && images.length > 0 && (
           <Pressable onPress={deSelectItems}>
             <FlatList
+              ref={flatListImages}
               ListHeaderComponent={
-                <ListHeaderComponent
-                  data={data} // !! Voir si c'est utile. Peut etre récupérer du store ?
-                  profile={profile}
-                />
+                <ListHeaderComponent data={data} profile={profile} />
               }
               data={images}
               keyExtractor={(item, index) => index}
@@ -129,9 +215,12 @@ const ImagesProfileScreen = ({ navigation, route }) => {
                   onPress={() => handleOnPress(item)}
                   onLongPress={() => handleLongPress(item)}
                   selected={getSelected(item)}
-                  uri={item.url}
+                  uri={`${URL_SERVER}/storage/${item.image}`}
                 />
               )}
+              onEndReachedThreshold={0.5} // Formule (20 - (1.6666 * 6)) - Se declenche au 10 eme post
+              onEndReached={fetchMorePosts}
+              ListFooterComponent={renderFooter}
             />
           </Pressable>
         )}
@@ -141,7 +230,7 @@ const ImagesProfileScreen = ({ navigation, route }) => {
       <CustomImageViewer
         showModal={imageViewer}
         setShowModal={setImageViewer}
-        imageUrls={[{ url: image.url }]}
+        imageUrls={[{ url: `${URL_SERVER}/storage/${image.image}` }]}
         renderHeader={() => (
           <RenderHeaderImageViewer
             setImageViewer={setImageViewer}
@@ -153,10 +242,10 @@ const ImagesProfileScreen = ({ navigation, route }) => {
         <CustomAlert
           showAlert={showDelete}
           title="Attention !"
-          message={`Voulez vous supprimer cette image ? ${image.id}`}
+          message="Voulez vous supprimer cette image ?"
           onDismiss={() => setShowDelete(false)}
           onCancelPressed={() => setShowDelete(false)}
-          onConfirmPressed={() => setShowDelete(false)}
+          onConfirmPressed={deleteImage}
         />
       </CustomImageViewer>
 

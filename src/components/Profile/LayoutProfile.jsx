@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   ImageBackground,
   StyleSheet,
   Text,
@@ -16,7 +17,7 @@ import { useStoreState } from 'easy-peasy'
 
 import { TabView, TabBar } from 'react-native-tab-view'
 
-import { useNavigation } from '@react-navigation/native'
+import { useIsFocused, useNavigation } from '@react-navigation/native'
 
 import {
   blackColor,
@@ -48,6 +49,8 @@ const LayoutProfile = ({
 
   const navigation = useNavigation()
 
+  const isFocused = useIsFocused()
+
   const userStore = useStoreState((state) => state.user)
   const { user } = userStore
 
@@ -58,12 +61,18 @@ const LayoutProfile = ({
   const [dateHike, setDateHike] = useState('')
   const [images, setImages] = useState([])
   const [imagesNb, setImagesNb] = useState(0)
+  const [loading, setLoading] = useState(false)
 
   // charges les 4 images pour afficher sur le profile
   useEffect(() => {
-    console.log('data', data)
-    loadImagesProfile()
-  }, [])
+    if (isFocused) {
+      console.log('FOCUS', 'FOCUS')
+      console.log('data', data)
+      setLoading(true)
+      loadImagesProfile()
+      loadImagesNumber()
+    }
+  }, [isFocused])
 
   // Va chercher la date de la prochaine rando pour le profile club
   useEffect(() => {
@@ -85,6 +94,17 @@ const LayoutProfile = ({
     console.log('images profile', response.data)
 
     setImages(response.data)
+    setLoading(false)
+  }
+
+  const loadImagesNumber = async () => {
+    const response = await axiosGetWithToken(
+      `${profile}/${data.id}/allImagesCount`
+    )
+
+    if (response.status === 200) {
+      setImagesNb(response.data.count - 4)
+    }
   }
 
   // Change l'index a quand on clic sur le btn
@@ -128,38 +148,58 @@ const LayoutProfile = ({
   return (
     <View style={{ flex: 1 }}>
       {/* Les 4 dernière images du user/club. La denière est un bouton pour voir toutes les autres images */}
-      {images.length > 0 && (
+      {images.length > 0 || !loading ? (
         <View style={styles.imagesContainer}>
-          {images.map((image, index) =>
-            images.length !== index + 1 ? (
-              <ImageBackground
-                // eslint-disable-next-line react/no-array-index-key
-                key={index}
-                style={styles.imageContainer}
-                source={{ uri: `${URL_SERVER}/storage/${image.image}` }}
-              />
-            ) : (
-              <TouchableOpacity
-                // eslint-disable-next-line react/no-array-index-key
-                key={index}
-                style={styles.imageContainer}
-                onPress={() => {
-                  navigation.navigate('ImagesProfile', { profile })
-                }}
-              >
+          {images.length > 0 &&
+            images.map((image, index) =>
+              images.length !== index + 1 ? (
                 <ImageBackground
-                  imageStyle={{ opacity: 0.5 }}
-                  source={{ uri: image.uri }}
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={index}
+                  style={styles.imageContainer}
+                  source={{ uri: `${URL_SERVER}/storage/${image.image}` }}
+                />
+              ) : (
+                <TouchableOpacity
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={index}
+                  style={styles.imageContainer}
+                  onPress={() => {
+                    navigation.navigate('ImagesProfile', { profile, data })
+                  }}
                 >
-                  <View style={styles.darkness}>
-                    <Text style={[defaultText, { color: darkColor }]}>
-                      +{imagesNb}
-                    </Text>
-                  </View>
-                </ImageBackground>
-              </TouchableOpacity>
-            )
+                  <ImageBackground
+                    imageStyle={{ opacity: 0.5 }}
+                    source={{ uri: `${URL_SERVER}/storage/${image.image}` }}
+                  >
+                    <View style={styles.darkness}>
+                      <Text style={[defaultText, { color: darkColor }]}>
+                        +{imagesNb}
+                      </Text>
+                    </View>
+                  </ImageBackground>
+                </TouchableOpacity>
+              )
+            )}
+          {images.length === 0 && (
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <Text style={[defaultText, { color: colors.text }]}>
+                Aucune images
+              </Text>
+            </View>
           )}
+        </View>
+      ) : (
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
+          <ActivityIndicator />
         </View>
       )}
 

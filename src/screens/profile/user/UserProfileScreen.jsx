@@ -46,7 +46,11 @@ const UserProfileScreen = ({ navigation, route }) => {
   }
 
   useEffect(() => {
-    loadUserProfile()
+    if (user.id !== userId) {
+      loadUserProfile()
+    } else {
+      setUserProfile(user)
+    }
   }, [])
 
   // Permet de récupérer le nom du user a qui appartient le profil
@@ -80,7 +84,7 @@ const UserProfileScreen = ({ navigation, route }) => {
       {userId === user.id && (
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate('EditUserProfile')
+            navigation.navigate('EditUserProfile', { userProfile })
           }}
           style={{ position: 'absolute', top: 10, right: 20 }}
         >

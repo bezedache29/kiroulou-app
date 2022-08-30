@@ -9,14 +9,23 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
 
+import { useStoreState } from 'easy-peasy'
+
 import { useIsFocused } from '@react-navigation/native'
 
 import CustomLabelNavigation from '../../../../../../components/CustomLabelNavigation'
 import ClubsFollowCard from '../../../../../../components/Profile/User/ClubsFollowCard'
 import CustomSearchInput from '../../../../../../components/CustomSearchInput'
 import useAxios from '../../../../../../hooks/useAxios'
-import { darkColor, defaultText } from '../../../../../../assets/styles/styles'
+import {
+  darkColor,
+  defaultText,
+  mb30,
+  px20,
+  TitleH3,
+} from '../../../../../../assets/styles/styles'
 import useCustomToast from '../../../../../../hooks/useCustomToast'
+import CustomBigButton from '../../../../../../components/CustomBigButton'
 
 const ClubsUserFollowScreen = ({ navigation, route }) => {
   const { colors } = useTheme()
@@ -24,6 +33,9 @@ const ClubsUserFollowScreen = ({ navigation, route }) => {
   const { toastShow } = useCustomToast()
 
   const { userId } = route.params
+
+  const userStore = useStoreState((state) => state.user)
+  const { user } = userStore
 
   const isFocused = useIsFocused()
 
@@ -148,16 +160,38 @@ const ClubsUserFollowScreen = ({ navigation, route }) => {
         }}
       />
 
-      <CustomSearchInput
-        placeholder="Rechercher par nom"
-        value={search}
-        onChangeValue={onChangeText}
-      />
+      {clubs.length > 0 && (
+        <CustomSearchInput
+          placeholder="Rechercher par nom"
+          value={search}
+          onChangeValue={onChangeText}
+        />
+      )}
 
       <View style={styles.content}>
         <FlatList
           ref={flatListClubs}
           data={clubs}
+          ListEmptyComponent={() => (
+            <View style={styles.containerNoFeed}>
+              <Text style={[TitleH3, mb30, { color: colors.text }]}>
+                Aucun club suivis !
+              </Text>
+              {user.id === userId && (
+                <>
+                  <Text style={[defaultText, mb30, { color: colors.text }]}>
+                    Recherchez des clubs pour connaitre les dates de leur
+                    randonnées
+                  </Text>
+                  <CustomBigButton
+                    label="Rechercher des clubs"
+                    onPress={() => navigation.navigate('Clubs')}
+                    styleBtn={px20}
+                  />
+                </>
+              )}
+            </View>
+          )}
           renderItem={({ item }) => (
             <ClubsFollowCard club={item} unfollow={unfollow} />
           )}
@@ -180,5 +214,11 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     marginBottom: 10,
     flex: 1,
+  },
+  containerNoFeed: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
   },
 })

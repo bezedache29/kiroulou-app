@@ -30,9 +30,13 @@ const HeaderDrawer = ({ onPress, title }) => {
       </Text>
       <TouchableOpacity onPress={onPress} style={styles.containerAvatar}>
         <ImageBackground
-          source={{
-            uri: `${URL_SERVER}/storage/${user.avatar}`,
-          }}
+          source={
+            user.avatar !== null
+              ? {
+                  uri: `${URL_SERVER}/storage/${user.avatar}`,
+                }
+              : require('../../assets/images/png/default-avatar.png')
+          }
           style={styles.avatar}
           imageStyle={{ borderRadius: 25 }}
         />

@@ -68,9 +68,13 @@ const CustomDrawer = (props) => {
       >
         <ImageBackground source={imageBackground} style={p20}>
           <Image
-            source={{
-              uri: `${URL_SERVER}/storage/${user.avatar}`,
-            }}
+            source={
+              user.avatar !== null
+                ? {
+                    uri: `${URL_SERVER}/storage/${user.avatar}`,
+                  }
+                : require('../../assets/images/png/default-avatar.png')
+            }
             style={[
               styles.avatar,
               {
@@ -90,7 +94,7 @@ const CustomDrawer = (props) => {
               { color: secondaryColor },
             ]}
           >
-            CDL VTT
+            {user.short_name_club}
           </Text>
         </ImageBackground>
 
