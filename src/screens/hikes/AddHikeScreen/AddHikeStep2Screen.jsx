@@ -96,7 +96,7 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
         `${route.params.hikeEdit.address} ${route.params.hikeEdit.postCode} ${route.params.hikeEdit.city}`
       )
       setAddressToDB({
-        street_address: route.params.hikeEdit.address,
+        street_address: route.params.hikeEdit.address, // TODO Check
         city: route.params.hikeEdit.city,
         zipcode: route.params.hikeEdit.postCode,
         lat: route.params.hikeEdit.lat,
@@ -209,7 +209,7 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
   }
 
   const checkOpenModalTrip = () => {
-    // !! Check Premium pour ajouter des circuits
+    // TODO !! Check Premium pour ajouter des circuits
     if (trips.length > 3) {
       setOpenAlertToContinue(false)
       alert('Vous ne pouvez plus ajouter de circuits ! Passez en Premium')

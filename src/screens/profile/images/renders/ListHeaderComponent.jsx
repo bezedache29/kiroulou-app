@@ -3,6 +3,8 @@ import React from 'react'
 
 import { useTheme } from 'react-native-paper'
 
+import { URL_SERVER } from 'react-native-dotenv'
+
 import {
   darkColor,
   darkPrimaryColor,
@@ -19,7 +21,10 @@ const ListHeaderComponent = ({ data, profile }) => {
     <>
       <View style={styles.avatarContainer}>
         <View style={styles.imageContainer}>
-          <Image style={styles.image} source={{ uri: data.avatar }} />
+          <Image
+            style={styles.image}
+            source={{ uri: `${URL_SERVER}/storage/${data.avatar}` }}
+          />
         </View>
       </View>
       <Text style={[littleTitle, textAlignCenter, { color: colors.text }]}>
@@ -28,7 +33,7 @@ const ListHeaderComponent = ({ data, profile }) => {
       <Text
         style={[defaultText, textAlignCenter, mb20, { color: colors.text }]}
       >
-        {profile === 'club' ? data.city : data.club}
+        {profile === 'club' && data.name}
       </Text>
     </>
   )

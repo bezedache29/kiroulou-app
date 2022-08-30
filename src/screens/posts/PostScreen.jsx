@@ -190,7 +190,7 @@ const PostScreen = ({ navigation, route }) => {
       })
 
       closeBottomSheet()
-      navigation.goBack()
+      navigation.navigate('Splash')
     } else {
       toastShow({
         title: 'Action impossible',
@@ -210,7 +210,7 @@ const PostScreen = ({ navigation, route }) => {
         <CustomContainer
           label={post.title}
           pressBack={() => navigation.goBack()}
-          editIcon
+          editIcon={user.id === post.user_id}
           iconName="note-edit"
           onPressEdit={toggleBottomSheet}
         >

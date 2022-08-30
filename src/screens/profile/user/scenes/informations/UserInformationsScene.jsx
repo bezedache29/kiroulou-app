@@ -50,22 +50,29 @@ const UserInformationsScene = ({ userProfile }) => {
 
   const [follow, setFollow] = useState(false)
   const [username, setUsername] = useState('')
+  const [userInfo, setUserInfo] = useState(false)
 
   useEffect(() => {
     checkIfUserFollowed()
-
-    setUsername(
-      userProfile.firstname
-        ? `${userProfile.firstname} ${userProfile.lastname}`
-        : userProfile.email
-    )
+    if (user.id === userProfile.id) {
+      setUserInfo(true)
+      setUsername(
+        user.firstname ? `${user.firstname} ${user.lastname}` : user.email
+      )
+    } else {
+      setUsername(
+        userProfile.firstname
+          ? `${userProfile.firstname} ${userProfile.lastname}`
+          : userProfile.email
+      )
+    }
   }, [])
 
   const pressFollow = async () => {
     setFollow(!follow)
 
     const response = await axiosPostWithToken(
-      `users/${userProfile.id}/followOrUnfollow`
+      `users/${userInfo ? user.id : userProfile.id}/followOrUnfollow`
     )
 
     if (response.status === 201) {
@@ -89,7 +96,7 @@ const UserInformationsScene = ({ userProfile }) => {
 
   const checkIfUserFollowed = async () => {
     const response = await axiosGetWithToken(
-      `users/${userProfile.id}/isUserFollowed`
+      `users/${userInfo ? user.id : userProfile.id}/isUserFollowed`
     )
 
     if (response.status === 200) {
@@ -102,20 +109,26 @@ const UserInformationsScene = ({ userProfile }) => {
       <View style={[mb20, { flex: 1 }]}>
         <View style={[mx20, mt40, styles.header]}>
           <ImageBackground
-            source={{
-              uri: `${URL_SERVER}/storage/${userProfile.avatar}`,
-            }}
+            source={
+              user.avatar !== null
+                ? {
+                    uri: `${URL_SERVER}/storage/${
+                      userInfo ? user.avatar : userProfile.avatar
+                    }`,
+                  }
+                : require('../../../../../assets/images/png/default-avatar.png')
+            }
             style={[mr20, styles.avatar]}
             imageStyle={styles.avatarStyle}
           />
           <View style={{ flex: 4 }}>
-            <Text style={[littleTitle, { color: darkColor }]}>
-              {userProfile.firstame
-                ? `${userProfile.firstame} ${userProfile.lastname}`
-                : userProfile.email}
-            </Text>
+            <Text style={[littleTitle, { color: darkColor }]}>{username}</Text>
             <Text style={[defaultText, mt10, { color: darkColor }]}>
-              {userProfile.address
+              {userInfo
+                ? user.address
+                  ? `${user.address.city.name} ${user.address.department}`
+                  : 'Adresse non renseigné'
+                : userProfile.address
                 ? `${userProfile.address.city.name} ${userProfile.address.department}`
                 : 'Adresse non renseigné'}
             </Text>

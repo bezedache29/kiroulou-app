@@ -9,13 +9,22 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
 
+import { useStoreState } from 'easy-peasy'
+
 import { useIsFocused } from '@react-navigation/native'
+
+import {
+  darkColor,
+  defaultText,
+  mb30,
+  TitleH3,
+} from '../../../../../../assets/styles/styles'
+
 import CustomLabelNavigation from '../../../../../../components/CustomLabelNavigation'
 import UsersFollowCard from '../../../../../../components/Profile/User/UsersFollowCard'
 import CustomSearchInput from '../../../../../../components/CustomSearchInput'
 import useAxios from '../../../../../../hooks/useAxios'
 import useCustomToast from '../../../../../../hooks/useCustomToast'
-import { darkColor, defaultText } from '../../../../../../assets/styles/styles'
 
 const UsersUserFollowScreen = ({ navigation, route }) => {
   const { colors } = useTheme()
@@ -23,6 +32,9 @@ const UsersUserFollowScreen = ({ navigation, route }) => {
   const { toastShow } = useCustomToast()
 
   const { userId } = route.params
+
+  const userStore = useStoreState((state) => state.user)
+  const { user } = userStore
 
   const isFocused = useIsFocused()
 
@@ -157,16 +169,30 @@ const UsersUserFollowScreen = ({ navigation, route }) => {
         }}
       />
 
-      <CustomSearchInput
-        placeholder="Rechercher par prénom ou nom"
-        value={search}
-        onChangeValue={onChangeText}
-      />
+      {users.length > 0 && (
+        <CustomSearchInput
+          placeholder="Rechercher par prénom ou nom"
+          value={search}
+          onChangeValue={onChangeText}
+        />
+      )}
 
       <View style={styles.content}>
         <FlatList
           ref={flatListUsers}
           data={users}
+          ListEmptyComponent={() => (
+            <View style={styles.containerNoFeed}>
+              <Text style={[TitleH3, mb30, { color: colors.text }]}>
+                Aucun club suivis !
+              </Text>
+              {user.id === userId && (
+                <Text style={[defaultText, mb30, { color: colors.text }]}>
+                  Suivez des personnes pour suivre leur actualités.
+                </Text>
+              )}
+            </View>
+          )}
           renderItem={({ item }) => (
             <UsersFollowCard user={item} unfollow={unfollow} />
           )}
@@ -189,5 +215,11 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     marginBottom: 10,
     flex: 1,
+  },
+  containerNoFeed: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
   },
 })
