@@ -36,11 +36,6 @@ const ClubsCard = ({ club, refresh }) => {
 
   const [showLeaveClub, setShowLeaveClub] = useState(false)
 
-  // useEffect(() => {
-  //   console.log('club', club)
-  //   console.log('user', user)
-  // }, [])
-
   const requestToJoin = async () => {
     const response = await axiosPostWithToken(`clubs/${club.id}/requestToJoin`)
 

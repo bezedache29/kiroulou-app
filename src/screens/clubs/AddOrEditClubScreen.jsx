@@ -221,11 +221,13 @@ const AddOrEditClubScreen = ({ navigation, route }) => {
 
     let data = {
       name: values.name,
-      shortName: values.shortName,
+      short_name: values.shortName,
       website: values.website,
     }
 
-    if (address === '' && !addressToDB) {
+    console.log(addressToDB)
+
+    if (!addressToDB) {
       setAddressError("L'adresse est obligatoire")
       addressToDBError = true
     }
@@ -347,7 +349,7 @@ const AddOrEditClubScreen = ({ navigation, route }) => {
               message: 'Le club a bien été créé',
             })
 
-            userActions.loadUser(response.data.user_update)
+            userActions.loadUser(userUpdated.data.user)
             resetForm()
             setAddress('')
             setNewAddress(true)
@@ -595,15 +597,7 @@ const AddOrEditClubScreen = ({ navigation, route }) => {
                 </ButtonBS>
               ))
             ) : (
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <ActivityIndicator />
-              </View>
+              <CustomLoader />
             )}
           </CustomBSModal>
         </View>

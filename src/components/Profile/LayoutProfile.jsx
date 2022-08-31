@@ -35,6 +35,7 @@ import {
 
 import useUtils from '../../hooks/useUtils'
 import useAxios from '../../hooks/useAxios'
+import CustomLoader from '../CustomLoader'
 
 const LayoutProfile = ({
   renderScene,
@@ -196,16 +197,16 @@ const LayoutProfile = ({
           )}
         </View>
       ) : (
-        <View
-          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-        >
-          <ActivityIndicator />
-        </View>
+        <CustomLoader />
       )}
 
       {/* Si le profile est un club on affiche une information pour la date de la rando */}
       {profile && profile === 'clubs' && (
-        <View
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate('Hike', { hikeId: data.next_hike.id })
+          }
+          disabled={data.next_hike === null}
           style={{
             backgroundColor: warningColor,
             marginBottom: 5,
@@ -218,7 +219,7 @@ const LayoutProfile = ({
           <Text style={[mt10, textAlignCenter, TitleH3, { color: darkColor }]}>
             {dateHike}
           </Text>
-        </View>
+        </TouchableOpacity>
       )}
 
       {/* TabView (informations / articles) pour le user - (informations / articles / membres) pour le club */}

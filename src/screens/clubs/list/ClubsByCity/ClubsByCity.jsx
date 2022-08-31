@@ -28,6 +28,7 @@ import CustomBigButton from '../../../../components/CustomBigButton'
 import CustomSearchInput from '../../../../components/CustomSearchInput'
 import ClubsCard from '../../../../components/Clubs/ClubsCard'
 import useAxios from '../../../../hooks/useAxios'
+import CustomLoader from '../../../../components/CustomLoader'
 
 const ClubsByCity = () => {
   const { colors } = useTheme()
@@ -144,37 +145,40 @@ const ClubsByCity = () => {
         )}
 
         <View style={styles.content}>
-          {
-            // TODO Loading
-          }
-          <FlatList
-            ref={flatListClubs}
-            data={clubs}
-            ListEmptyComponent={() => (
-              <View style={styles.containerNoFeed}>
-                <Text style={[TitleH4, mb30, { color: colors.text }]}>
-                  Aucun clubs de créé pour le moment !
-                </Text>
-                <Text style={[defaultText, mb30, { color: colors.text }]}>
-                  N'hésitez pas a créer le votre en cliquant sur le lien
-                  ci-dessous
-                </Text>
-                <CustomBigButton
-                  label="Créer un club"
-                  onPress={() => navigation.navigate('AddClub')}
-                  styleBtn={px20}
-                />
-              </View>
-            )}
-            renderItem={({ item }) => (
-              <ClubsCard club={item} refresh={refresh} />
-            )}
-            keyExtractor={(item) => item.id}
-            showsVerticalScrollIndicator={false}
-            onEndReachedThreshold={0.5} // Formule (20 - (1.6666 * 6)) - Se declenche au 10 eme post
-            onEndReached={fetchMorePosts}
-            ListFooterComponent={renderFooter}
-          />
+          {!loading ? (
+            <FlatList
+              ref={flatListClubs}
+              data={clubs}
+              ListEmptyComponent={() => (
+                <View style={styles.containerNoFeed}>
+                  <Text style={[TitleH4, mb30, { color: colors.text }]}>
+                    Aucun clubs de créé pour le moment !
+                  </Text>
+                  <Text style={[defaultText, mb30, { color: colors.text }]}>
+                    N'hésitez pas a créer le votre en cliquant sur le lien
+                    ci-dessous
+                  </Text>
+                  <CustomBigButton
+                    label="Créer un club"
+                    onPress={() => navigation.navigate('AddClub')}
+                    styleBtn={px20}
+                  />
+                </View>
+              )}
+              renderItem={({ item }) => (
+                <ClubsCard club={item} refresh={refresh} />
+              )}
+              keyExtractor={(item) => item.id}
+              showsVerticalScrollIndicator={false}
+              onEndReachedThreshold={0.5} // Formule (20 - (1.6666 * 6)) - Se declenche au 10 eme post
+              onEndReached={fetchMorePosts}
+              ListFooterComponent={renderFooter}
+            />
+          ) : (
+            <View style={{ paddingTop: 50 }}>
+              <CustomLoader />
+            </View>
+          )}
         </View>
       </View>
     </FadingEdge>

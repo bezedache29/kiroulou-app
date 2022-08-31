@@ -2,7 +2,6 @@
  * Formulaire pour qu'un user ajoute un de ses vélos
  */
 import {
-  ActivityIndicator,
   Dimensions,
   Image,
   ScrollView,
@@ -423,15 +422,7 @@ const AddBikeScreen = ({ navigation }) => {
                 </ButtonBS>
               ))
             ) : (
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <ActivityIndicator />
-              </View>
+              <CustomLoader />
             )}
           </CustomBSModal>
 

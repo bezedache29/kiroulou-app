@@ -39,13 +39,15 @@ import useCustomToast from '../../../hooks/useCustomToast'
 import useAxios from '../../../hooks/useAxios'
 import useUtils from '../../../hooks/useUtils'
 import CustomBigButton from '../../../components/CustomBigButton'
+import CustomAlert from '../../../components/CustomAlert'
 
 const ClubProfileScreen = ({ navigation, route }) => {
   // Hooks
   const { colors } = useTheme()
   const { toastShow } = useCustomToast()
   const { dateToTimestamp, formatDateToSql } = useUtils()
-  const { axiosPutWithToken, axiosGetWithToken } = useAxios()
+  const { axiosPutWithToken, axiosGetWithToken, axiosDeleteWithToken } =
+    useAxios()
 
   const { clubId } = route.params
 
@@ -78,6 +80,27 @@ const ClubProfileScreen = ({ navigation, route }) => {
 
     setClub(response.data)
     setLoader(false)
+  }
+
+  const deleteClub = async () => {
+    setShowAlertDeleteClub(false)
+    closeBottomSheet()
+
+    // TODO Notifications aux users
+
+    const response = await axiosDeleteWithToken(`clubs/${club.id}`)
+
+    if (response.status === 201) {
+      toastShow({
+        title: 'Club supprimé !',
+        message: 'Le club a bien été supprimé',
+      })
+
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Splash' }],
+      })
+    }
   }
 
   const renderScene = ({ route }) => {
@@ -144,11 +167,12 @@ const ClubProfileScreen = ({ navigation, route }) => {
 
   const goTo = (direction) => {
     optionsProfile?.current?.closeBottomSheet()
-    if (direction === 'EditClubProfile') {
-      navigation.navigate(direction)
-    } else if (direction === 'AdminClubProfile') {
-      navigation.navigate(direction)
-    }
+    navigation.navigate(direction, { club })
+    // if (direction === 'EditClubProfile') {
+
+    // } else if (direction === 'AdminClubProfile') {
+    //   navigation.navigate(direction, { club })
+    // }
   }
 
   // A la confirmation de la date du DatePicker
@@ -268,7 +292,7 @@ const ClubProfileScreen = ({ navigation, route }) => {
             </ButtonBS>
             <ButtonBS
               onPress={() => {
-                goTo('AddOrEditClub', { club })
+                goTo('AddOrEditClub')
               }}
             >
               Changer les informations
@@ -293,33 +317,16 @@ const ClubProfileScreen = ({ navigation, route }) => {
           />
 
           {/* Alert avant de changer de supprimer le club */}
-          <AwesomeAlert
-            show={showAlertDeleteClub}
-            showProgress={!showAlertDeleteClub}
+
+          <CustomAlert
+            showAlert={showAlertDeleteClub}
             title="Attention !"
             message="Supprimer le club entrainera la perte de ses données et de son historique"
-            closeOnTouchOutside
-            closeOnHardwareBackPress={false}
-            showCancelButton
-            showConfirmButton
+            onDismiss={() => setShowAlertDeleteClub(false)}
+            onCancelPressed={() => setShowAlertDeleteClub(false)}
+            onConfirmPressed={deleteClub}
             cancelText="Annuler"
             confirmText="Supprimer"
-            confirmButtonColor={darkPrimaryColor}
-            cancelButtonColor={cancelColor}
-            cancelButtonTextStyle={defaultText}
-            confirmButtonTextStyle={defaultText}
-            onDismiss={() => {
-              setShowAlertDeleteClub(false)
-            }}
-            contentContainerStyle={{ backgroundColor: colors.background }}
-            titleStyle={[TitleH3, { color: colors.text }]}
-            messageStyle={[defaultText, { color: colors.text }]}
-            onCancelPressed={() => {
-              setShowAlertDeleteClub(false)
-            }}
-            onConfirmPressed={() => {
-              setShowAlertDeleteClub(false)
-            }}
           />
         </View>
       </BottomSheetModalProvider>

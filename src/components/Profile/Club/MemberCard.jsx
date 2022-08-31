@@ -107,9 +107,13 @@ const MembersCard = ({
       {/* Icon */}
       <View style={styles.header}>
         <ImageBackground
-          source={{
-            uri: `${URL_SERVER}/storage/${member.avatar}`,
-          }}
+          source={
+            member.avatar !== null
+              ? {
+                  uri: `${URL_SERVER}/storage/${member.avatar}`,
+                }
+              : require('../../../assets/images/png/default-avatar.png')
+          }
           style={styles.avatar}
           imageStyle={{ borderRadius: 25 }}
         />
@@ -123,9 +127,7 @@ const MembersCard = ({
           </Text>
           {/* Ville du member */}
           <Text style={[defaultText, { color: darkColor, fontSize: 14 }]}>
-            {member.address
-              ? member.address.ccity.name
-              : 'Ville non renseignée'}
+            {member.address ? member.address.city.name : 'Ville non renseignée'}
           </Text>
         </View>
       </View>
