@@ -6,21 +6,7 @@ const addClubSchema = yup.object().shape({
     .min(5, 'trop petit')
     .max(40, 'trop long!')
     .required('Le nom est obligatoire'),
-  shortName: yup
-    .string()
-    .min(6, 'trop petit')
-    .max(30, 'trop long!')
-    .required('Le nom raccourci est obligatoire'),
-  address: yup
-    .string()
-    .min(6, 'trop petit')
-    .max(30, 'trop long!')
-    .required("L'adresse est obligatoire"),
-  country: yup
-    .string()
-    .min(6, 'trop petit')
-    .max(30, 'trop long!')
-    .required('Le département est obligatoire'),
+  shortName: yup.string().min(2, 'trop petit').max(10, 'trop long!'),
   website: yup.string().min(6, 'trop petit').max(30, 'trop long!'),
 })
 

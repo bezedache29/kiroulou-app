@@ -16,7 +16,6 @@ import CancellationScreen from '../screens/legals/TermsAndConditions/TermsOfServ
 import ConductScreen from '../screens/legals/TermsAndConditions/TermsOfService/ConductScreen'
 import SupportAndQuestionsScreen from '../screens/legals/TermsAndConditions/TermsOfService/SupportAndQuestionsScreen'
 import TerminationScreen from '../screens/legals/TermsAndConditions/TermsOfService/TerminationScreen'
-import AddClubScreen from '../screens/clubs/AddClubScreen'
 import ForgotPasswordScreen from '../screens/auth/ForgotPasswordScreen'
 import SubsScreen from '../screens/subs/SubsScreen'
 import SubsChoiceScreen from '../screens/subs/SubsChoiceScreen'
@@ -45,6 +44,7 @@ import SubPaymentScreen from '../screens/subs/SubPaymentScreen'
 import SubSuccessScreen from '../screens/subs/SubSuccessScreen'
 import InvoicesScreen from '../screens/invoices/InvoicesScreen'
 import UserProfileScreen from '../screens/profile/user/UserProfileScreen'
+import AddOrEditClubScreen from '../screens/clubs/AddOrEditClubScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -79,7 +79,7 @@ const AppStack = () => (
     <Stack.Screen name="CookiePolicy" component={CookiePolicyScreen} />
 
     {/* Clubs */}
-    <Stack.Screen name="AddClub" component={AddClubScreen} />
+    <Stack.Screen name="AddOrEditClub" component={AddOrEditClubScreen} />
 
     {/* Profil User & Club */}
     <Stack.Screen name="ImagesProfile" component={ImagesProfileScreen} />

@@ -13,23 +13,19 @@ import {
 import React, { useEffect, useRef, useState } from 'react'
 
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 import { useTheme } from 'react-native-paper'
 import { Formik } from 'formik'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
-
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
-
-import MultipleImagePicker from '@baronha/react-native-multiple-image-picker'
 
 import addBikeSchema from '../../../../../../../validationSchemas/addBikeSchema'
 
 import {
   dangerColor,
-  darkPrimaryColor,
   mr5,
   mt20,
   mx20,
@@ -49,6 +45,7 @@ import useImages from '../../../../../../../hooks/useImages'
 import useAxios from '../../../../../../../hooks/useAxios'
 import useCustomToast from '../../../../../../../hooks/useCustomToast'
 import CustomLoader from '../../../../../../../components/CustomLoader'
+import usePicker from '../../../../../../../hooks/usePicker'
 
 const { width, height } = Dimensions.get('window')
 
@@ -57,7 +54,8 @@ const AddBikeScreen = ({ navigation }) => {
   const { formatDate, formatDateToSql } = useUtils()
   const { colors } = useTheme()
   const { axiosGetWithToken, axiosPostWithToken } = useAxios()
-  const { sendImageToServer, compressImage, checkExtension } = useImages()
+  const { sendImageToServer } = useImages()
+  const { openImagePicker } = usePicker()
   const { toastShow } = useCustomToast()
 
   // Variables
@@ -125,22 +123,10 @@ const AddBikeScreen = ({ navigation }) => {
 
   // Ouvre les photos du téléphone
   const openPicker = async () => {
-    try {
-      const response = await MultipleImagePicker.openPicker({
-        mediaType: 'image',
-        singleSelectedMode: true,
-        doneTitle: 'Valider',
-        cancelTitle: 'Annuler',
-        selectedColor: darkPrimaryColor,
-      })
+    const img = await openImagePicker()
 
-      // On check que ce sont bien des images qui sont upload (jpeg / jpg / png only)
-      if (checkExtension(response.mime)) {
-        const compress = await compressImage(`file://${response.realPath}`)
-        setImage(compress)
-      }
-    } catch (e) {
-      console.log(e.code, e.message)
+    if (img !== null) {
+      setImage(img)
     }
   }
 
