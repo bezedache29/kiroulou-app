@@ -284,10 +284,7 @@ const EditUserProfileScreen = ({ navigation, route }) => {
     }
 
     if (!addressError && !imageError) {
-      const response = await axiosPutWithToken(
-        `users/${userEdit.id}/update`,
-        data
-      )
+      const response = await axiosPutWithToken(`users/${userEdit.id}`, data)
 
       if (response.status === 201) {
         toastShow({

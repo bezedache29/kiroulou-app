@@ -15,7 +15,9 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
-import { useStoreState } from 'easy-peasy'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+
+import { useStoreState, useStoreActions } from 'easy-peasy'
 
 import {
   darkPrimaryColor,
@@ -42,20 +44,26 @@ import { AppContext } from '../context/Context'
 import CustomBSModal from '../components/CustomBSModal'
 import ButtonBS from '../components/ButtonBS'
 import CustomOverlay from '../components/CustomOverlay'
-import useAxios from '../hooks/useAxios'
 import CustomAlert from '../components/CustomAlert'
+
+import useAxios from '../hooks/useAxios'
+import useCustomToast from '../hooks/useCustomToast'
 
 const SettingsScreen = ({ navigation }) => {
   const { colors } = useTheme()
   const paperTheme = useTheme() // Recupère la valeur du darkmode
   const { toggleTheme } = useContext(AppContext)
-  const { axiosPostWithToken } = useAxios()
+  const { axiosPostWithToken, axiosDeleteWithToken } = useAxios()
+  const { toastShow } = useCustomToast()
 
+  const userActions = useStoreActions((actions) => actions.user)
   const userStore = useStoreState((state) => state.user)
   const { user } = userStore
 
   const [overlay, setOverlay] = useState(false)
   const [showCancelSub, setShowCancelSub] = useState(false)
+  const [showDeleteUser, setShowDeleteUser] = useState(false)
+  const [showNoDeleteUser, setShowNoDeleteUser] = useState(false)
 
   const notifications = {
     push: user.is_push_notifications,
@@ -73,6 +81,38 @@ const SettingsScreen = ({ navigation }) => {
     } else {
       setOverlay(true)
       bottomSheetRef?.current?.openBottomSheet()
+    }
+  }
+
+  const deleteUser = async () => {
+    setShowDeleteUser(false)
+
+    let error = false
+
+    // Check si le user est admin du club
+    if (user.is_club_admin === 1) {
+      error = true
+      setShowNoDeleteUser(true)
+    }
+
+    // Si pas d'erreur, on supprime le user
+    if (!error) {
+      const response = await axiosDeleteWithToken(`users/${user.id}`)
+
+      if (response.status === 201) {
+        userActions.loadUser({})
+        await AsyncStorage.removeItem('kro_auth_token')
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Splash' }],
+        })
+      } else {
+        toastShow({
+          title: 'Action impossible !',
+          message: `Merci de réessayer plus tard (${response.status})`,
+          type: 'toast_danger',
+        })
+      }
     }
   }
 
@@ -178,6 +218,19 @@ const SettingsScreen = ({ navigation }) => {
                     style={[defaultText, my10, ml20, { color: colors.text }]}
                   >
                     Mes factures
+                  </Text>
+                </TouchableRipple>
+
+                <TouchableRipple
+                  onPress={() => {
+                    setShowDeleteUser(true)
+                  }}
+                  style={mt10}
+                >
+                  <Text
+                    style={[defaultText, my10, ml20, { color: colors.text }]}
+                  >
+                    Supprimmer mon compte
                   </Text>
                 </TouchableRipple>
               </LayoutSection>
@@ -325,6 +378,28 @@ const SettingsScreen = ({ navigation }) => {
             onDismiss={() => setShowCancelSub(false)}
             onCancelPressed={() => setShowCancelSub(false)}
             onConfirmPressed={() => cancelSub()}
+          />
+
+          <CustomAlert
+            showAlert={showDeleteUser}
+            title="Attention !"
+            message={`Etes vous sur de vouloir supprimer votre compte ?\n\nCette action est irréversible !`}
+            onDismiss={() => setShowDeleteUser(false)}
+            onCancelPressed={() => setShowDeleteUser(false)}
+            onConfirmPressed={() => deleteUser()}
+          />
+
+          <CustomAlert
+            showAlert={showNoDeleteUser}
+            title="Impossbile !"
+            message={`Vous devez d'abord changer l'administrateur de votre club ou supprimer ce dernier`}
+            cancelText="Annuler"
+            confirmText="Voir mon club"
+            onDismiss={() => setShowNoDeleteUser(false)}
+            onCancelPressed={() => setShowNoDeleteUser(false)}
+            onConfirmPressed={() =>
+              navigation.navigate('ClubProfile', { clubId: user.club_id })
+            }
           />
 
           {/* BottomSheet pour options de l'abonnement */}
