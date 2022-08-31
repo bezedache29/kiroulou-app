@@ -268,7 +268,7 @@ const ClubProfileScreen = ({ navigation, route }) => {
             </ButtonBS>
             <ButtonBS
               onPress={() => {
-                goTo('EditClubProfile')
+                goTo('AddOrEditClub', { club })
               }}
             >
               Changer les informations

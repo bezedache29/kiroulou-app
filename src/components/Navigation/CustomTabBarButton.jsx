@@ -80,7 +80,7 @@ const CustomTabBarButton = ({ children, opened, toggleOpened }) => {
         </TouchableOpacity>
 
         {/* Bouton du milieu */}
-        <TouchableOpacity onPress={() => goToScreen('AddClub')}>
+        <TouchableOpacity onPress={() => goToScreen('AddOrEditClub')}>
           <Animated.View
             style={[
               styles.item,

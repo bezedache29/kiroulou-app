@@ -24,11 +24,7 @@ const InputFieldButton = ({ onPress, icon, label, chevronColor, error }) => {
       >
         {icon}
 
-        <Text
-          style={[defaultText, { color: error ? dangerColor : colors.text }]}
-        >
-          {label}
-        </Text>
+        <Text style={[defaultText, { color: colors.text }]}>{label}</Text>
 
         {chevronColor && (
           <MaterialCommunityIcons
@@ -39,7 +35,11 @@ const InputFieldButton = ({ onPress, icon, label, chevronColor, error }) => {
           />
         )}
       </TouchableOpacity>
-      {error && <Text style={{ color: dangerColor }}>{error}</Text>}
+      {error && (
+        <Text style={[defaultText, { color: dangerColor, fontSize: 14 }]}>
+          {error}
+        </Text>
+      )}
     </>
   )
 }

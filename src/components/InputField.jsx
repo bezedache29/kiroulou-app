@@ -68,8 +68,16 @@ const InputField = ({
         <Text style={[styles.link, minText]}>{fieldButtonLabel}</Text>
       </TouchableOpacity>
     </View>
-    {error && <Text style={{ color: dangerColor }}>{error}</Text>}
-    {otherError && <Text style={{ color: dangerColor }}>{otherError}</Text>}
+    {error && (
+      <Text style={[defaultText, { color: dangerColor, fontSize: 14 }]}>
+        {error}
+      </Text>
+    )}
+    {otherError && (
+      <Text style={[defaultText, { color: dangerColor, fontSize: 14 }]}>
+        {otherError}
+      </Text>
+    )}
   </>
 )
 

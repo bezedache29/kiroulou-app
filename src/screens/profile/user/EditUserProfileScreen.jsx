@@ -41,6 +41,7 @@ import useImages from '../../../hooks/useImages'
 import useAxios from '../../../hooks/useAxios'
 import CustomLoader from '../../../components/CustomLoader'
 import InputFieldButton from '../../../components/InputFieldButton'
+import usePicker from '../../../hooks/usePicker'
 
 const defaultImage = require('../../../assets/images/png/default-avatar.png')
 
@@ -48,7 +49,9 @@ const EditUserProfileScreen = ({ navigation, route }) => {
   const { colors } = useTheme()
   const { toastShow } = useCustomToast()
   const { sendImageToServer, compressImage, checkExtension } = useImages()
-  const { axiosPostWithToken, axiosPutWithToken } = useAxios()
+  const { openImagePicker } = usePicker()
+  const { axiosPostWithToken, axiosPutWithToken, axiosSearchAddress } =
+    useAxios()
 
   const { userProfile } = route.params
 
@@ -127,7 +130,7 @@ const EditUserProfileScreen = ({ navigation, route }) => {
   // }, [addressToDB])
 
   const searchToApi = async (value) => {
-    const response = await axios.get(`${URL_ADDRESS}${value}`)
+    const response = await axiosSearchAddress(value)
 
     // console.log('response', response.data)
     setProposals(response.data.features)
@@ -157,24 +160,32 @@ const EditUserProfileScreen = ({ navigation, route }) => {
   }
 
   const openPicker = async () => {
-    try {
-      const response = await MultipleImagePicker.openPicker({
-        mediaType: 'image',
-        singleSelectedMode: true,
-        doneTitle: 'Valider',
-        cancelTitle: 'Annuler',
-        selectedColor: darkPrimaryColor,
-      })
+    const img = await openImagePicker()
 
-      // On check que ce sont bien des images qui sont upload (jpeg / jpg / png only)
-      if (checkExtension(response.mime)) {
-        const compress = await compressImage(`file://${response.realPath}`)
-        setImage(compress)
-      }
-    } catch (e) {
-      console.log(e.code, e.message)
+    if (img !== null) {
+      setImage(img)
     }
   }
+
+  // const openPicker = async () => {
+  //   try {
+  //     const response = await MultipleImagePicker.openPicker({
+  //       mediaType: 'image',
+  //       singleSelectedMode: true,
+  //       doneTitle: 'Valider',
+  //       cancelTitle: 'Annuler',
+  //       selectedColor: darkPrimaryColor,
+  //     })
+
+  //     // On check que ce sont bien des images qui sont upload (jpeg / jpg / png only)
+  //     if (checkExtension(response.mime)) {
+  //       const compress = await compressImage(`file://${response.realPath}`)
+  //       setImage(compress)
+  //     }
+  //   } catch (e) {
+  //     console.log(e.code, e.message)
+  //   }
+  // }
 
   const checkIfAddressExist = async () => {
     const response = await axiosPostWithToken(

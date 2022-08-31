@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { URL_API, URL_SERVER } from 'react-native-dotenv'
+import { URL_API, URL_SERVER, URL_ADDRESS } from 'react-native-dotenv'
 import { useStoreState } from 'easy-peasy'
 
 const useAxios = () => {
@@ -118,6 +118,12 @@ const useAxios = () => {
     return response
   }
 
+  const axiosSearchAddress = async (value) => {
+    const response = await axios.get(`${URL_ADDRESS}${value}`)
+
+    return response
+  }
+
   return {
     axiosPostWithoutToken,
     axiosGetWithoutToken,
@@ -125,6 +131,7 @@ const useAxios = () => {
     axiosGetWithToken,
     axiosPutWithToken,
     axiosDeleteWithToken,
+    axiosSearchAddress,
   }
 }
 
