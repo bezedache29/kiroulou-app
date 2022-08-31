@@ -49,6 +49,7 @@ const App = () => {
             toast_danger: (toast) => (
               <CustomToast toast={toast} type="danger" />
             ),
+            toast_info: (toast) => <CustomToast toast={toast} type="info" />,
           }}
         >
           <PaperProvider theme={theme}>

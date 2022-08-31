@@ -11,10 +11,11 @@ import React, { useEffect, useState } from 'react'
 import { useTheme } from 'react-native-paper'
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
 import { useNavigation } from '@react-navigation/native'
 
-import { useStoreState } from 'easy-peasy'
+import { useStoreState, useStoreActions } from 'easy-peasy'
 
 import { URL_SERVER } from 'react-native-dotenv'
 
@@ -46,16 +47,19 @@ import useServices from '../../../../../hooks/useServices'
 const ClubInformationsScene = ({ club }) => {
   console.log(club)
   const { colors } = useTheme()
-  const { axiosPostWithToken, axiosGetWithToken } = useAxios()
+  const { axiosPostWithToken, axiosGetWithToken, axiosPutWithToken } =
+    useAxios()
   const { toastShow } = useCustomToast()
   const { getValidUrl } = useServices()
 
   const navigation = useNavigation()
 
+  const userActions = useStoreActions((actions) => actions.user)
   const userStore = useStoreState((state) => state.user)
   const { user } = userStore
 
   const [showAlertPremium, setShowAlertPremium] = useState(false)
+  const [showLeaveClub, setShowLeaveClub] = useState(false)
   const [follow, setFollow] = useState(false)
 
   useEffect(() => {
@@ -104,6 +108,49 @@ const ClubInformationsScene = ({ club }) => {
     }
   }
 
+  const enterOrExit = async () => {
+    if (user.club_id === club.id) {
+      setShowLeaveClub(true)
+    } else {
+      // Demande adhésion
+      const response = await axiosPostWithToken(
+        `clubs/${club.id}/requestToJoin`
+      )
+
+      if (response.status === 201) {
+        toastShow({
+          title: 'Demande adhésion envoyé',
+          message: `Votre demande d'adhésion a été envoyé au club ${club.name}`,
+        })
+
+        // TODO Notification admin
+      }
+
+      if (response.status === 403) {
+        toastShow({
+          title: 'Demande toujours en cours',
+          message: response.data.message,
+          type: 'toast_info',
+        })
+      }
+    }
+  }
+
+  const leaveClub = async () => {
+    setShowLeaveClub(false)
+    const response = await axiosPutWithToken(`users/${user.id}/leaveClub`)
+
+    if (response.status === 201) {
+      toastShow({
+        title: 'Club quitté !',
+        message: `Vous avez quitté le club ${club.name}`,
+      })
+      userActions.loadUser(response.data.user)
+
+      // TODO Notification
+    }
+  }
+
   return (
     <ScrollView style={{ backgroundColor: secondaryColor }}>
       <View style={[pb20, { flex: 1 }]}>
@@ -147,30 +194,51 @@ const ClubInformationsScene = ({ club }) => {
           )}
         </View>
 
-        <View style={mt20}>
+        <View style={mt10}>
           <CustomButtonInfo
-            title="Les randos organisées par le club"
+            title={follow ? 'Ne plus suivre le club' : 'Suivre le club'}
             colors={colors}
-            onPress={goToHikesClub}
+            onPress={pressFollow}
             backgroundColor={primaryColor}
+            iconRight={
+              <MaterialIcons
+                name={follow ? 'star' : 'star-outline'}
+                size={30}
+                color={darkColor}
+              />
+            }
           />
 
-          {user.club_id !== club.id && (
+          {user.club_id === club.id && user.is_club_admin === 1 ? (
+            <View />
+          ) : (
             <CustomButtonInfo
-              title={follow ? 'Ne plus suivre le club' : 'Suivre le club'}
+              title={
+                user.club_id === club.id
+                  ? 'Quitter le club'
+                  : "Demande d'adhésion"
+              }
               colors={colors}
-              onPress={pressFollow}
+              onPress={enterOrExit}
               backgroundColor={primaryColor}
               style={mt20}
               iconRight={
-                <MaterialIcons
-                  name={follow ? 'star' : 'star-outline'}
+                <MaterialCommunityIcons
+                  name={follow ? 'location-exit' : 'location-enter'}
                   size={30}
                   color={darkColor}
                 />
               }
             />
           )}
+
+          <CustomButtonInfo
+            title="Les randos organisées par le club"
+            colors={colors}
+            onPress={goToHikesClub}
+            style={mt20}
+            backgroundColor={primaryColor}
+          />
         </View>
       </View>
 
@@ -186,6 +254,15 @@ const ClubInformationsScene = ({ club }) => {
         }}
         confirmText="Voir les premiums"
         cancelText="Fermer"
+      />
+
+      <CustomAlert
+        showAlert={showLeaveClub}
+        title="Attention !"
+        message={`Etes vous sur de vouloir quitter le club ${club.name} ?`}
+        onDismiss={() => setShowLeaveClub(false)}
+        onCancelPressed={() => setShowLeaveClub(false)}
+        onConfirmPressed={leaveClub}
       />
     </ScrollView>
   )
