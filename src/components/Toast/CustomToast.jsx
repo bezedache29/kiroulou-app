@@ -19,6 +19,9 @@ const CustomToast = ({ toast, type }) => {
     if (type === 'warning') {
       return warningColor
     }
+    if (type === 'info') {
+      return '#17a2b8'
+    }
 
     return darkPrimaryColor
   }

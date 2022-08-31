@@ -33,16 +33,13 @@ const ClubsFollowCard = ({ club, unfollow }) => {
     <View style={styles.container}>
       {/* Icon */}
       <View style={styles.header}>
-        {
-          // TODO Avatar
-        }
-        {/* <ImageBackground
+        <ImageBackground
           source={{
             uri: `${URL_SERVER}/storage/${club.avatar}`,
           }}
           style={styles.avatar}
           imageStyle={{ borderRadius: 25 }}
-        /> */}
+        />
         <View>
           {/* Nom du club */}
           <Text style={[defaultTextBold, { color: darkColor }]}>

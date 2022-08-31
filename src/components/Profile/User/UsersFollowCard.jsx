@@ -26,9 +26,13 @@ const UsersFollowCard = ({ user, unfollow }) => {
       {/* Icon */}
       <View style={styles.header}>
         <ImageBackground
-          source={{
-            uri: `${URL_SERVER}/storage/${user.avatar}`,
-          }}
+          source={
+            user.avatar !== null
+              ? {
+                  uri: `${URL_SERVER}/storage/${user.avatar}`,
+                }
+              : require('../../../assets/images/png/default-avatar.png')
+          }
           style={styles.avatar}
           imageStyle={{ borderRadius: 25 }}
         />
