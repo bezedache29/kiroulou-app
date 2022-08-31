@@ -50,6 +50,7 @@ import CustomIconButton from '../../../../../../../components/CustomIconButton'
 import useImages from '../../../../../../../hooks/useImages'
 import useAxios from '../../../../../../../hooks/useAxios'
 import useCustomToast from '../../../../../../../hooks/useCustomToast'
+import CustomLoader from '../../../../../../../components/CustomLoader'
 
 const { width, height } = Dimensions.get('window')
 
@@ -72,6 +73,8 @@ const EditBikeScreen = ({ navigation, route }) => {
   const [types, setTypes] = useState(false)
   const [typeError, setTypeError] = useState(false)
   const [image, setImage] = useState(false)
+  const [oldImage, setOldImage] = useState(false)
+  const [loader, setLoader] = useState(false)
 
   // Au montage du composant, on récupère la date et le type
   useEffect(() => {
@@ -81,6 +84,7 @@ const EditBikeScreen = ({ navigation, route }) => {
     }
     if (route.params.bike.image !== null) {
       setImage(`${URL_SERVER}/storage/${route.params.bike.image}`)
+      setOldImage(route.params.bike.image)
     }
   }, [route.params])
 
@@ -160,6 +164,7 @@ const EditBikeScreen = ({ navigation, route }) => {
 
   // Permet de valider le formulaire
   const submitForm = async (values, resetForm) => {
+    setLoader(true)
     const data = {
       name: values.name,
       brand: values.brand,
@@ -176,6 +181,7 @@ const EditBikeScreen = ({ navigation, route }) => {
     )
 
     if (response.status === 201) {
+      let error = false
       if (image) {
         // Permet de savoir si l'image a changé.
         // L'image venant du téléphone commence par file
@@ -183,7 +189,7 @@ const EditBikeScreen = ({ navigation, route }) => {
         const checkOrigin = image.substring(0, 4)
         if (checkOrigin === 'file') {
           // On met l'extension du fichier
-          const title = `${image.split('.').pop()}`
+          const title = `${oldImage || 'noimages'}|${image.split('.').pop()}`
           // On envoie l'image pour stockage
 
           // Création et Envoie image en DB
@@ -202,21 +208,31 @@ const EditBikeScreen = ({ navigation, route }) => {
               message: 'Il y a un problème avec votre image',
               type: 'toast_danger',
             })
+
+            error = true
           }
         }
       }
 
-      toastShow({
-        title: 'Modification du vélo réussi !',
-        message: 'Votre vélo a bien été modifié avec succès',
-      })
+      setLoader(false)
 
-      // TODO Notifications aux followers
+      if (!error) {
+        toastShow({
+          title: 'Modification du vélo réussi !',
+          message: 'Votre vélo a bien été modifié avec succès',
+        })
 
-      resetForm()
+        // TODO Notifications aux followers
 
-      navigation.goBack()
+        resetForm()
+
+        navigation.goBack()
+      }
     }
+  }
+
+  if (loader) {
+    return <CustomLoader />
   }
 
   return (
