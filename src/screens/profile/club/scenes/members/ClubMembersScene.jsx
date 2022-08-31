@@ -238,7 +238,7 @@ const ClubMembersScene = ({ item }) => {
           member.firstname
             ? `${member.firstname} ${member.lastname}`
             : member.email
-        } du club Nom du club ?`}
+        } du club ${club.name} ?`}
         onDismiss={() => {
           setShowAlert(false)
         }}

@@ -43,6 +43,7 @@ import useAxios from '../../../../../hooks/useAxios'
 import useCustomToast from '../../../../../hooks/useCustomToast'
 
 const ClubInformationsScene = ({ club }) => {
+  console.log(club)
   const { colors } = useTheme()
   const { axiosPostWithToken, axiosGetWithToken } = useAxios()
   const { toastShow } = useCustomToast()
@@ -105,16 +106,13 @@ const ClubInformationsScene = ({ club }) => {
     <ScrollView style={{ backgroundColor: secondaryColor }}>
       <View style={[pb20, { flex: 1 }]}>
         <View style={[mx20, mt40, styles.header]}>
-          {
-            // TODO Mettre l'avatar
-          }
-          {/* <ImageBackground
+          <ImageBackground
             source={{
               uri: `${URL_SERVER}/storage/${club.avatar}`,
             }}
             style={[mr20, styles.avatar]}
             imageStyle={styles.avatarStyle}
-          /> */}
+          />
           <View style={{ flex: 4 }}>
             <Text style={[littleTitle, { color: darkColor }]}>{club.name}</Text>
             <Text style={[defaultText, mt10, { color: darkColor }]}>
