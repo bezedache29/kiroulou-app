@@ -9,6 +9,8 @@ import React, { useRef, useEffect } from 'react'
 
 import { useNavigation } from '@react-navigation/native'
 
+import { useStoreState } from 'easy-peasy'
+
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
@@ -20,6 +22,9 @@ import {
 
 const CustomTabBarButton = ({ children, opened, toggleOpened }) => {
   const animation = useRef(new Animated.Value(0)).current
+
+  const userStore = useStoreState((state) => state.user)
+  const { user } = userStore
 
   const navigation = useNavigation()
 
@@ -80,7 +85,7 @@ const CustomTabBarButton = ({ children, opened, toggleOpened }) => {
         </TouchableOpacity>
 
         {/* Bouton du milieu */}
-        <TouchableOpacity onPress={() => goToScreen('AddOrEditClub')}>
+        {/* <TouchableOpacity onPress={() => goToScreen('AddOrEditPost')}>
           <Animated.View
             style={[
               styles.item,
@@ -97,41 +102,76 @@ const CustomTabBarButton = ({ children, opened, toggleOpened }) => {
               },
             ]}
           >
-            <MaterialIcons name="group-add" color={whiteColor} size={24} />
-          </Animated.View>
-        </TouchableOpacity>
-
-        {/* Bouton de droite */}
-        <TouchableOpacity onPress={() => goToScreen('AddHikeStep1')}>
-          <Animated.View
-            style={[
-              styles.item,
-              opacity,
-              {
-                transform: [
-                  {
-                    translateX: animation.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0, 60],
-                    }),
-                  },
-                  {
-                    translateY: animation.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0, -50],
-                    }),
-                  },
-                ],
-              },
-            ]}
-          >
             <MaterialCommunityIcons
-              name="map-plus"
+              name="comment-plus-outline"
               color={whiteColor}
               size={24}
             />
           </Animated.View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+
+        {/* Bouton de droite Suivant si c'est un admin de club qou un utilisateur sans club */}
+        {user.club_id === null && user.is_club_admin === 0 && (
+          <TouchableOpacity onPress={() => goToScreen('AddOrEditClub')}>
+            <Animated.View
+              style={[
+                styles.item,
+                opacity,
+                {
+                  transform: [
+                    {
+                      translateX: animation.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 60],
+                      }),
+                    },
+                    {
+                      translateY: animation.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, -50],
+                      }),
+                    },
+                  ],
+                },
+              ]}
+            >
+              <MaterialIcons name="group-add" color={whiteColor} size={24} />
+            </Animated.View>
+          </TouchableOpacity>
+        )}
+
+        {user.is_club_admin === 1 && user.club_id !== null && (
+          <TouchableOpacity onPress={() => goToScreen('AddHikeStep1')}>
+            <Animated.View
+              style={[
+                styles.item,
+                opacity,
+                {
+                  transform: [
+                    {
+                      translateX: animation.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 60],
+                      }),
+                    },
+                    {
+                      translateY: animation.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, -50],
+                      }),
+                    },
+                  ],
+                },
+              ]}
+            >
+              <MaterialCommunityIcons
+                name="map-plus"
+                color={whiteColor}
+                size={24}
+              />
+            </Animated.View>
+          </TouchableOpacity>
+        )}
 
         {/* Gros Bouton + au milieu */}
         <TouchableWithoutFeedback
