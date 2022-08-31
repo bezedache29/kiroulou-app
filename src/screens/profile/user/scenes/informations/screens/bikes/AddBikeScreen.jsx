@@ -48,6 +48,7 @@ import CustomIconButton from '../../../../../../../components/CustomIconButton'
 import useImages from '../../../../../../../hooks/useImages'
 import useAxios from '../../../../../../../hooks/useAxios'
 import useCustomToast from '../../../../../../../hooks/useCustomToast'
+import CustomLoader from '../../../../../../../components/CustomLoader'
 
 const { width, height } = Dimensions.get('window')
 
@@ -71,6 +72,7 @@ const AddBikeScreen = ({ navigation }) => {
   // const [typeName, setTypeName] = useState('Type de vélo')
   const [typeError, setTypeError] = useState(false)
   const [image, setImage] = useState(false)
+  const [loader, setLoader] = useState(false)
 
   useEffect(() => {
     loadTypes()
@@ -151,6 +153,7 @@ const AddBikeScreen = ({ navigation }) => {
 
   // Permet de valider le formulaire
   const submitForm = async (values, resetForm) => {
+    setLoader(true)
     const data = {
       name: values.name,
       brand: values.brand,
@@ -164,9 +167,10 @@ const AddBikeScreen = ({ navigation }) => {
     const response = await axiosPostWithToken('users/bikes', data)
 
     if (response.status === 201) {
+      let error = false
       if (image) {
         // On met l'extension du fichier
-        const title = `${image.split('.').pop()}`
+        const title = `${'nothing'}|${image.split('.').pop()}`
         // On envoie l'image pour stockage
 
         // Création de l'image et envoie en DB
@@ -179,25 +183,32 @@ const AddBikeScreen = ({ navigation }) => {
           }
         )
 
+        console.log('isSend', isSend)
+
         if (isSend.respInfo.status !== 201) {
           toastShow({
             title: 'Oops !',
             message: 'Il y a un problème avec votre image',
             type: 'toast_danger',
           })
+
+          error = true
         }
-      } else {
+      }
+
+      setLoader(false)
+
+      if (!error) {
         toastShow({
           title: 'Ajout du vélo avec succès !',
           message: 'Un nouveau vélo fait maintenant partie de votre collection',
         })
 
         // TODO Notifications aux followers
+
+        resetForm()
+        navigation.goBack()
       }
-
-      resetForm()
-
-      navigation.goBack()
     }
 
     if (response.status === 422) {
@@ -207,6 +218,10 @@ const AddBikeScreen = ({ navigation }) => {
         type: 'toast_danger',
       })
     }
+  }
+
+  if (loader) {
+    return <CustomLoader />
   }
 
   return (
@@ -350,6 +365,7 @@ const AddBikeScreen = ({ navigation }) => {
                       onChange={handleChange('weight')}
                       onBlur={handleBlur('weight')}
                       value={values.weight}
+                      keyboardType="numeric"
                     />
 
                     {/* Date du vélo */}

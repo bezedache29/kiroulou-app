@@ -78,9 +78,9 @@ const BikesUserScreen = ({ navigation, route }) => {
     setBike(null)
   }
 
-  useEffect(() => {
-    loadBikes()
-  }, [])
+  // useEffect(() => {
+  //   loadBikes()
+  // }, [])
 
   useEffect(() => {
     if (isFocused) {
@@ -137,7 +137,7 @@ const BikesUserScreen = ({ navigation, route }) => {
         <Text style={[littleTitle, { color: colors.text }]}>
           Nombre de vélo : {bikes.length}
         </Text>
-        {userId === user.id && (
+        {userId === user.id && bikes.length > 0 && (
           <TouchableOpacity
             style={{ marginLeft: 'auto' }}
             onPress={() => navigation.navigate('AddBike')}

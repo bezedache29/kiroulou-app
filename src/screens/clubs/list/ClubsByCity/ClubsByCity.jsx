@@ -14,11 +14,20 @@ import { useTheme } from 'react-native-paper'
 
 import FadingEdge from 'react-native-fading-edge'
 
-import { useIsFocused } from '@react-navigation/native'
+import { useIsFocused, useNavigation } from '@react-navigation/native'
+
+import {
+  darkColor,
+  defaultText,
+  mb30,
+  px20,
+  TitleH4,
+} from '../../../../assets/styles/styles'
+
+import CustomBigButton from '../../../../components/CustomBigButton'
 import CustomSearchInput from '../../../../components/CustomSearchInput'
 import ClubsCard from '../../../../components/Clubs/ClubsCard'
 import useAxios from '../../../../hooks/useAxios'
-import { darkColor, defaultText } from '../../../../assets/styles/styles'
 
 const ClubsByCity = () => {
   const { colors } = useTheme()
@@ -26,6 +35,8 @@ const ClubsByCity = () => {
   const { axiosGetWithToken } = useAxios()
 
   const isFocused = useIsFocused()
+
+  const navigation = useNavigation()
 
   const flatListClubs = useRef()
 
@@ -124,11 +135,13 @@ const ClubsByCity = () => {
   return (
     <FadingEdge bottom={500}>
       <View style={{ flex: 1, backgroundColor: colors.background }}>
-        <CustomSearchInput
-          placeholder="Rechercher par ville"
-          value={search}
-          onChangeValue={onChangeText}
-        />
+        {clubs.length > 0 && (
+          <CustomSearchInput
+            placeholder="Rechercher par ville"
+            value={search}
+            onChangeValue={onChangeText}
+          />
+        )}
 
         <View style={styles.content}>
           {
@@ -137,6 +150,22 @@ const ClubsByCity = () => {
           <FlatList
             ref={flatListClubs}
             data={clubs}
+            ListEmptyComponent={() => (
+              <View style={styles.containerNoFeed}>
+                <Text style={[TitleH4, mb30, { color: colors.text }]}>
+                  Aucun clubs de créé pour le moment !
+                </Text>
+                <Text style={[defaultText, mb30, { color: colors.text }]}>
+                  N'hésitez pas a créer le votre en cliquant sur le lien
+                  ci-dessous
+                </Text>
+                <CustomBigButton
+                  label="Créer un club"
+                  onPress={() => navigation.navigate('AddClub')}
+                  styleBtn={px20}
+                />
+              </View>
+            )}
             renderItem={({ item }) => (
               <ClubsCard club={item} refresh={refresh} />
             )}
@@ -167,6 +196,12 @@ const styles = StyleSheet.create({
   loader: {
     flex: 3,
     justifyContent: 'center',
+  },
+  containerNoFeed: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 20,
   },
 })
 
