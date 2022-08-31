@@ -41,12 +41,14 @@ import CustomButtonInfo from '../../../../../components/CustomButtonInfo'
 import CustomAlert from '../../../../../components/CustomAlert'
 import useAxios from '../../../../../hooks/useAxios'
 import useCustomToast from '../../../../../hooks/useCustomToast'
+import useServices from '../../../../../hooks/useServices'
 
 const ClubInformationsScene = ({ club }) => {
   console.log(club)
   const { colors } = useTheme()
   const { axiosPostWithToken, axiosGetWithToken } = useAxios()
   const { toastShow } = useCustomToast()
+  const { getValidUrl } = useServices()
 
   const navigation = useNavigation()
 
@@ -134,11 +136,11 @@ const ClubInformationsScene = ({ club }) => {
           {club.website !== null ? (
             <Text
               onPress={() => {
-                Linking.openURL('http://cotedeslegendesvtt.free.fr/')
+                Linking.openURL(getValidUrl(club.website))
               }}
               style={[defaultLink]}
             >
-              http://cotedeslegendesvtt.free.fr/
+              {getValidUrl(club.website.toLowerCase())}
             </Text>
           ) : (
             <Text style={[defaultLink]}>Pas de site internet</Text>

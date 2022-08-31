@@ -5,7 +5,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  ActivityIndicator,
 } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 
@@ -67,6 +66,7 @@ const AddOrEditClubScreen = ({ navigation, route }) => {
   const userActions = useStoreActions((actions) => actions.user)
 
   const [image, setImage] = useState(false)
+  const [oldImage, setOldImage] = useState(false)
   const [clubError, setClubError] = useState(false)
   const [club, setClub] = useState(false)
   const [organizations, setOrganizations] = useState([])
@@ -81,15 +81,21 @@ const AddOrEditClubScreen = ({ navigation, route }) => {
   const [type, setType] = useState({ name: "Type d'organisation" })
   const [typeError, setTypeError] = useState(false)
   const [overlay, setOverlay] = useState(false)
+  const [loader, setLoader] = useState(false)
 
   useEffect(() => {
     if (route.params?.club) {
+      setLoader(true)
       setClub(route.params.club)
       if (route.params.club.avatar !== null) {
         setImage(`${URL_SERVER}/storage/${route.params.club.avatar}`)
+        setOldImage(route.params.club.avatar)
       }
 
-      // TODO Récupérer le type
+      setType({
+        id: route.params.club.organization.id,
+        name: route.params.club.organization.name,
+      })
 
       setAddress(
         `${route.params.club.address.street_address} ${route.params.club.address.zipcode.code} ${route.params.club.address.city.name}`
@@ -133,6 +139,12 @@ const AddOrEditClubScreen = ({ navigation, route }) => {
       setNewAddress(false)
     }
   }, [address])
+
+  useEffect(() => {
+    if (club) {
+      setLoader(false)
+    }
+  }, [club])
 
   // Ref pour la bottomSheet Type
   const bottomSheetRef = useRef(null)
@@ -216,7 +228,7 @@ const AddOrEditClubScreen = ({ navigation, route }) => {
     setClubError(false)
     let addressToDBError = false
     let typeIdError = false
-    let clubCreateError = false
+    let sendClubError = false
     let imageError = false
 
     let data = {
@@ -224,8 +236,6 @@ const AddOrEditClubScreen = ({ navigation, route }) => {
       short_name: values.shortName,
       website: values.website,
     }
-
-    console.log(addressToDB)
 
     if (!addressToDB) {
       setAddressError("L'adresse est obligatoire")
@@ -249,8 +259,6 @@ const AddOrEditClubScreen = ({ navigation, route }) => {
 
       if (isExist.status === 404) {
         const addressCreated = await createAddress(addressToDB)
-
-        console.log('addressCreated', addressCreated.data)
 
         if (addressCreated.status === 201) {
           data = {
@@ -286,29 +294,35 @@ const AddOrEditClubScreen = ({ navigation, route }) => {
     }
 
     if (!addressToDBError && !typeIdError) {
-      // TODO On cré le club, on récupère l'id et on la met dans la route pour créer l'image
+      let response
 
-      const response = await axiosPostWithToken('clubs', data)
-
-      console.log('response create', response.data)
+      if (!club) {
+        // Creation du club
+        response = await axiosPostWithToken('clubs', data)
+      } else {
+        // Update du club
+        response = await axiosPutWithToken(`clubs/${club.id}`, data)
+      }
 
       if (response.status !== 201) {
         toastShow({
           title: 'Action impossible !',
-          message: `Création de club impossible (${response.status})`,
+          message: `${club ? 'Modification' : 'Création'} de club impossible (${
+            response.status
+          })`,
           type: 'toast_danger',
         })
 
-        clubCreateError = true
+        sendClubError = true
       }
 
-      if (!clubCreateError) {
+      if (!sendClubError) {
         if (image) {
           const checkOrigin = image.substring(0, 4)
 
           if (checkOrigin === 'file') {
             // On met l'extension du fichier
-            const title = `${club ? club.avatar : 'no-image'}|${image
+            const title = `${club ? oldImage : 'no-image'}|${image
               .split('.')
               .pop()}`
             // On envoie l'image pour stockage
@@ -320,8 +334,6 @@ const AddOrEditClubScreen = ({ navigation, route }) => {
                 title,
               }
             )
-
-            console.log('isSend', isSend)
 
             if (isSend.respInfo.status !== 201) {
               toastShow({
@@ -335,21 +347,34 @@ const AddOrEditClubScreen = ({ navigation, route }) => {
         }
 
         if (!imageError) {
-          // Update user avec le club_id et admin
-          const userUpdated = await axiosPutWithToken(
-            `users/${user.id}/admin`,
-            response.data.user_update
-          )
+          if (!club) {
+            // Update user avec le club_id et admin
+            const userUpdated = await axiosPutWithToken(
+              `users/${user.id}/admin`,
+              response.data.user_update
+            )
 
-          console.log('userUpdated', userUpdated.data)
+            if (userUpdated.status === 201) {
+              toastShow({
+                title: 'Club créé !',
+                message: 'Le club a bien été créé',
+              })
 
-          if (userUpdated.status === 201) {
-            toastShow({
-              title: 'Club créé !',
-              message: 'Le club a bien été créé',
-            })
+              userActions.loadUser(userUpdated.data.user)
+            } else {
+              sendClubError = true
+              toastShow({
+                title: 'Oops !',
+                message: `Création de club impossible ... (${userUpdated.status})`,
+                type: 'toast_danger',
+              })
 
-            userActions.loadUser(userUpdated.data.user)
+              // Delete avatar & club
+              await axiosDeleteWithToken(`clubs/${response.data.club.id}`)
+            }
+          }
+
+          if (!sendClubError) {
             resetForm()
             setAddress('')
             setNewAddress(true)
@@ -361,19 +386,6 @@ const AddOrEditClubScreen = ({ navigation, route }) => {
             navigation.navigate('ClubProfile', {
               clubId: response.data.club.id,
             })
-          } else {
-            toastShow({
-              title: 'Oops !',
-              message: `Création de club impossible ... (${userUpdated.status})`,
-              type: 'toast_danger',
-            })
-
-            // Delete avatar & club
-            const res = await axiosDeleteWithToken(
-              `clubs/${response.data.club.id}`
-            )
-
-            console.log('res delete', res.data)
           }
         }
       }
@@ -391,7 +403,7 @@ const AddOrEditClubScreen = ({ navigation, route }) => {
       <BottomSheetModalProvider>
         <View style={{ flex: 1, backgroundColor: colors.background }}>
           <CustomLabelNavigation
-            label="Créer club"
+            label={`${club ? 'Modifier' : 'Créer'} un club`}
             colors={colors}
             onPress={() => navigation.goBack()}
           />
@@ -417,166 +429,173 @@ const AddOrEditClubScreen = ({ navigation, route }) => {
             </View>
 
             <View style={px20}>
-              <Formik
-                validationSchema={addClubSchema}
-                initialValues={{
-                  name: '',
-                  shortName: '',
-                  website: '',
-                }}
-                onSubmit={(values, { resetForm }) => {
-                  submitForm(values, resetForm)
-                }}
-              >
-                {({
-                  handleChange,
-                  handleBlur,
-                  handleSubmit,
-                  values,
-                  errors,
-                  touched,
-                }) => (
-                  <>
-                    <InputField
-                      label="Nom du club"
-                      icon={
-                        <MaterialCommunityIcons
-                          name="account-tie"
-                          size={20}
-                          color={
-                            (touched.name && errors.name) || clubError
-                              ? dangerColor
-                              : colors.icon
-                          }
-                          style={mr5}
-                        />
-                      }
-                      colors={colors}
-                      otherError={clubError}
-                      error={(touched.name && errors.name) || clubError}
-                      name="name"
-                      onChange={handleChange('name')}
-                      onBlur={handleBlur('name')}
-                      value={values.name}
-                    />
-
-                    <InputField
-                      label="Nom raccourci (ex: CDL VTT)"
-                      icon={
-                        <MaterialCommunityIcons
-                          name="shield-account"
-                          size={20}
-                          color={
-                            touched.shortName && errors.shortName
-                              ? dangerColor
-                              : colors.icon
-                          }
-                          style={mr5}
-                        />
-                      }
-                      colors={colors}
-                      error={touched.shortName && errors.shortName}
-                      name="shortName"
-                      onChange={handleChange('shortName')}
-                      onBlur={handleBlur('shortName')}
-                      value={values.shortName}
-                    />
-
-                    {!changeAddress ? (
-                      <InputFieldButton
-                        onPress={wantChangeAddress}
-                        label={addressLabel}
-                        error={addressError}
-                        icon={
-                          <MaterialCommunityIcons
-                            name="home"
-                            size={20}
-                            color={addressError ? dangerColor : colors.icon}
-                            style={mr5}
-                          />
-                        }
-                      />
-                    ) : (
+              {!loader ? (
+                <Formik
+                  validationSchema={addClubSchema}
+                  initialValues={{
+                    name: club ? club.name : '',
+                    shortName:
+                      club && club.short_name !== null ? club.short_name : '',
+                    website:
+                      club && club.website !== null
+                        ? route.params.club.website
+                        : '',
+                  }}
+                  onSubmit={(values, { resetForm }) => {
+                    submitForm(values, resetForm)
+                  }}
+                >
+                  {({
+                    handleChange,
+                    handleBlur,
+                    handleSubmit,
+                    values,
+                    errors,
+                    touched,
+                  }) => (
+                    <>
                       <InputField
-                        autoFocus
-                        label="Adresse"
+                        label="Nom du club"
                         icon={
                           <MaterialCommunityIcons
-                            name="home"
+                            name="account-tie"
                             size={20}
-                            color={addressError ? dangerColor : colors.icon}
+                            color={
+                              (touched.name && errors.name) || clubError
+                                ? dangerColor
+                                : colors.icon
+                            }
                             style={mr5}
                           />
                         }
                         colors={colors}
-                        error={addressError}
-                        name="address"
-                        onChange={setAddress}
-                        value={address}
+                        otherError={clubError}
+                        error={(touched.name && errors.name) || clubError}
+                        name="name"
+                        onChange={handleChange('name')}
+                        onBlur={handleBlur('name')}
+                        value={values.name}
                       />
-                    )}
 
-                    {changeAddress && proposals.length > 0 && (
-                      <View style={styles.proposals}>
-                        {proposals.map((prop) => (
-                          <TouchableOpacity
-                            key={prop.properties.id}
-                            style={styles.proposal}
-                            onPress={() => selectAddress(prop)}
-                          >
-                            <Text style={[defaultText, styles.text]}>
-                              {prop.properties.label}
-                            </Text>
-                          </TouchableOpacity>
-                        ))}
-                      </View>
-                    )}
+                      <InputField
+                        label="Nom raccourci (ex: CDL VTT)"
+                        icon={
+                          <MaterialCommunityIcons
+                            name="shield-account"
+                            size={20}
+                            color={
+                              touched.shortName && errors.shortName
+                                ? dangerColor
+                                : colors.icon
+                            }
+                            style={mr5}
+                          />
+                        }
+                        colors={colors}
+                        error={touched.shortName && errors.shortName}
+                        name="shortName"
+                        onChange={handleChange('shortName')}
+                        onBlur={handleBlur('shortName')}
+                        value={values.shortName}
+                      />
 
-                    <InputFieldButton
-                      onPress={toggleBottomSheet}
-                      label={type.name}
-                      error={typeError}
-                      icon={
-                        <MaterialCommunityIcons
-                          name="shield-account"
-                          size={20}
-                          color={typeError ? dangerColor : colors.icon}
-                          style={mr5}
-                        />
-                      }
-                      chevronColor={typeError ? dangerColor : colors.text}
-                    />
-
-                    <InputField
-                      label="Site internet"
-                      icon={
-                        <MaterialCommunityIcons
-                          name="web"
-                          size={20}
-                          color={
-                            touched.website && errors.website
-                              ? dangerColor
-                              : colors.icon
+                      {!changeAddress ? (
+                        <InputFieldButton
+                          onPress={wantChangeAddress}
+                          label={addressLabel}
+                          error={addressError}
+                          icon={
+                            <MaterialCommunityIcons
+                              name="home"
+                              size={20}
+                              color={addressError ? dangerColor : colors.icon}
+                              style={mr5}
+                            />
                           }
-                          style={mr5}
                         />
-                      }
-                      colors={colors}
-                      error={touched.website && errors.website}
-                      name="website"
-                      onChange={handleChange('website')}
-                      onBlur={handleBlur('website')}
-                      value={values.website}
-                      keyboardType="url"
-                    />
+                      ) : (
+                        <InputField
+                          autoFocus
+                          label="Adresse"
+                          icon={
+                            <MaterialCommunityIcons
+                              name="home"
+                              size={20}
+                              color={addressError ? dangerColor : colors.icon}
+                              style={mr5}
+                            />
+                          }
+                          colors={colors}
+                          error={addressError}
+                          name="address"
+                          onChange={setAddress}
+                          value={address}
+                        />
+                      )}
 
-                    <CustomBigButton
-                      label="Créer mon club"
-                      onPress={handleSubmit}
-                    />
-                  </>
-                )}
-              </Formik>
+                      {changeAddress && proposals.length > 0 && (
+                        <View style={styles.proposals}>
+                          {proposals.map((prop) => (
+                            <TouchableOpacity
+                              key={prop.properties.id}
+                              style={styles.proposal}
+                              onPress={() => selectAddress(prop)}
+                            >
+                              <Text style={[defaultText, styles.text]}>
+                                {prop.properties.label}
+                              </Text>
+                            </TouchableOpacity>
+                          ))}
+                        </View>
+                      )}
+
+                      <InputFieldButton
+                        onPress={toggleBottomSheet}
+                        label={type.name}
+                        error={typeError}
+                        icon={
+                          <MaterialCommunityIcons
+                            name="shield-account"
+                            size={20}
+                            color={typeError ? dangerColor : colors.icon}
+                            style={mr5}
+                          />
+                        }
+                        chevronColor={typeError ? dangerColor : colors.text}
+                      />
+
+                      <InputField
+                        label="Site internet"
+                        icon={
+                          <MaterialCommunityIcons
+                            name="web"
+                            size={20}
+                            color={
+                              touched.website && errors.website
+                                ? dangerColor
+                                : colors.icon
+                            }
+                            style={mr5}
+                          />
+                        }
+                        colors={colors}
+                        error={touched.website && errors.website}
+                        name="website"
+                        onChange={handleChange('website')}
+                        onBlur={handleBlur('website')}
+                        value={values.website}
+                      />
+
+                      <CustomBigButton
+                        label={`${club ? 'Modifier' : 'Créer'} mon club`}
+                        onPress={handleSubmit}
+                      />
+                    </>
+                  )}
+                </Formik>
+              ) : (
+                <CustomLoader />
+              )}
             </View>
           </ScrollView>
 
