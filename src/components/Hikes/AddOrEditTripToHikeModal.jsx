@@ -42,6 +42,7 @@ const AddOrEditTripToHikeModal = ({
   showModalTrip,
   closeModal,
   setTripCreated,
+  setTripUpdated,
   edit,
 }) => {
   const { colors } = useTheme()
@@ -52,8 +53,8 @@ const AddOrEditTripToHikeModal = ({
   // Si on edit le parcours
   useEffect(() => {
     if (edit) {
-      setTrip(edit)
-      setChecked(edit.difficulty)
+      setTrip(edit.trip)
+      setChecked(edit.trip.difficulty)
     }
   }, [edit])
 
@@ -90,7 +91,12 @@ const AddOrEditTripToHikeModal = ({
               console.log('PARCOURS ', data)
               // resetForm()
 
-              setTripCreated(data)
+              if (edit) {
+                setTripUpdated({ id: edit.id, trip: data })
+              } else {
+                setTripCreated(data)
+              }
+
               resetForm()
               setChecked(1)
               closeModal()

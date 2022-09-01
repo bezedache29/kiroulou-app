@@ -70,7 +70,9 @@ const AddHikeStep1Screen = ({ navigation, route }) => {
                 name: hikeEdit ? hikeEdit.name : '',
                 description: hikeEdit ? hikeEdit.description : '',
                 publicPrice: hikeEdit ? hikeEdit.publicPrice.toString() : '',
-                privatePrice: hikeEdit ? hikeEdit.privatePrice.toString() : '',
+                privatePrice: hikeEdit
+                  ? hikeEdit.privatePrice.toString()
+                  : null,
               }}
               onSubmit={(values, { resetForm }) => {
                 const data = {
@@ -81,10 +83,14 @@ const AddHikeStep1Screen = ({ navigation, route }) => {
                     Math.round(+values.publicPrice.replace(',', '.') * 100) /
                     100
                   ).toFixed(2),
-                  private_price: (
-                    Math.round(+values.privatePrice.replace(',', '.') * 100) /
-                    100
-                  ).toFixed(2),
+                  private_price:
+                    values.privatePrice !== null
+                      ? (
+                          Math.round(
+                            +values.privatePrice.replace(',', '.') * 100
+                          ) / 100
+                        ).toFixed(2)
+                      : null,
                 }
                 // Envoie les infos a la part 2
                 console.log('DATA STEP 1 ', data)

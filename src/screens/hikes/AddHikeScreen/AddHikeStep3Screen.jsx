@@ -18,6 +18,8 @@ import { useFormik } from 'formik'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
+import { useStoreState } from 'easy-peasy'
+
 import {
   cancelColor,
   darkColor,
@@ -35,6 +37,9 @@ import CustomCarousel from '../../../components/CustomCarousel'
 import useImages from '../../../hooks/useImages'
 import useAxios from '../../../hooks/useAxios'
 import CustomAlert from '../../../components/CustomAlert'
+import useServices from '../../../hooks/useServices'
+import useCustomToast from '../../../hooks/useCustomToast'
+import CustomLoader from '../../../components/CustomLoader'
 
 const { width, height } = Dimensions.get('window')
 const CARD_HEIGHT = 220
@@ -43,15 +48,21 @@ const CARD_WIDTH = width * 0.8
 const AddHikeStep3Screen = ({ navigation, route }) => {
   const { colors } = useTheme()
   const { sendImageToServer, compressImage, checkExtension } = useImages()
-  const { axiosPostWithToken } = useAxios()
+  const { axiosPostWithToken, axiosGetWithToken } = useAxios()
+  const { checkIfAddressExist, createAddress } = useServices()
+  const { toastShow } = useCustomToast()
 
   const { dataSteps } = route.params
-  const { trips } = dataSteps
+  const { trips, address } = dataSteps
+
+  const userStore = useStoreState((state) => state.user)
+  const { user } = userStore
 
   const [flyer, setFlyer] = useState(false)
   const [originalImages, setOriginalImages] = useState([])
   const [images, setImages] = useState([])
   const [showDeleteImages, setShowDeleteImages] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const animation = new Animated.Value(0)
 
@@ -78,74 +89,204 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
   const formik = useFormik({
     initialValues: {},
     onSubmit: async () => {
+      setLoading(true)
       console.log('dataSteps', dataSteps)
 
-      const hikeData = dataSteps
+      let hikeData = dataSteps
+      let addressToDBError = false
+      let hikeError = false
+      let flyerError = false
+      let imagesError = false
+      let tripError = false
+      let postError = false
 
       Reflect.deleteProperty(hikeData, 'trips')
+      Reflect.deleteProperty(hikeData, 'address')
 
-      console.log('data--', hikeData)
-      console.log('trips--', trips)
+      // console.log('data--', hikeData)
+      // console.log('trips--', trips)
+      // console.log('address--', address)
 
-      const hike = await axiosPostWithToken('hikes/vtt', hikeData)
+      // 1 - Address
+      const isExist = await checkIfAddressExist(address)
 
-      console.log('hike', hike.data)
+      if (isExist.status === 404) {
+        const addressCreated = await createAddress(address)
 
-      if (hike.status === 201) {
-        if (trips && trips.length > 0) {
-          // On request la création des parcours
-          for (const trip of trips) {
-            const res = await axiosPostWithToken(
-              `hikes/vtt/${hike.data.hike_vtt_id}/storeTrip`,
-              trip
-            )
+        if (addressCreated.status === 201) {
+          hikeData = {
+            ...hikeData,
+            address_id: addressCreated.data.address.id,
+          }
+        } else {
+          toastShow({
+            title: 'Action impossible !',
+            message: `Il y a une erreur au niveau de l'adresse (${isExist.status})`,
+            type: 'toast_danger',
+          })
 
-            if (res.status !== 201) {
-              // TODO Modal erreur
-              console.log('Error Trip')
+          addressToDBError = true
+          setLoading(false)
+        }
+      } else if (isExist.status === 201) {
+        hikeData = {
+          ...hikeData,
+          address_id: isExist.data.isAlreadyExist.id,
+        }
+        addressToDBError = false
+      } else {
+        toastShow({
+          title: 'Action impossible !',
+          message: `Erreur au niveau de l'addresse (${isExist.status})`,
+          type: 'toast_danger',
+        })
+
+        addressToDBError = true
+        setLoading(false)
+      }
+
+      // 2 - Hike
+      if (!addressToDBError) {
+        hikeData = {
+          ...hikeData,
+          club_id: user.club_id,
+        }
+
+        const hike = await axiosPostWithToken('hikes/vtt', hikeData)
+
+        if (hike.status !== 201) {
+          toastShow({
+            title: 'Action impossible !',
+            message: `Impossible d'ajouter une randonée vtt pour le moment (${hike.status})`,
+            type: 'toast_danger',
+          })
+
+          hikeError = true
+        } else {
+          // 3 - Flyer
+          // On met le type d'image a upload et l'extension du fichier
+          const title = `flyer|${flyer.split('.').pop()}`
+          // On envoie l'image pour stockage
+          const isSend = await sendImageToServer(
+            `hikes/vtt/${hike.data.hike_vtt_id}/storeImage`,
+            {
+              name: 'flyer',
+              uri: flyer,
+              title,
+            }
+          )
+
+          if (isSend.respInfo.status !== 201) {
+            toastShow({
+              title: 'Action impossible !',
+              message: `Il y a une erreur avec votre flyer (${isSend.respInfo.status})`,
+              type: 'toast_danger',
+            })
+
+            flyerError = true
+          }
+
+          if (!flyerError) {
+            // 4 - Images
+            // On check s'il y a des images a upload
+            if (images.length > 0) {
+              for (const image of images) {
+                if (!imagesError) {
+                  // Type d'image & extension du fichier
+                  const title = `image|${image.split('.').pop()}`
+                  const send = await sendImageToServer(
+                    `hikes/vtt/${hike.data.hike_vtt_id}/storeImage`,
+                    {
+                      name: 'image',
+                      uri: image,
+                      title,
+                    }
+                  )
+
+                  if (send.respInfo.status !== 201) {
+                    imagesError = true
+
+                    toastShow({
+                      title: "Erreur d'images",
+                      message: `Il y a une erreur avec une de vos images (${send.respInfo.status})`,
+                      type: 'toast_danger',
+                    })
+                  }
+                }
+              }
+            }
+
+            // Parcours
+            // eslint-disable-next-line no-lonely-if
+            if (trips && trips.length > 0) {
+              for (const trip of trips) {
+                if (!tripError) {
+                  const res = await axiosPostWithToken(
+                    `hikes/vtt/${hike.data.hike_vtt_id}/storeTrip`,
+                    trip
+                  )
+
+                  if (res.status !== 201) {
+                    tripError = true
+                    toastShow({
+                      title: 'Erreur sur un parcours !',
+                      message: `Un parcours n'a pas pu être ecréé (${res.status})`,
+                      type: 'toast_danger',
+                    })
+                  }
+                }
+              }
             }
           }
         }
 
-        // On met le type d'image a upload et l'extension du fichier
-        const title = `images-${flyer.split('.').pop()}`
-        // On envoie l'image pour stockage
-        const isSend = await sendImageToServer(
-          `hikes/vtt/${hike.data.hike_vtt_id}/storeImage`,
-          {
-            name: 'flyer',
-            uri: flyer,
-            title,
-          }
-        )
+        if (!hikeError && !flyerError) {
+          // Créer le club post
+          // On récupère la rando vtt depuis le server
+          const hikeVtt = await axiosGetWithToken(
+            `hikes/vtt/${hike.data.hike_vtt_id}`
+          )
 
-        console.log('isSend', isSend)
-
-        if (isSend.respInfo.status !== 201) {
-          // TODO Modal error
-          console.log('ERREUR')
-        }
-
-        // On check s'il y a des images a upload
-        if (images.length > 0) {
-          for (const image of images) {
-            // Type d'image & extension du fichier
-            const title = `image-${image.split('.').pop()}`
-            const send = await sendImageToServer(
-              `hikes/vtt/${hike.data.hike_vtt_id}/storeImage`,
-              {
-                name: 'image',
-                uri: image,
-                title,
-              }
+          if (hikeVtt.status === 200) {
+            const data = {
+              title: hikeVtt.data.name,
+              description: hikeVtt.data.description,
+              hike_vtt_id: hikeVtt.data.id,
+            }
+            const response = await axiosPostWithToken(
+              `clubs/${user.club_id}/posts`,
+              data
             )
 
-            console.log('send', send)
+            if (response.status !== 201) {
+              postError = true
+              toastShow({
+                title: 'Erreur article',
+                message: `Votre article n'a pas pu être créé (${response.status})`,
+                type: 'toast_danger',
+              })
+            }
+          }
+
+          if (!imagesError && !tripError && !postError) {
+            if (!postError && !tripError && !imagesError) {
+              toastShow({
+                title: 'Randonnée créé !',
+                message:
+                  'Votre randonnée vtt a bien été créé et partagé auprès de la communauté :)',
+              })
+            } else {
+              toastShow({
+                title: 'Randonnée créé !',
+                message:
+                  'Votre randonnée vtt a bien été créé et partagé auprès de la communauté, sans toutes les options',
+              })
+            }
+            navigation.navigate('Hike', { hikeId: hikeVtt.data.id })
           }
         }
-
-        // TODO Créer un post avec le le nom de la rando et le descriptif
       }
+      setLoading(false)
     },
   })
 
@@ -157,23 +298,18 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
     setImages(img)
   }
 
+  // Le Flyer est obligatoire pour créer une rando.
+  // On check si y a un flyer
   const createHike = () => {
     if (flyer) {
-      // Peut on boucler dans RNFetchBlob pour envoyer le tableau d'images avec ??
       formik.handleSubmit()
+    } else {
+      toastShow({
+        title: 'Flyer obligatoire !',
+        message: 'Le flyer est obligatoire avant de créer la rando',
+        type: 'toast_danger',
+      })
     }
-
-    // const dataStep3 = {
-    //   flyer: `file://${flyer.realPath}`,
-    //   images: imgs,
-    // }
-
-    // const data = {
-    //   ...dataSteps,
-    //   ...dataStep3,
-    // }
-
-    // console.log('dataAllSteps', data)
   }
 
   const deleteImages = () => {
@@ -182,6 +318,7 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
     setShowDeleteImages(false)
   }
 
+  // TODO Refacto
   const openPicker = async () => {
     try {
       const response = await MultipleImagePicker.openPicker({
@@ -191,14 +328,11 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
         cancelTitle: 'Annuler',
         selectedColor: darkPrimaryColor,
       })
-      console.log('response: ', response)
 
       // On check que ce sont bien des images qui sont upload (jpeg / jpg / png only)
       if (checkExtension(response.mime)) {
         const compress = await compressImage(`file://${response.realPath}`)
-        console.log('compress', compress)
         setFlyer(compress)
-        // setFlyer(`file://${response.realPath}`)
       }
     } catch (e) {
       console.log(e.code, e.message)
@@ -223,6 +357,10 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
     }
   }
 
+  if (loading) {
+    return <CustomLoader />
+  }
+
   return (
     <AddHikeLayout
       label={route.params?.hikeEdit ? 'Modifier une rando' : 'Créer une rando'}
@@ -234,8 +372,6 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
       }
       buttonPress={createHike}
     >
-      {/* <CustomDivider /> */}
-
       <View style={{ flex: 1 }}>
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -270,8 +406,6 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
                     !flyer
                       ? require('../../../assets/images/png/default-flyer.png')
                       : {
-                          // ici URI du flyer depuis l'api
-                          // uri: 'https://www.nafix.fr/tracts/2022_tract/tract_72407.jpg',
                           uri: flyer,
                         }
                   }
@@ -306,6 +440,7 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
 
                 {images.length === 0 ? (
                   <CustomIconButton
+                    isText
                     onPress={() => openPickerMultiple()}
                     text="Ajouter des images / photos"
                     size="100%"
