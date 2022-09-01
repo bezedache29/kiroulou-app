@@ -50,10 +50,12 @@ import CustomBSModal from '../../../components/CustomBSModal'
 import ButtonBS from '../../../components/ButtonBS'
 import CustomOverlay from '../../../components/CustomOverlay'
 import useAxios from '../../../hooks/useAxios'
+import useCustomToast from '../../../hooks/useCustomToast'
 
 const AddHikeStep2Screen = ({ navigation, route }) => {
   const { dataStep1 } = route.params
   const { axiosGetWithToken } = useAxios()
+  const { toastShow } = useCustomToast()
 
   const { colors } = useTheme()
   const { formatDate, dateToTimestamp, formatDateToSql } = useUtils()
@@ -66,10 +68,13 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
   const [addressError, setAddressError] = useState(false)
   const [proposals, setProposals] = useState([])
   const [addressToDB, setAddressToDB] = useState(false)
+  const [newAddress, setNewAddress] = useState(false)
+  const [addressLabel, setAddressLabel] = useState('Adresse de la rando')
 
   const [trips, setTrips] = useState([])
   const [showModalTrip, setShowModalTrip] = useState(false)
   const [tripCreated, setTripCreated] = useState(false)
+  const [tripUpdated, setTripUpdated] = useState(false)
   const [openAlertToContinue, setOpenAlertToContinue] = useState(false)
   const [trip, setTrip] = useState(false)
   const [isEditTrip, setIsEditTrip] = useState(false)
@@ -83,6 +88,8 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
   const [overlay, setOverlay] = useState(false)
 
   const [showDeleteTrip, setShowDeleteTrip] = useState(false)
+
+  const [showAlertPremium, setShowAlertPremium] = useState(false)
 
   useEffect(() => {
     if (route.params?.hikeEdit) {
@@ -112,26 +119,14 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
     }
   }, [route.params?.hikeEdit])
 
-  // Ref pour la bottomSheet
-  const bottomSheetRef = useRef(null)
-
-  // Permet d'ouvrir et fermer la bottomSheet pour afficher les options de l'article
-  const toggleBottomSheet = (item) => {
-    if (overlay) {
-      setOverlay(false)
-      setTrip(false)
-      bottomSheetRef?.current?.closeBottomSheet()
-    } else {
-      setOverlay(true)
-      setTrip(item)
-      bottomSheetRef?.current?.openBottomSheet()
-    }
-  }
-
   useEffect(() => {
     if (dataStep1) {
       console.log('data from route', dataStep1)
     }
+    setAddressLabel(
+      `${user.club.address.street_address} ${user.club.address.zipcode.code} ${user.club.address.city.name}`
+    )
+    addressClubToDB()
   }, [])
 
   const searchToApi = async (value) => {
@@ -142,12 +137,12 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
   }
 
   useEffect(() => {
-    if (address !== '' && !addressToDB) {
+    if (address && address.length >= 1 && !addressToDB) {
       setAddressError(false)
       searchToApi(address)
     }
     if (address === '' && !route.params?.hikeEdit) {
-      setAddressToDB(false)
+      // setAddressToDB(false)
       setProposals([])
     }
   }, [address])
@@ -156,8 +151,97 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
     console.log('addressToDB', addressToDB)
   }, [addressToDB])
 
+  // Permet d'ouvrir la modal du parcours si on a un parcours a editer
+  useEffect(() => {
+    if (isEditTrip) {
+      setShowModalTrip(true)
+    }
+  }, [isEditTrip])
+
+  // Lorsqu'un parcours est créé on l'ajoute au tableau, si moins de 5 parcours dans le tableau
+  // On ouvre une alert pour informer le user s'il veut ajouter un autre parcours
+  useEffect(() => {
+    if (tripCreated) {
+      setTrips((oldData) => [...oldData, tripCreated])
+      setTripCreated(false)
+      setOpenAlertToContinue(true)
+    }
+  }, [tripCreated])
+
+  useEffect(() => {
+    if (tripUpdated) {
+      const newTrips = [...trips]
+      newTrips.splice(tripUpdated.id, 1, tripUpdated.trip)
+      setTrips(newTrips)
+    }
+  }, [tripUpdated])
+
+  useEffect(() => {
+    console.log('trips', trips)
+  }, [trips])
+
+  useEffect(() => {
+    console.log('trip', trip)
+  }, [trip])
+
+  // Ref pour la bottomSheet
+  const bottomSheetRef = useRef(null)
+
+  // Permet d'ouvrir et fermer la bottomSheet pour afficher les options du parcours
+  const toggleBottomSheet = (trip) => {
+    if (overlay) {
+      setOverlay(false)
+      setTrip(false)
+      bottomSheetRef?.current?.closeBottomSheet()
+    } else {
+      setOverlay(true)
+      setTrip(trip)
+      bottomSheetRef?.current?.openBottomSheet()
+    }
+  }
+
+  const addressClubToDB = () => {
+    setAddressToDB({
+      street_address: user.club.address.street_address,
+      city: user.club.address.city.name,
+      zipcode: user.club.address.zipcode.code,
+      lat: user.club.address.lat,
+      lng: user.club.address.lng,
+      region: user.club.address.region,
+      department: user.club.address.department,
+      department_code: user.club.address.department_code,
+    })
+  }
+
+  // Toggle la checkbox
+  // Quand checked => adresse rando = adresse du club
+  // Quand non checked => adresse rando = adresse a renseigner
+  const toggleAddress = (value) => {
+    setIsClubAddress(value)
+    if (value) {
+      addressClubToDB()
+      setAddressLabel(
+        `${user.club.address.street_address} ${user.club.address.zipcode.code} ${user.club.address.city.name}`
+      )
+      setNewAddress(true)
+    } else {
+      setAddressToDB(false)
+      setAddress()
+      setAddressLabel('Adresse de la rando')
+      setNewAddress(false)
+    }
+  }
+
+  const wantChangeAddress = () => {
+    setNewAddress(false)
+    setAddress('')
+    setAddressToDB(false)
+    setIsClubAddress(false)
+  }
+
   const selectAddress = (value) => {
-    setAddress(value.properties.label)
+    setNewAddress(true)
+    // setAddress(value.properties.label)
     const context = value.properties.context.split(',')
     const addressToDB = {
       street_address: value.properties.name,
@@ -169,6 +253,9 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
       department: context[1],
       department_code: context[0],
     }
+    setAddressLabel(
+      `${value.properties.name} ${value.properties.postcode} ${value.properties.city}`
+    )
 
     setProposals([])
     // setAddressAdded(addressToDB)
@@ -177,16 +264,6 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
 
     console.log('address to db ', addressToDB)
   }
-
-  // Lorsqu'un parcours est créé on l'ajoute au tableau, si moins de 5 parcours dans le tableau
-  // On ouvre une alert pour informer le user s'il veut ajouter un autre parcours
-  useEffect(() => {
-    if (tripCreated) {
-      setTrips((oldData) => [...oldData, tripCreated])
-      setTripCreated(false)
-      setOpenAlertToContinue(true)
-    }
-  }, [tripCreated])
 
   // A la confirmation de la date du DatePicker
   const handleConfirmDate = (date) => {
@@ -209,10 +286,9 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
   }
 
   const checkOpenModalTrip = () => {
-    // TODO !! Check Premium pour ajouter des circuits
-    if (trips.length > 3) {
+    if (trips.length > 3 && user.premium !== 'active') {
       setOpenAlertToContinue(false)
-      alert('Vous ne pouvez plus ajouter de circuits ! Passez en Premium')
+      setShowAlertPremium(true)
     } else {
       setShowModalTrip(true)
     }
@@ -227,12 +303,18 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
     }
   }
 
-  // Permet d'ouvrir la modal du parcours si on a un parcours a editer
-  useEffect(() => {
-    if (isEditTrip) {
-      setShowModalTrip(true)
-    }
-  }, [isEditTrip])
+  const deleteTrip = () => {
+    setShowDeleteTrip(false)
+    setOverlay(false)
+    bottomSheetRef?.current?.closeBottomSheet()
+    const newTrips = [...trips]
+    newTrips.splice(trip.index, 1)
+    setTrips(newTrips)
+    toastShow({
+      title: 'Parcours supprimé !',
+      message: 'Votre parcours a bien été supprimé',
+    })
+  }
 
   // Au clic sur le bouton pour passer a l'étape 3
   const goToNextStep = async () => {
@@ -244,38 +326,35 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
       setDateError('Vous devez renseigner une date')
     }
 
-    if ((addressToDB || isClubAddress) && date) {
-      // On met la date et les parcours
-      const data = {
+    if (addressToDB && date) {
+      // On met la date, l'adresse et les parcours
+      const dataStep2 = {
         trips: trips.length > 0 ? trips : [],
         date: formatDateToSql(dateForDB),
+        address: addressToDB,
       }
-
-      console.log('TRIPS', data.trips)
-
-      let dataStep2
 
       // On check l'adresse pour savoir si c'est la rando est a l'adresse du club ou a un autre endroit
-      if (isClubAddress) {
-        // Fetch le club depuis l'id club du user
-        const response = await axiosGetWithToken(
-          `clubs/${user.club_id}/clubInformations`
-        )
-        // Récupérer l'adresse
-        dataStep2 = {
-          street_address: response.data.address.street_address,
-          city: response.data.address.city.name,
-          zipcode: response.data.address.zipcode.code,
-          lat: response.data.address.lat,
-          lng: response.data.address.lng,
-          region: response.data.address.region,
-          department: response.data.address.department,
-          department_code: response.data.address.department_code,
-          ...data,
-        }
-      } else {
-        dataStep2 = addressToDB
-      }
+      // if (isClubAddress) {
+      //   // Fetch le club depuis l'id club du user
+      //   const response = await axiosGetWithToken(
+      //     `clubs/${user.club_id}/clubInformations`
+      //   )
+      //   // Récupérer l'adresse
+      //   dataStep2 = {
+      //     street_address: response.data.address.street_address,
+      //     city: response.data.address.city.name,
+      //     zipcode: response.data.address.zipcode.code,
+      //     lat: response.data.address.lat,
+      //     lng: response.data.address.lng,
+      //     region: response.data.address.region,
+      //     department: response.data.address.department,
+      //     department_code: response.data.address.department_code,
+      //     ...data,
+      //   }
+      // } else {
+      //   dataStep2 = addressToDB
+      // }
 
       const dataSteps = {
         ...dataStep1,
@@ -299,8 +378,7 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
             route.params?.hikeEdit ? 'Modifier une rando' : 'Créer une rando'
           }
           step={2}
-          subTitle="Inscrivez l'adresse ou se trouvera la randonnée, ainsi que les parcours
-    disponible si vous le souhaitez."
+          subTitle="Inscrivez l'adresse ou se trouvera la randonnée, ainsi que les parcours disponibles si vous le souhaitez."
           nextStepCondition={(addressToDB || isClubAddress) && date}
           buttonLabel="Passer à l'étape 3"
           buttonPress={goToNextStep}
@@ -331,10 +409,10 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
                   },
                 ]}
                 isChecked={isClubAddress}
-                onPress={(isChecked) => setIsClubAddress(isChecked)}
+                onPress={(isChecked) => toggleAddress(isChecked)}
               />
 
-              {!isClubAddress && (
+              {!isClubAddress && !newAddress && (
                 <>
                   <InputField
                     label="Adresse de la rando"
@@ -351,6 +429,7 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
                     name="address"
                     onChange={setAddress}
                     value={address}
+                    autoFocus={!isClubAddress}
                   />
 
                   {proposals.length > 0 && (
@@ -369,6 +448,22 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
                     </View>
                   )}
                 </>
+              )}
+
+              {newAddress && !isClubAddress && (
+                <InputFieldButton
+                  onPress={wantChangeAddress}
+                  label={addressLabel}
+                  error={addressError}
+                  icon={
+                    <MaterialCommunityIcons
+                      name="home"
+                      size={20}
+                      color={addressError ? dangerColor : colors.icon}
+                      style={mr5}
+                    />
+                  }
+                />
               )}
 
               {/* DATE DE LA RANDO */}
@@ -411,6 +506,7 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
 
                 {trips.length === 0 ? (
                   <CustomIconButton
+                    isText
                     text="Ajouter un parcours"
                     onPress={() => setShowModalTrip(true)}
                     size="100%"
@@ -422,7 +518,7 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
                         // eslint-disable-next-line react/no-array-index-key
                         key={index}
                         trip={trip}
-                        onPress={() => toggleBottomSheet(trip)}
+                        onPress={() => toggleBottomSheet({ trip, index })}
                       />
                     ))}
                   </View>
@@ -440,6 +536,7 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
               setTrip(false)
             }}
             setTripCreated={setTripCreated}
+            setTripUpdated={setTripUpdated}
             edit={isEditTrip || false}
           />
 
@@ -452,6 +549,19 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
             onCancelPressed={() => setOpenAlertToContinue(false)}
             onConfirmPressed={() => checkOpenModalTrip()}
             backgroundColor={colors.backgroundBox}
+          />
+
+          {/* Alert pour passer premium */}
+          <CustomAlert
+            showAlert={showAlertPremium}
+            title="Action refusé !"
+            message="Vous avez atteint le nombre maximal de parcours. Pour en proposer plus vous devez mettre a niveau votre compte avec une version premium"
+            onDismiss={() => setShowAlertPremium(false)}
+            onCancelPressed={() => setShowAlertPremium(false)}
+            onConfirmPressed={() => navigation.navigate('Subs')}
+            backgroundColor={colors.backgroundBox}
+            cancelText="Fermer"
+            confirmText="Voir les premiums"
           />
 
           {/* Modal DatePicker */}
@@ -486,10 +596,10 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
           <CustomAlert
             showAlert={showDeleteTrip}
             title="Attention !"
-            message={`Etes vous sur de vouloir supprimer le parcours de : ${trip?.distance} km ?`}
+            message={`Etes vous sur de vouloir supprimer le parcours de : ${trip?.trip?.distance} km ?`}
             onDismiss={() => setShowDeleteTrip(false)}
             onCancelPressed={() => setShowDeleteTrip(false)}
-            onConfirmPressed={() => setShowDeleteTrip(false)}
+            onConfirmPressed={deleteTrip}
           />
         </AddHikeLayout>
       </BottomSheetModalProvider>
