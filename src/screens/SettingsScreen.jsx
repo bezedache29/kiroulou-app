@@ -124,24 +124,34 @@ const SettingsScreen = ({ navigation }) => {
     const response = await axiosPostWithToken('subscriptions/cancel')
 
     if (response.status === 404) {
-      // TODO Toast danger
-      alert("Pas d'abonnements")
+      toastShow({
+        title: 'Abonnement introuvable !',
+        message: `Pas d'abonnements (${response.status})`,
+        type: 'toast_danger',
+      })
     }
 
     if (response.status === 403) {
-      // TODO Toast danger
-      alert("Vous avez déjà annulé l'abonnement en cours")
+      toastShow({
+        title: 'Action impossible !',
+        message: `Vous avez déjà annulé l'abonnement en cours (${response.status})`,
+        type: 'toast_danger',
+      })
     }
 
     if (response.status === 201) {
-      // TODO Toast success
-      alert(
-        "Abonnement annulé, vous pouvez profiter des bonus premium jusqu'à la date de fin de votre premium"
-      )
+      toastShow({
+        title: 'Abonnement annulé !',
+        message: `Vous pouvez profiter des bonus premium jusqu'à la date de fin de votre premium`,
+      })
     }
 
     if (response.status === 500) {
-      // TODO Toast danger
+      toastShow({
+        title: 'Oops !',
+        message: `Erreur critique (${response.status})`,
+        type: 'toast_danger',
+      })
     }
 
     console.log(response.data)
@@ -230,7 +240,7 @@ const SettingsScreen = ({ navigation }) => {
                   <Text
                     style={[defaultText, my10, ml20, { color: colors.text }]}
                   >
-                    Supprimmer mon compte
+                    Supprimer mon compte
                   </Text>
                 </TouchableRipple>
               </LayoutSection>

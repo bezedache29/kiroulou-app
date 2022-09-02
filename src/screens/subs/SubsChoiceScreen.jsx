@@ -29,10 +29,12 @@ import CustomBigButton from '../../components/CustomBigButton'
 import AdvantagesModal from '../../components/Subs/AdvantagesModal'
 import useAxios from '../../hooks/useAxios'
 import CustomLoader from '../../components/CustomLoader'
+import useCustomToast from '../../hooks/useCustomToast'
 
 const SubsChoiceScreen = ({ navigation }) => {
   const { colors } = useTheme()
-  const { axiosGetWithToken, axiosPostWithToken } = useAxios()
+  const { axiosGetWithToken } = useAxios()
+  const { toastShow } = useCustomToast()
 
   const userStore = useStoreState((state) => state.user)
   const { user } = userStore
@@ -65,15 +67,11 @@ const SubsChoiceScreen = ({ navigation }) => {
 
   const fetchProducts = async () => {
     const res = await axiosGetWithToken('subscriptions/plans')
-    console.log('plans', res.data)
 
-    const { data } = res
-
-    setPremiums(data.reverse())
-    setPremium(res.data[0])
-
-    // const response = await axiosGetWithToken('subscriptions/types')
-    // fetchPricesAndProducts(response.data)
+    if (res.status === 200) {
+      setPremiums(res.data.reverse())
+      setPremium(res.data[0])
+    }
     setLoading(false)
   }
 
@@ -94,22 +92,30 @@ const SubsChoiceScreen = ({ navigation }) => {
   }
 
   const validSub = async () => {
-    if (user.premium_actif === premium.nickname) {
-      // TODO Modal Alert
-      alert(`Deja abonné pour ${premium.nickname}`)
-      return
-    }
-
     if (
-      user.premium_actif !== null &&
-      user.premium_actif !== premium.nickname
+      (user.premium_actif === premium.nickname ||
+        user.premium_actif === 'Premium 2') &&
+      !user.premium_actif_cancel
     ) {
-      // TODO Modal Alert
-      alert("Etes vous sur de vouloir changer d'abonnement ?")
-      return
+      toastShow({
+        title: 'Action impossible !',
+        message: `Deja abonné pour ${user.premium_actif}`,
+        type: 'toast_danger',
+      })
+    } else if (
+      user.premium_actif !== null &&
+      user.premium_actif !== premium.nickname &&
+      !user.premium_actif_cancel
+    ) {
+      toastShow({
+        title: 'Attention !',
+        message: `Vous avez déjà un abonnement actif ${user.premium_actif}`,
+        type: 'toast_info',
+      })
+      navigation.navigate('SubPayment', { premium })
+    } else {
+      navigation.navigate('SubPayment', { premium })
     }
-
-    navigation.navigate('SubPayment', { premium })
   }
 
   if (loading) {

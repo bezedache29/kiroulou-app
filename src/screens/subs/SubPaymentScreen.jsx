@@ -16,6 +16,8 @@ import CustomContainer from '../../components/CustomContainer'
 import CustomBigButton from '../../components/CustomBigButton'
 import useAxios from '../../hooks/useAxios'
 import ReinsuranceElement from '../../components/Payment/ReinsuranceElement'
+import CustomLoader from '../../components/CustomLoader'
+import useCustomToast from '../../hooks/useCustomToast'
 
 const securityPNG = require('../../assets/images/png/payment/security.png')
 const cardsPNG = require('../../assets/images/png/payment/cards.png')
@@ -26,10 +28,12 @@ const SubPaymentScreen = ({ navigation, route }) => {
   const { colors } = useTheme()
   const { axiosPostWithToken, axiosGetWithToken } = useAxios()
   const { initPaymentSheet, presentPaymentSheet } = useStripe()
+  const { toastShow } = useCustomToast()
 
   const { premium } = route.params
 
   const [loader, setLoader] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [subTypeId, setSubTypeId] = useState(1)
 
   // On initialise un paiement au chargement du screen
@@ -41,7 +45,7 @@ const SubPaymentScreen = ({ navigation, route }) => {
 
   // Permet d'initialiser un paiement d'abonnement depuis l'api
   const fetchPaymentSheetParams = async () => {
-    // TODO Check si y a un abonnement en cours et qui n'a pas déjà été annulé. Si c'est le cas il faut annulé celui en cours avant de créer un nouveau
+    // Check si y a un abonnement en cours et qui n'a pas déjà été annulé. Si c'est le cas il faut annulé celui en cours avant de créer un nouveau
     const res = await axiosGetWithToken('subscriptions/check')
 
     let subInProgressId = false
@@ -65,6 +69,10 @@ const SubPaymentScreen = ({ navigation, route }) => {
 
     if (response.status !== 200) {
       console.log(`error request fetchPaymentSheetParams ${response.status}`)
+      toastShow({
+        title: 'Acction impossible !',
+        message: `Une erreur durant l'initiation de paiement. Réessayez plus tard (${response.status})`,
+      })
     }
 
     const { subscriptionId, clientSecret, ephemeralKey, customer } =
@@ -98,6 +106,10 @@ const SubPaymentScreen = ({ navigation, route }) => {
     })
     if (error) {
       console.log('error', error)
+      toastShow({
+        title: 'Acction impossible !',
+        message: `Une erreur durant l'initiation de paiement. Réessayez plus tard`,
+      })
     }
     // setLoader(true)
     return {
@@ -115,17 +127,21 @@ const SubPaymentScreen = ({ navigation, route }) => {
     const { error } = await presentPaymentSheet()
 
     if (error) {
-      console.log(`Error code: ${error.code}`, error.message)
-      // TODO Delete intent Payment (Dans le useState)
-      console.log('subId', subscriptionId)
+      toastShow({
+        title: `Error code: ${error.code}`,
+        message: error.message,
+        type: 'Toast_danger',
+      })
+      // console.log(`Error code: ${error.code}`, error.message)
+      // console.log('subId', subscriptionId)
       // On delete l'intention de paiement créé a l'instant
       await axiosPostWithToken('subscriptions/delete', {
         subscription_id: subscriptionId,
       })
     } else {
-      console.log('subscriptionId 12', subscriptionId)
-      console.log('subInProgressId 12', subInProgressId)
-      // TODO Loader pendant la request
+      // console.log('subscriptionId 12', subscriptionId)
+      // console.log('subInProgressId 12', subInProgressId)
+      setLoading(true)
       // On envoie le l'id du sub qui a été créé sur Stripe, l'id du type du sub, l'id du prix et le sub en cours s'il existe
       const response = await axiosPostWithToken('subscriptions/create', {
         subscription_id: subscriptionId,
@@ -136,8 +152,11 @@ const SubPaymentScreen = ({ navigation, route }) => {
 
       if (response.status !== 201) {
         console.log(`error request fetchPaymentSheetParams ${response.status}`)
-        // TODO Modal erreur - Toast
       } else {
+        toastShow({
+          title: 'Bravo et merci !',
+          message: `Vous êtes désormais un membre premium KiRoulOu`,
+        })
         navigation.reset({
           index: 0,
           routes: [{ name: 'SubSuccess', params: { sub: response.data.sub } }],
@@ -146,11 +165,17 @@ const SubPaymentScreen = ({ navigation, route }) => {
 
       console.log('subs-created', response.data)
     }
+
+    setLoading(false)
+  }
+
+  if (loading) {
+    return <CustomLoader />
   }
 
   return (
     <CustomContainer
-      label={`Confirmation achat ${premium.name}`}
+      label={`Abonnement à ${premium.nickname}`}
       pressBack={() => navigation.goBack()}
     >
       <View style={styles.container}>
@@ -180,9 +205,10 @@ const SubPaymentScreen = ({ navigation, route }) => {
           <Text
             style={[defaultText, textAlignCenter, mt20, { color: colors.text }]}
           >
-            Abonnement {premium.name} - {premium.unit_amount} € / mois
+            Abonnement {premium.nickname} - {premium.amount / 100} € / mois
           </Text>
           <CustomBigButton
+            loading={loader}
             label="Valider et Payer"
             disabled={loader}
             onPress={openPaymentSheet}
