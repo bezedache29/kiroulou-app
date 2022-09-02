@@ -60,12 +60,11 @@ const CustomCardUser = ({ onPress, item }) => {
   }
 
   const like = async () => {
+    setLiked(!liked)
     const response = await axiosPostWithToken(
       `users/posts/${item.id}/likeOrUnlike`
     )
     const { post } = response.data
-
-    checkUserLike()
     setLikesCount(post.post_user_likes_count)
   }
 
