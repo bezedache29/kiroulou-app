@@ -53,10 +53,17 @@ const AddOrEditTripToHikeModal = ({
   // Si on edit le parcours
   useEffect(() => {
     if (edit) {
-      setTrip(edit.trip)
-      setChecked(edit.trip.difficulty)
+      console.log('edit', edit)
+      setTrip(edit)
+      setChecked(Number(edit.trip.difficulty))
     }
   }, [edit])
+
+  useEffect(() => {
+    if (trip) {
+      console.log('trip', trip)
+    }
+  }, [trip])
 
   return (
     <CustomModal showModal={showModalTrip} closeModal={closeModal}>
@@ -74,29 +81,36 @@ const AddOrEditTripToHikeModal = ({
           <Formik
             validationSchema={addTripSchema}
             initialValues={{
-              distance: trip ? trip.distance : '',
-              height_difference: trip ? trip.height_difference : 0,
-              difficulty: trip ? trip.difficulty : 1,
-              supplies: trip ? trip.supplies : 0,
+              distance: trip ? trip.trip.distance : '',
+              height_difference: trip ? trip.trip.height_difference : 0,
+              difficulty: trip ? trip.trip.difficulty : 1,
+              supplies: trip ? trip.trip.supplies : 0,
             }}
             onSubmit={(values, { resetForm }) => {
               const data = {
-                distance: values.distance,
-                height_difference: values.height_difference,
-                difficulty: values.difficulty,
-                supplies: values.supplies,
+                trip: {
+                  distance: values.distance.toString(),
+                  height_difference: values.height_difference.toString(),
+                  difficulty: values.difficulty.toString(),
+                  supplies: values.supplies.toString(),
+                },
               }
-
               // Envoie les infos a la part 2
               console.log('PARCOURS ', data)
               // resetForm()
 
               if (edit) {
-                setTripUpdated({ id: edit.id, trip: data })
+                if (trip.trip.id) {
+                  data.trip.id = trip.trip.id
+                  data.trip.hike_vtt_id = trip.trip.hike_vtt_id
+                }
+                data.index = trip.index
+                setTripUpdated(data)
               } else {
                 setTripCreated(data)
               }
 
+              setTrip(false)
               resetForm()
               setChecked(1)
               closeModal()

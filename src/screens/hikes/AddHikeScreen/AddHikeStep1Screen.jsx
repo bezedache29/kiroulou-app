@@ -33,7 +33,6 @@ const AddHikeStep1Screen = ({ navigation, route }) => {
     if (route.params?.hikeEdit) {
       setLoading(true)
       setHikeEdit(route.params.hikeEdit)
-      console.log('hikeEdit', route.params.hikeEdit)
     }
   }, [route.params?.hikeEdit])
 
@@ -69,12 +68,15 @@ const AddHikeStep1Screen = ({ navigation, route }) => {
               initialValues={{
                 name: hikeEdit ? hikeEdit.name : '',
                 description: hikeEdit ? hikeEdit.description : '',
-                publicPrice: hikeEdit ? hikeEdit.publicPrice.toString() : '',
-                privatePrice: hikeEdit
-                  ? hikeEdit.privatePrice.toString()
-                  : null,
+                publicPrice: hikeEdit
+                  ? Math.trunc(hikeEdit.public_price).toString()
+                  : '',
+                privatePrice:
+                  hikeEdit && hikeEdit.private_price !== null
+                    ? Math.trunc(hikeEdit.private_price).toString()
+                    : null,
               }}
-              onSubmit={(values, { resetForm }) => {
+              onSubmit={(values) => {
                 const data = {
                   name: values.name,
                   description: values.description,
@@ -92,10 +94,8 @@ const AddHikeStep1Screen = ({ navigation, route }) => {
                         ).toFixed(2)
                       : null,
                 }
-                // Envoie les infos a la part 2
-                console.log('DATA STEP 1 ', data)
-                // resetForm()
 
+                // Envoie les infos a la part 2
                 navigation.navigate('AddHikeStep2', {
                   dataStep1: data,
                   hikeEdit,

@@ -3,8 +3,6 @@ import React, { useEffect, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
 
-import { SceneMap } from 'react-native-tab-view'
-
 import { useStoreState } from 'easy-peasy'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'

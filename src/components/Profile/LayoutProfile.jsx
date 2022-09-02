@@ -1,5 +1,4 @@
 import {
-  ActivityIndicator,
   ImageBackground,
   StyleSheet,
   Text,
@@ -44,8 +43,9 @@ const LayoutProfile = ({
   hikeDate = false,
   data = {}, // Ici on peut passer le club pour le profil du club ou le user pour le user
 }) => {
+  // console.log('data', data)
   const { colors } = useTheme()
-  const { formatDate, dateToTimestamp, timestampToDate } = useUtils()
+  const { formatDate } = useUtils()
   const { axiosGetWithToken } = useAxios()
 
   const navigation = useNavigation()
@@ -67,8 +67,6 @@ const LayoutProfile = ({
   // charges les 4 images pour afficher sur le profile
   useEffect(() => {
     if (isFocused) {
-      console.log('FOCUS', 'FOCUS')
-      console.log('data', data)
       setLoading(true)
       loadImagesProfile()
       loadImagesNumber()
@@ -91,8 +89,6 @@ const LayoutProfile = ({
     const response = await axiosGetWithToken(
       `${profile}/${data.id}/profileImages`
     )
-
-    console.log('images profile', response.data)
 
     setImages(response.data)
     setLoading(false)

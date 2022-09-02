@@ -13,6 +13,8 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
 
+import { URL_SERVER } from 'react-native-dotenv'
+
 import MultipleImagePicker from '@baronha/react-native-multiple-image-picker'
 import { useFormik } from 'formik'
 
@@ -28,6 +30,7 @@ import {
   littleTitle,
   ml10,
   mt10,
+  mt20,
   rowCenter,
 } from '../../../assets/styles/styles'
 
@@ -48,21 +51,33 @@ const CARD_WIDTH = width * 0.8
 const AddHikeStep3Screen = ({ navigation, route }) => {
   const { colors } = useTheme()
   const { sendImageToServer, compressImage, checkExtension } = useImages()
-  const { axiosPostWithToken, axiosGetWithToken } = useAxios()
+  const {
+    axiosPostWithToken,
+    axiosGetWithToken,
+    axiosPutWithToken,
+    axiosDeleteWithToken,
+  } = useAxios()
   const { checkIfAddressExist, createAddress } = useServices()
   const { toastShow } = useCustomToast()
 
   const { dataSteps } = route.params
   const { trips, address } = dataSteps
 
+  console.log('dataSteps on 3', dataSteps)
+
   const userStore = useStoreState((state) => state.user)
   const { user } = userStore
 
+  const [hikeEdit, setHikeEdit] = useState(false)
   const [flyer, setFlyer] = useState(false)
+  const [oldFlyer, setOldFlyer] = useState(false)
   const [originalImages, setOriginalImages] = useState([])
   const [images, setImages] = useState([])
   const [showDeleteImages, setShowDeleteImages] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [imagesEditHike, setImagesEditHike] = useState(false)
+  const [showDeleteImagesEditHike, setShowDeleteImagesEditHike] =
+    useState(false)
 
   const animation = new Animated.Value(0)
 
@@ -71,16 +86,19 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
   useEffect(() => {
     if (route.params?.hikeEdit) {
       console.log('hikeEdit', route.params.hikeEdit)
-      setFlyer(route.params.hikeEdit.flyer)
+
+      setHikeEdit(true)
+
+      setFlyer(`${URL_SERVER}/storage/${route.params.hikeEdit.flyer}`)
+      setOldFlyer(route.params.hikeEdit.flyer)
+
+      if (route.params.hikeEdit.hike_vtt_images.length > 0) {
+        setImagesEditHike(route.params.hikeEdit.hike_vtt_images)
+      }
     }
   }, [route.params?.hikeEdit])
 
   useEffect(() => {
-    console.log('flyer', flyer)
-  }, [flyer])
-
-  useEffect(() => {
-    console.log('originalImages', originalImages)
     if (originalImages.length > 0) {
       compressImages()
     }
@@ -90,7 +108,6 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
     initialValues: {},
     onSubmit: async () => {
       setLoading(true)
-      console.log('dataSteps', dataSteps)
 
       let hikeData = dataSteps
       let addressToDBError = false
@@ -99,6 +116,7 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
       let imagesError = false
       let tripError = false
       let postError = false
+      let imagesEditHikeError = false
 
       Reflect.deleteProperty(hikeData, 'trips')
       Reflect.deleteProperty(hikeData, 'address')
@@ -152,7 +170,16 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
           club_id: user.club_id,
         }
 
-        const hike = await axiosPostWithToken('hikes/vtt', hikeData)
+        let hike
+
+        if (!hikeEdit) {
+          hike = await axiosPostWithToken('hikes/vtt', hikeData)
+        } else {
+          hike = await axiosPutWithToken(
+            `hikes/vtt/${route.params?.hikeEdit.id}`,
+            hikeData
+          )
+        }
 
         if (hike.status !== 201) {
           toastShow({
@@ -164,26 +191,32 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
           hikeError = true
         } else {
           // 3 - Flyer
-          // On met le type d'image a upload et l'extension du fichier
-          const title = `flyer|${flyer.split('.').pop()}`
-          // On envoie l'image pour stockage
-          const isSend = await sendImageToServer(
-            `hikes/vtt/${hike.data.hike_vtt_id}/storeImage`,
-            {
-              name: 'flyer',
-              uri: flyer,
-              title,
+          const checkOrigin = flyer.substring(0, 4)
+
+          if (checkOrigin === 'file') {
+            // On met l'extension du fichier & l'ancien path si update
+            const title = `flyer|${flyer.split('.').pop()}|${
+              hikeEdit ? oldFlyer : 'create'
+            }`
+            // On envoie l'image pour stockage
+            const isSend = await sendImageToServer(
+              `hikes/vtt/${hike.data.hike_vtt_id}/storeImage`,
+              {
+                name: 'flyer',
+                uri: flyer,
+                title,
+              }
+            )
+
+            if (isSend.respInfo.status !== 201) {
+              toastShow({
+                title: 'Action impossible !',
+                message: `Il y a une erreur avec votre flyer (${isSend.respInfo.status})`,
+                type: 'toast_danger',
+              })
+
+              flyerError = true
             }
-          )
-
-          if (isSend.respInfo.status !== 201) {
-            toastShow({
-              title: 'Action impossible !',
-              message: `Il y a une erreur avec votre flyer (${isSend.respInfo.status})`,
-              type: 'toast_danger',
-            })
-
-            flyerError = true
           }
 
           if (!flyerError) {
@@ -193,7 +226,7 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
               for (const image of images) {
                 if (!imagesError) {
                   // Type d'image & extension du fichier
-                  const title = `image|${image.split('.').pop()}`
+                  const title = `image|${image.split('.').pop()}|create`
                   const send = await sendImageToServer(
                     `hikes/vtt/${hike.data.hike_vtt_id}/storeImage`,
                     {
@@ -216,13 +249,42 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
               }
             }
 
+            if (imagesEditHike.length && imagesEditHike.lenght === 0) {
+              for (const image of imagesEditHike) {
+                if (!imagesEditHikeError) {
+                  // Type d'image & extension du fichier
+                  const title = `image|${image.split('.').pop()}|delete`
+                  const send = await sendImageToServer(
+                    `hikes/vtt/${hike.data.hike_vtt_id}/storeImage`,
+                    {
+                      name: 'image',
+                      uri: image,
+                      title,
+                    }
+                  )
+
+                  if (send.respInfo.status !== 201) {
+                    imagesEditHikeError = true
+
+                    toastShow({
+                      title: "Erreur d'images",
+                      message: `Il y a une erreur avec une de vos images (${send.respInfo.status})`,
+                      type: 'toast_danger',
+                    })
+                  }
+                }
+              }
+            }
+
             // Parcours
             // eslint-disable-next-line no-lonely-if
             if (trips && trips.length > 0) {
+              // On check que dans le tableau, nos parcours n'ont pas d'id.
+              // Si pas d'id cela veut dire que ce sont des parcours a créé en DB
               for (const trip of trips) {
-                if (!tripError) {
+                if (!tripError && !trip.id) {
                   const res = await axiosPostWithToken(
-                    `hikes/vtt/${hike.data.hike_vtt_id}/storeTrip`,
+                    `hikes/vtt/${hike.data.hike_vtt_id}/trip`,
                     trip
                   )
 
@@ -271,19 +333,33 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
           if (!imagesError && !tripError && !postError) {
             if (!postError && !tripError && !imagesError) {
               toastShow({
-                title: 'Randonnée créé !',
-                message:
-                  'Votre randonnée vtt a bien été créé et partagé auprès de la communauté :)',
+                title: `Randonnée ${hikeEdit ? 'modifiée' : 'créée'} !`,
+                message: `Votre randonnée vtt a bien été ${
+                  hikeEdit
+                    ? 'modifiée'
+                    : 'créée et partagée auprès de la communauté :)'
+                }`,
               })
             } else {
               toastShow({
-                title: 'Randonnée créé !',
-                message:
-                  'Votre randonnée vtt a bien été créé et partagé auprès de la communauté, sans toutes les options',
+                title: `Randonnée ${hikeEdit ? 'modifiée' : 'créée'} !`,
+                message: `Votre randonnée vtt a bien été ${
+                  hikeEdit
+                    ? 'modifiée'
+                    : 'créée et partagée auprès de la communauté :)'
+                }, sans toutes les options`,
               })
             }
-            navigation.navigate('Hike', { hikeId: hikeVtt.data.id })
           }
+          navigation.reset({
+            index: 0,
+            routes: [
+              {
+                name: 'Hike',
+                params: { hikeId: hikeVtt.data.id, create: true },
+              },
+            ],
+          })
         }
       }
       setLoading(false)
@@ -318,6 +394,31 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
     setShowDeleteImages(false)
   }
 
+  const deleteOldImages = async () => {
+    setLoading(true)
+    setShowDeleteImagesEditHike(false)
+    setImagesEditHike(false)
+
+    const response = await axiosDeleteWithToken(
+      `hikes/vtt/${route.params?.hikeEdit.id}/deleteImages`
+    )
+
+    if (response.status === 201) {
+      toastShow({
+        title: 'Images supprimées !',
+        message: 'Les anciennes images de la rando ont bien été supprimées',
+      })
+    } else {
+      toastShow({
+        title: 'Images non supprimées',
+        message: `Les anciennes images de la rando n'ont pas pu être supprimées (${response.status})`,
+        type: 'toast_danger',
+      })
+    }
+
+    setLoading(false)
+  }
+
   // TODO Refacto
   const openPicker = async () => {
     try {
@@ -350,7 +451,6 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
         cancelTitle: 'Annuler',
         selectedColor: darkPrimaryColor,
       })
-      console.log('response: ', response)
       setOriginalImages(response)
     } catch (e) {
       console.log(e.code, e.message)
@@ -380,10 +480,12 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
             screenEndRef.current.scrollToEnd({ animated: true })
           }
         >
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, paddingBottom: imagesEditHike ? 100 : 0 }}>
             <View style={[[rowCenter, mt10], { flex: 1 }]}>
               <Text style={[littleTitle, { color: colors.text }]}>
-                Ajouter un flyer
+                {`${
+                  route.params?.hikeEdit ? 'Modifier le' : 'Ajouter un '
+                } flyer`}
               </Text>
               <Text
                 style={[
@@ -417,6 +519,59 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
                   ]}
                 />
               </TouchableOpacity>
+
+              {imagesEditHike && (
+                <>
+                  <View
+                    style={[
+                      mt20,
+                      { flexDirection: 'row', alignItems: 'center' },
+                    ]}
+                  >
+                    <Text style={[littleTitle, { color: colors.text }]}>
+                      Les images / photos de la rando
+                    </Text>
+
+                    {imagesEditHike.length > 0 && (
+                      <TouchableOpacity
+                        style={styles.iconPlus}
+                        onPress={() => setShowDeleteImagesEditHike(true)}
+                      >
+                        <MaterialCommunityIcons
+                          name="trash-can"
+                          size={30}
+                          color={cancelColor}
+                        />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+
+                  <View style={{ flex: 1, marginBottom: 20 }}>
+                    <CustomCarousel
+                      snapToInterval={CARD_WIDTH}
+                      animation={animation}
+                    >
+                      {imagesEditHike.map((image) => (
+                        <View
+                          key={image.id}
+                          style={[
+                            styles.card,
+                            { backgroundColor: colors.background },
+                          ]}
+                        >
+                          <ImageBackground
+                            source={{
+                              uri: `${URL_SERVER}/storage/${image.image}`,
+                            }}
+                            style={{ width: '100%' }}
+                            resizeMode="cover"
+                          />
+                        </View>
+                      ))}
+                    </CustomCarousel>
+                  </View>
+                </>
+              )}
 
               <View>
                 <View style={[rowCenter, mt10]}>
@@ -485,6 +640,15 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
         onDismiss={() => setShowDeleteImages(false)}
         onCancelPressed={() => setShowDeleteImages(false)}
         onConfirmPressed={() => deleteImages()}
+      />
+
+      <CustomAlert
+        showAlert={showDeleteImagesEditHike}
+        title="Attention !"
+        message="Etes vous sur de vouloir supprimer les anciennes images ?"
+        onDismiss={() => setShowDeleteImagesEditHike(false)}
+        onCancelPressed={() => setShowDeleteImagesEditHike(false)}
+        onConfirmPressed={() => deleteOldImages()}
       />
     </AddHikeLayout>
   )

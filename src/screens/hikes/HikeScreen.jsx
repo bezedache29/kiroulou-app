@@ -8,9 +8,16 @@ import {
   TouchableOpacity,
   Animated,
 } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
+
+import { URL_SERVER } from 'react-native-dotenv'
+
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
+
+import { useStoreState } from 'easy-peasy'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
@@ -45,6 +52,12 @@ import CustomImageViewer from '../../components/CustomImageViewer'
 import Weather from '../../components/Weather/Weather'
 import CustomModal from '../../components/CustomModal'
 import PoepleHypeModal from '../../components/Hikes/Hike/PoepleHypeModal'
+import useAxios from '../../hooks/useAxios'
+import CustomLoader from '../../components/CustomLoader'
+import CustomBSModal from '../../components/CustomBSModal'
+import ButtonBS from '../../components/ButtonBS'
+import CustomOverlay from '../../components/CustomOverlay'
+import CustomAlert from '../../components/CustomAlert'
 
 const { width, height } = Dimensions.get('window')
 const CARD_HEIGHT = 220
@@ -53,9 +66,12 @@ const CARD_WIDTH = width * 0.8
 const HikeScreen = ({ navigation, route }) => {
   const { colors } = useTheme()
   const { createFakeAlbum, createFakeHike, createFakeUser } = useFaker()
+  const { axiosGetWithToken } = useAxios()
 
-  // On récupère la randonnée via les paramètres de la route
-  // const { hike } = route.params
+  const userStore = useStoreState((state) => state.user)
+  const { user } = userStore
+
+  const { hikeId } = route.params
 
   const [hike, setHike] = useState(false) // Pour les tests
   const [images, setImages] = useState([])
@@ -65,265 +81,366 @@ const HikeScreen = ({ navigation, route }) => {
   const [index, setIndex] = useState(0)
   const [showHypes, setShowHypes] = useState(false)
   const [peopleHype, setPeopleHype] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [overlay, setOverlay] = useState(false)
+  const [showAlertCancelHike, setShowAlertCancelHike] = useState(false)
 
   const animation = new Animated.Value(0)
 
   useEffect(() => {
-    console.log('hike :', hike)
-    if (hike) {
-      const today = new Date()
-      console.log(today.getTime())
-      // Timestamp de la date de la rando
-      const { date } = hike
-      console.log(date.getTime())
-
-      for (let i = 0; i < 7; i++) {
-        setPeopleHype((oldData) => [...oldData, createFakeUser()])
-      }
-    }
-  }, [hike])
-
-  useEffect(() => {
-    for (let i = 0; i < 5; i++) {
-      setImages((oldData) => [...oldData, createFakeAlbum()])
-    }
-
-    setHike(createFakeHike())
+    closeBottomSheet()
+    loadHike()
   }, [])
 
-  return (
-    <CustomContainer
-      pressBack={() => navigation.goBack()}
-      label="Détails de la rando"
-    >
-      <View style={{ flex: 1 }}>
-        <ScrollView>
-          <View style={styles.container}>
-            <CustomBox style={styles.leftBox}>
-              <TouchableOpacity
-                onPress={() => setShowFlyer(true)}
-                style={styles.leftContainer}
-              >
-                <ImageBackground
-                  source={{ uri: hike?.flyer }}
-                  style={styles.flyer}
-                  resizeMode="stretch"
-                />
-              </TouchableOpacity>
+  // useEffect(() => {
+  //   console.log('hike :', hike)
+  //   if (hike) {
+  //     const today = new Date()
+  //     console.log(today.getTime())
+  //     // Timestamp de la date de la rando
+  //     const { date } = hike
+  //     console.log(date.getTime())
 
-              <View style={{ marginTop: 'auto' }}>
+  //     for (let i = 0; i < 7; i++) {
+  //       setPeopleHype((oldData) => [...oldData, createFakeUser()])
+  //     }
+  //   }
+  // }, [hike])
+
+  // useEffect(() => {
+  //   for (let i = 0; i < 5; i++) {
+  //     setImages((oldData) => [...oldData, createFakeAlbum()])
+  //   }
+
+  //   setHike(createFakeHike())
+  // }, [])
+
+  // Ref pour la bottomSheet Type
+  const optionsHike = useRef(null)
+
+  const closeBottomSheet = () => {
+    setOverlay(false)
+    optionsHike?.current?.closeBottomSheet()
+  }
+
+  // Permet d'ouvrir et fermer la bottomSheet pour choisir le type de vélo
+  const toggleBottomSheet = () => {
+    if (overlay) {
+      closeBottomSheet()
+    } else {
+      setOverlay(true)
+      optionsHike?.current?.openBottomSheet()
+    }
+  }
+
+  const loadHike = async () => {
+    const response = await axiosGetWithToken(`hikes/vtt/${hikeId}`)
+
+    console.log(response.data)
+
+    setHike(response.data)
+    setLoading(false)
+  }
+
+  const cancelHike = async () => {
+    setShowAlertCancelHike(false)
+    closeBottomSheet()
+
+    // Axios delete hike
+  }
+
+  if (loading) {
+    return <CustomLoader />
+  }
+
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <BottomSheetModalProvider>
+        <CustomContainer
+          pressBack={() =>
+            route.params?.create
+              ? navigation.navigate('Drawer')
+              : navigation.goBack()
+          }
+          label="Détails de la rando"
+          iconName="file-edit"
+          editIcon={user.club_id === hike.club_id && user.is_club_admin === 1}
+          onPressEdit={toggleBottomSheet}
+        >
+          <View style={{ flex: 1 }}>
+            {overlay && <CustomOverlay />}
+            <ScrollView>
+              <View style={styles.container}>
+                <CustomBox style={styles.leftBox}>
+                  <TouchableOpacity
+                    onPress={() => setShowFlyer(true)}
+                    style={styles.leftContainer}
+                  >
+                    <ImageBackground
+                      source={{ uri: hike?.flyer }}
+                      style={styles.flyer}
+                      resizeMode="stretch"
+                    />
+                  </TouchableOpacity>
+
+                  <View style={{ marginTop: 'auto' }}>
+                    <CustomIconButton
+                      text={isHype ? 'Unhype' : 'Hype'}
+                      onPress={() => setIsHype(!isHype)}
+                      size="100%"
+                      cancel={!!isHype}
+                      icon={
+                        <MaterialCommunityIcons
+                          name={isHype ? 'alarm-light' : 'alarm-light-outline'}
+                          size={24}
+                          color={whiteColor}
+                        />
+                      }
+                    />
+                  </View>
+                </CustomBox>
+
+                <CustomBox style={styles.rightBox}>
+                  <Text style={[littleTitle, mb5, { color: colors.textBox }]}>
+                    Nom de la rando
+                  </Text>
+                  <Text style={[defaultText, mb5, { color: colors.textBox }]}>
+                    Nom du club
+                  </Text>
+
+                  <Text
+                    style={[littleTitle, textAlignCenter, my10, styles.date]}
+                  >
+                    11 juin 2022
+                  </Text>
+
+                  <View style={[rowCenter, my10]}>
+                    <View style={{ flex: 5 }}>
+                      <Text
+                        style={[defaultText, mb5, { color: colors.textBox }]}
+                      >
+                        prix public :
+                      </Text>
+                      <Text style={[defaultText, { color: colors.textBox }]}>
+                        prix licencié :
+                      </Text>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={[defaultText, { color: colors.textBox }]}>
+                        5 €
+                      </Text>
+                      <Text style={[defaultText, { color: colors.textBox }]}>
+                        6 €
+                      </Text>
+                    </View>
+                  </View>
+
+                  <CustomDivider addStyle={my5} />
+
+                  <Text style={[littleTitle, mt10, { color: colors.textBox }]}>
+                    Adresse :
+                  </Text>
+                  <Text style={[defaultText, { color: colors.textBox }]}>
+                    Stade George Martin
+                  </Text>
+                  <Text style={[defaultText, { color: colors.textBox }]}>
+                    29260 Lesneven
+                  </Text>
+                </CustomBox>
+              </View>
+
+              <CustomBox>
+                <TouchableOpacity
+                  onPress={() => setShowHypes(true)}
+                  style={rowCenter}
+                >
+                  <Text style={[mr20, defaultText, { color: colors.textBox }]}>
+                    Personnes Hypes :
+                  </Text>
+                  <View style={[rowCenter]}>
+                    {/* On boucle sur les personnes hypes jusqu'a en avoir 5 */}
+                    {peopleHype &&
+                      peopleHype.map(
+                        (user, index) =>
+                          index <= 4 && <AvatarHype key={user.id} user={user} />
+                      )}
+                    {/* Si 6 personnes hype on affiche le 6 ème */}
+                    {peopleHype && peopleHype.length === 6 && (
+                      <AvatarHype user={peopleHype[5]} />
+                    )}
+                    {/* Si plus de 6 personnes hype, on affiche le compteur des personnes restante sur le 6 eme */}
+                    {peopleHype && peopleHype.length > 6 && (
+                      <AvatarHype
+                        user={peopleHype[5]}
+                        nbUsers={peopleHype.length - 6}
+                      />
+                    )}
+                  </View>
+                </TouchableOpacity>
+              </CustomBox>
+
+              <CustomBox>
+                <Text style={[littleTitle, mb20, { color: colors.textBox }]}>
+                  X parcours :
+                </Text>
+                <RouteHike />
+                <RouteHike />
+                <RouteHike />
+              </CustomBox>
+
+              <CustomBox>
+                <Text style={[littleTitle, mb5, { color: colors.textBox }]}>
+                  Description :
+                </Text>
+                <Text style={[defaultText, { color: colors.textBox }]}>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi
+                  recusandae, quisquam maiores repellendus excepturi, quia
+                  molestiae voluptas illum cumque impedit ad reprehenderit
+                  beatae labore nobis placeat neque. Doloremque, inventore
+                  recusandae.
+                </Text>
+              </CustomBox>
+
+              {/* Carousel d'images */}
+              <CustomBox>
+                <Text style={[littleTitle, { color: colors.textBox }]}>
+                  Images / Photos :
+                </Text>
+                {images.length ? (
+                  <CustomCarousel
+                    snapToInterval={CARD_WIDTH}
+                    animation={animation}
+                  >
+                    {images.map((image, index) => (
+                      <TouchableOpacity
+                        onPress={() => {
+                          setIndex(index)
+                          setShowImages(true)
+                        }}
+                        key={image.id}
+                        style={[
+                          styles.card,
+                          { backgroundColor: colors.background },
+                        ]}
+                      >
+                        <ImageBackground
+                          source={{ uri: image.url }}
+                          style={{ width: '100%' }}
+                          resizeMode="contain"
+                        />
+                      </TouchableOpacity>
+                    ))}
+                  </CustomCarousel>
+                ) : (
+                  <Text style={[defaultText, mt10, { color: colors.textBox }]}>
+                    Pas d'images ou de photos a montrer
+                  </Text>
+                )}
+              </CustomBox>
+
+              {/* Météo */}
+              {/* <CustomBox>{hike && <Weather hike={hike} />}</CustomBox> */}
+
+              {
+                // TODO METEO
+              }
+
+              {/* Commentaires */}
+              <CustomBox>
+                <Text style={[littleTitle, { color: colors.textBox }]}>
+                  Commentaires
+                </Text>
                 <CustomIconButton
-                  text={isHype ? 'Unhype' : 'Hype'}
-                  onPress={() => setIsHype(!isHype)}
+                  text="Voir les commentaires (5)"
                   size="100%"
-                  cancel={!!isHype}
-                  icon={
+                  onPress={() =>
+                    navigation.navigate('Comments', { data: hike })
+                  }
+                  iconLeft={
                     <MaterialCommunityIcons
-                      name={isHype ? 'alarm-light' : 'alarm-light-outline'}
+                      name="comment-text-outline"
                       size={24}
                       color={whiteColor}
+                      style={mr10}
                     />
                   }
                 />
-              </View>
-            </CustomBox>
+              </CustomBox>
+            </ScrollView>
 
-            <CustomBox style={styles.rightBox}>
-              <Text style={[littleTitle, mb5, { color: colors.textBox }]}>
-                Nom de la rando
-              </Text>
-              <Text style={[defaultText, mb5, { color: colors.textBox }]}>
-                Nom du club
-              </Text>
-
-              <Text style={[littleTitle, textAlignCenter, my10, styles.date]}>
-                11 juin 2022
-              </Text>
-
-              <View style={[rowCenter, my10]}>
-                <View style={{ flex: 5 }}>
-                  <Text style={[defaultText, mb5, { color: colors.textBox }]}>
-                    prix public :
-                  </Text>
-                  <Text style={[defaultText, { color: colors.textBox }]}>
-                    prix licencié :
-                  </Text>
+            {/* Permet de voir le flyer en fullScreen */}
+            <CustomImageViewer
+              showModal={showFlyer}
+              setShowModal={setShowFlyer}
+              imageUrls={[{ url: hike.flyer }]}
+              renderHeader={() => (
+                <View style={{ backgroundColor: colors.background }}>
+                  <CustomLabelNavigation
+                    label="Flyer"
+                    colors={colors}
+                    onPress={() => setShowFlyer(false)}
+                  />
                 </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={[defaultText, { color: colors.textBox }]}>
-                    5 €
-                  </Text>
-                  <Text style={[defaultText, { color: colors.textBox }]}>
-                    6 €
-                  </Text>
+              )}
+            />
+
+            {/* Permet de voir les images / photos en fullScreen et de les swipe */}
+            <CustomImageViewer
+              showModal={showImages}
+              setShowModal={setShowImages}
+              imageUrls={images}
+              index={index}
+              renderHeader={() => (
+                <View style={{ backgroundColor: colors.background }}>
+                  <CustomLabelNavigation
+                    label="Photos / Images"
+                    colors={colors}
+                    onPress={() => setShowImages(false)}
+                  />
                 </View>
-              </View>
+              )}
+            />
 
-              <CustomDivider addStyle={my5} />
-
-              <Text style={[littleTitle, mt10, { color: colors.textBox }]}>
-                Adresse :
-              </Text>
-              <Text style={[defaultText, { color: colors.textBox }]}>
-                Stade George Martin
-              </Text>
-              <Text style={[defaultText, { color: colors.textBox }]}>
-                29260 Lesneven
-              </Text>
-            </CustomBox>
+            {/* Modal pour montrer les personnes hypes */}
+            <CustomModal
+              showModal={showHypes}
+              closeModal={() => setShowHypes(false)}
+            >
+              <PoepleHypeModal peopleHype={peopleHype} />
+            </CustomModal>
           </View>
 
-          <CustomBox>
-            <TouchableOpacity
-              onPress={() => setShowHypes(true)}
-              style={rowCenter}
+          {/* BottomSheet pour les les options d'edit de randonnée */}
+          <CustomBSModal
+            title="Que souhaitez vous faire ?"
+            SP={['25%', '30%']}
+            ref={optionsHike}
+            onDismiss={closeBottomSheet}
+          >
+            <ButtonBS onPress={() => setShowAlertCancelHike(true)} cancel>
+              Annuler la randonnée VTT
+            </ButtonBS>
+            <ButtonBS
+              onPress={() => {
+                // Mettre la rando dans un store ?
+                navigation.navigate('AddHikeStep1', { hikeEdit: hike })
+              }}
             >
-              <Text style={[mr20, defaultText, { color: colors.textBox }]}>
-                Personnes Hypes :
-              </Text>
-              <View style={[rowCenter]}>
-                {/* On boucle sur les personnes hypes jusqu'a en avoir 5 */}
-                {peopleHype &&
-                  peopleHype.map(
-                    (user, index) =>
-                      index <= 4 && <AvatarHype key={user.id} user={user} />
-                  )}
-                {/* Si 6 personnes hype on affiche le 6 ème */}
-                {peopleHype && peopleHype.length === 6 && (
-                  <AvatarHype user={peopleHype[5]} />
-                )}
-                {/* Si plus de 6 personnes hype, on affiche le compteur des personnes restante sur le 6 eme */}
-                {peopleHype && peopleHype.length > 6 && (
-                  <AvatarHype
-                    user={peopleHype[5]}
-                    nbUsers={peopleHype.length - 6}
-                  />
-                )}
-              </View>
-            </TouchableOpacity>
-          </CustomBox>
+              Modifier la randonnée
+            </ButtonBS>
+          </CustomBSModal>
 
-          <CustomBox>
-            <Text style={[littleTitle, mb20, { color: colors.textBox }]}>
-              X parcours :
-            </Text>
-            <RouteHike />
-            <RouteHike />
-            <RouteHike />
-          </CustomBox>
-
-          <CustomBox>
-            <Text style={[littleTitle, mb5, { color: colors.textBox }]}>
-              Description :
-            </Text>
-            <Text style={[defaultText, { color: colors.textBox }]}>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi
-              recusandae, quisquam maiores repellendus excepturi, quia molestiae
-              voluptas illum cumque impedit ad reprehenderit beatae labore nobis
-              placeat neque. Doloremque, inventore recusandae.
-            </Text>
-          </CustomBox>
-
-          {/* Carousel d'images */}
-          <CustomBox>
-            <Text style={[littleTitle, { color: colors.textBox }]}>
-              Images / Photos :
-            </Text>
-            {images.length ? (
-              <CustomCarousel snapToInterval={CARD_WIDTH} animation={animation}>
-                {images.map((image, index) => (
-                  <TouchableOpacity
-                    onPress={() => {
-                      setIndex(index)
-                      setShowImages(true)
-                    }}
-                    key={image.id}
-                    style={[
-                      styles.card,
-                      { backgroundColor: colors.background },
-                    ]}
-                  >
-                    <ImageBackground
-                      source={{ uri: image.url }}
-                      style={{ width: '100%' }}
-                      resizeMode="contain"
-                    />
-                  </TouchableOpacity>
-                ))}
-              </CustomCarousel>
-            ) : (
-              <Text style={[defaultText, mt10, { color: colors.textBox }]}>
-                Pas d'images ou de photos a montrer
-              </Text>
-            )}
-          </CustomBox>
-
-          {/* Météo */}
-          <CustomBox>{hike && <Weather hike={hike} />}</CustomBox>
-
-          {/* Commentaires */}
-          <CustomBox>
-            <Text style={[littleTitle, { color: colors.textBox }]}>
-              Commentaires
-            </Text>
-            <CustomIconButton
-              text="Voir les commentaires (5)"
-              size="100%"
-              onPress={() => navigation.navigate('Comments', { data: hike })}
-              iconLeft={
-                <MaterialCommunityIcons
-                  name="comment-text-outline"
-                  size={24}
-                  color={whiteColor}
-                  style={mr10}
-                />
-              }
-            />
-          </CustomBox>
-        </ScrollView>
-
-        {/* Permet de voir le flyer en fullScreen */}
-        <CustomImageViewer
-          showModal={showFlyer}
-          setShowModal={setShowFlyer}
-          imageUrls={[{ url: hike.flyer }]}
-          renderHeader={() => (
-            <View style={{ backgroundColor: colors.background }}>
-              <CustomLabelNavigation
-                label="Flyer"
-                colors={colors}
-                onPress={() => setShowFlyer(false)}
-              />
-            </View>
-          )}
-        />
-
-        {/* Permet de voir les images / photos en fullScreen et de les swipe */}
-        <CustomImageViewer
-          showModal={showImages}
-          setShowModal={setShowImages}
-          imageUrls={images}
-          index={index}
-          renderHeader={() => (
-            <View style={{ backgroundColor: colors.background }}>
-              <CustomLabelNavigation
-                label="Photos / Images"
-                colors={colors}
-                onPress={() => setShowImages(false)}
-              />
-            </View>
-          )}
-        />
-
-        {/* Modal pour montrer les personnes hypes */}
-        <CustomModal
-          showModal={showHypes}
-          closeModal={() => setShowHypes(false)}
-        >
-          <PoepleHypeModal peopleHype={peopleHype} />
-        </CustomModal>
-      </View>
-    </CustomContainer>
+          <CustomAlert
+            showAlert={showAlertCancelHike}
+            title="Attention !"
+            message="Etes vous sur de vouloir annuler la rando ?"
+            onDismiss={() => setShowAlertCancelHike(false)}
+            onCancelPressed={() => setShowAlertCancelHike(false)}
+            onConfirmPressed={cancelHike}
+          />
+        </CustomContainer>
+      </BottomSheetModalProvider>
+    </GestureHandlerRootView>
   )
 }
 

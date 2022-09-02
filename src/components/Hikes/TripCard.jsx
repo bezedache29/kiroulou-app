@@ -17,17 +17,18 @@ import {
 } from '../../assets/styles/styles'
 
 const TripCard = ({ onPress, trip }) => {
+  // console.log('trip trip card', trip)
   const { colors } = useTheme()
 
   const getColorDifficulty = (value) => {
     switch (value) {
-      case 1:
+      case '1':
         return darkPrimaryColor
-      case 2:
+      case '2':
         return beginnerColor
-      case 3:
+      case '3':
         return athleticColor
-      case 4:
+      case '4':
         return sportyColor
 
       default:
@@ -43,7 +44,7 @@ const TripCard = ({ onPress, trip }) => {
       <MaterialCommunityIcons
         name="checkbox-blank-circle"
         size={25}
-        color={getColorDifficulty(trip.difficulty)}
+        color={getColorDifficulty(trip.difficulty.toString())}
         style={{ flex: 1 }}
       />
       <View style={[rowCenter, { flex: 2 }]}>
@@ -64,7 +65,7 @@ const TripCard = ({ onPress, trip }) => {
             { color: colors.text, flex: 6, textAlign: 'right', marginRight: 3 },
           ]}
         >
-          {trip.heightDifference} m
+          {trip.height_difference} m
         </Text>
         <Text style={[defaultText, { color: colors.text, flex: 5 }]}>D+</Text>
       </View>
