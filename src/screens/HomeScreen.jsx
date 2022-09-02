@@ -84,7 +84,7 @@ const HomeScreen = ({ navigation }) => {
   const loadPosts = async (page, refresh = false) => {
     const response = await axiosGetWithToken(`posts?page=${page}`)
 
-    // console.log('posts', response.data.posts)
+    console.log('posts', response.data.posts)
 
     if (refresh) {
       setPosts(response.data.posts)
@@ -175,7 +175,9 @@ const HomeScreen = ({ navigation }) => {
                       <CustomCardClub
                         item={item}
                         onPress={() =>
-                          navigation.navigate('Hike', { hike: item })
+                          navigation.navigate('Hike', {
+                            hikeId: item.hike_vtt.id,
+                          })
                         }
                       />
                     )
