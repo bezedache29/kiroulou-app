@@ -5,36 +5,13 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import { useTheme } from 'react-native-paper'
 
-import {
-  athleticColor,
-  beginnerColor,
-  darkPrimaryColor,
-  defaultText,
-  mr10,
-  my5,
-  rowCenter,
-  sportyColor,
-} from '../../assets/styles/styles'
+import { defaultText, mr10, my5, rowCenter } from '../../assets/styles/styles'
+import useServices from '../../hooks/useServices'
 
 const TripCard = ({ onPress, trip }) => {
   // console.log('trip trip card', trip)
   const { colors } = useTheme()
-
-  const getColorDifficulty = (value) => {
-    switch (value) {
-      case '1':
-        return darkPrimaryColor
-      case '2':
-        return beginnerColor
-      case '3':
-        return athleticColor
-      case '4':
-        return sportyColor
-
-      default:
-        return darkPrimaryColor
-    }
-  }
+  const { colorDifficulty } = useServices()
 
   return (
     <TouchableOpacity
@@ -44,7 +21,7 @@ const TripCard = ({ onPress, trip }) => {
       <MaterialCommunityIcons
         name="checkbox-blank-circle"
         size={25}
-        color={getColorDifficulty(trip.difficulty.toString())}
+        color={colorDifficulty(trip.difficulty.toString())}
         style={{ flex: 1 }}
       />
       <View style={[rowCenter, { flex: 2 }]}>

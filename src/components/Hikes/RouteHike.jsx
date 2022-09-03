@@ -4,22 +4,29 @@ import React from 'react'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
 import { useTheme } from 'react-native-paper'
-import {
-  defaultText,
-  my5,
-  primaryColor,
-  rowCenter,
-} from '../../assets/styles/styles'
+import { defaultText, my5, rowCenter } from '../../assets/styles/styles'
+import useServices from '../../hooks/useServices'
 
-const RouteHike = () => {
+const RouteHike = ({ trip }) => {
   const { colors } = useTheme()
+  const { colorDifficulty } = useServices()
 
   return (
     <View style={[rowCenter, my5, styles.container]}>
-      <MaterialCommunityIcons name="circle" size={20} color={primaryColor} />
-      <Text style={[defaultText, { color: colors.textBox }]}>45 km</Text>
-      <Text style={[defaultText, { color: colors.textBox }]}>500 m D+</Text>
-      <Text style={[defaultText, { color: colors.textBox }]}>3 ravitos</Text>
+      <MaterialCommunityIcons
+        name="circle"
+        size={20}
+        color={colorDifficulty(trip.difficulty)}
+      />
+      <Text style={[defaultText, { color: colors.textBox }]}>
+        {trip.distance} km
+      </Text>
+      <Text style={[defaultText, { color: colors.textBox }]}>
+        {trip.height_difference} m D+
+      </Text>
+      <Text style={[defaultText, { color: colors.textBox }]}>
+        {trip.supplies} ravitos
+      </Text>
     </View>
   )
 }

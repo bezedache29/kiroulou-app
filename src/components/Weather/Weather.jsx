@@ -1,11 +1,4 @@
-import {
-  ActivityIndicator,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native'
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 
 import axios from 'axios'
@@ -19,6 +12,7 @@ import { littleTitle, rowCenter, TitleH3 } from '../../assets/styles/styles'
 import CustomModal from '../CustomModal'
 import useWeather from '../../hooks/useWeather'
 import WeatherModal from './WeatherModal'
+import CustomLoader from '../CustomLoader'
 
 const Weather = ({ hike }) => {
   const { colors } = useTheme()
@@ -38,17 +32,13 @@ const Weather = ({ hike }) => {
 
   // Récupère les infos météo de la position de la randonnée
   const requestWeather = async () => {
-    const response = await axios.get(
-      apiUrl(hike.position.lat, hike.position.lng)
-    )
-
-    // console.log(response.data)
+    const response = await axios.get(apiUrl(hike.address.lat, hike.address.lng))
 
     setWeather(response.data)
   }
 
   if (!weather) {
-    return <ActivityIndicator />
+    return <CustomLoader />
   }
 
   return (
