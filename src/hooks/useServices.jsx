@@ -52,11 +52,36 @@ const useServices = () => {
     }
   }
 
+  const getDistance = (zoom) => {
+    switch (zoom) {
+      case zoom <= 8:
+        return 50
+      case 9:
+        return 40
+      case 10:
+        return 30
+      case 11:
+        return 20
+      case 12:
+        return 12
+      case 13:
+        return 5
+      case 14:
+        return 3
+      case zoom >= 15:
+        return 1
+
+      default:
+        return 12
+    }
+  }
+
   return {
     checkIfAddressExist,
     createAddress,
     getValidUrl,
     colorDifficulty,
+    getDistance,
   }
 }
 

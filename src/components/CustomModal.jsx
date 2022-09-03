@@ -4,13 +4,26 @@ import React from 'react'
 import { useTheme } from 'react-native-paper'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import { cancelColor, mt50 } from '../assets/styles/styles'
+import { cancelColor, mt10, mt50 } from '../assets/styles/styles'
 
-const CustomModal = ({ children, showModal, closeModal, style }) => {
+const CustomModal = ({
+  children,
+  showModal,
+  closeModal,
+  style,
+  animation = 'slide',
+  closeRight = false,
+  transparent = false,
+}) => {
   const { colors } = useTheme()
 
   return (
-    <Modal animationType="slide" visible={showModal} onRequestClose={() => {}}>
+    <Modal
+      animationType={animation}
+      visible={showModal}
+      onRequestClose={() => {}}
+      transparent={transparent}
+    >
       <View
         style={[
           styles.container,
@@ -21,7 +34,10 @@ const CustomModal = ({ children, showModal, closeModal, style }) => {
         ]}
       >
         {closeModal && (
-          <TouchableOpacity onPress={closeModal} style={styles.closeBtn}>
+          <TouchableOpacity
+            onPress={closeModal}
+            style={closeRight ? styles.closeBtnRight : styles.closeBtn}
+          >
             <MaterialCommunityIcons
               name="close-circle"
               size={35}
@@ -30,7 +46,7 @@ const CustomModal = ({ children, showModal, closeModal, style }) => {
           </TouchableOpacity>
         )}
 
-        <View style={[mt50, { flex: 1 }]}>{children}</View>
+        <View style={[closeRight ? mt10 : mt50, { flex: 1 }]}>{children}</View>
       </View>
     </Modal>
   )
@@ -46,6 +62,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 10,
     right: 20,
+    zIndex: 2,
+  },
+  closeBtnRight: {
+    position: 'absolute',
+    top: -10,
+    right: -10,
     zIndex: 2,
   },
 })

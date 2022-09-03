@@ -104,6 +104,13 @@ const useUtils = () => {
   const formatDateToSql = (date) =>
     new Date(date).toISOString().slice(0, 19).replace('T', ' ')
 
+  const formatDateHike = (dateParams) => {
+    const date = new Date(dateParams)
+    const newDate = `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`
+
+    return newDate
+  }
+
   return {
     formatDate,
     dateToTimestamp,
@@ -115,6 +122,7 @@ const useUtils = () => {
     formatMonthText,
     formatDateToSql,
     convertDateSQL,
+    formatDateHike,
   }
 }
 
