@@ -9,6 +9,8 @@ import React from 'react'
 
 import { useTheme } from 'react-native-paper'
 
+import { URL_SERVER } from 'react-native-dotenv'
+
 import {
   darkColor,
   darkPrimaryColor,
@@ -21,6 +23,7 @@ import {
 
 import CustomDivider from '../CustomDivider'
 import CustomButton from '../CustomButton'
+import useUtils from '../../hooks/useUtils'
 
 const { width } = Dimensions.get('window')
 const CARD_HEIGHT = 220
@@ -28,13 +31,14 @@ const CARD_WIDTH = width * 0.8
 
 const HikesCardCarousel = ({ hike, goToHike }) => {
   const { colors } = useTheme()
+  const { formatDateHike } = useUtils()
 
   return (
     <View style={[styles.card, { backgroundColor: colors.background }]}>
       <View style={[styles.semiCard, { borderTopLeftRadius: 8 }]}>
         <ImageBackground
           source={{
-            uri: hike.flyer,
+            uri: `${URL_SERVER}/storage/${hike.flyer}`,
           }}
           style={{ width: '100%', height: '100%' }}
         />
@@ -56,7 +60,7 @@ const HikesCardCarousel = ({ hike, goToHike }) => {
               { color: colors.text, padding: 5 },
             ]}
           >
-            La Côte des légendes VTT
+            {hike.name}
           </Text>
 
           <CustomDivider />
@@ -68,7 +72,7 @@ const HikesCardCarousel = ({ hike, goToHike }) => {
               { color: darkPrimaryColor, padding: 5 },
             ]}
           >
-            16/09/2022
+            {formatDateHike(hike.date)}
           </Text>
 
           <View style={styles.addressContainer}>
@@ -79,7 +83,7 @@ const HikesCardCarousel = ({ hike, goToHike }) => {
                 { color: colors.text, fontSize: 14 },
               ]}
             >
-              Stade George Martin
+              {hike.street_address}
             </Text>
             <Text
               style={[
@@ -89,7 +93,7 @@ const HikesCardCarousel = ({ hike, goToHike }) => {
                 { color: colors.text, fontSize: 14 },
               ]}
             >
-              29260 Lesneven
+              {hike.code} {hike.city}
             </Text>
           </View>
 
