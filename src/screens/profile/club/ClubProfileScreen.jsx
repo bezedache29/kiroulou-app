@@ -10,13 +10,10 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
-import AwesomeAlert from 'react-native-awesome-alerts'
-
 import { useStoreState } from 'easy-peasy'
 
+import { useIsFocused } from '@react-navigation/native'
 import {
-  cancelColor,
-  darkPrimaryColor,
   defaultText,
   mb10,
   mb30,
@@ -51,6 +48,8 @@ const ClubProfileScreen = ({ navigation, route }) => {
 
   const { clubId } = route.params
 
+  const isFocused = useIsFocused()
+
   const userStore = useStoreState((state) => state.user)
   const { user } = userStore
 
@@ -70,8 +69,10 @@ const ClubProfileScreen = ({ navigation, route }) => {
   ])
 
   useEffect(() => {
-    loadClub()
-  }, [])
+    if (isFocused) {
+      loadClub()
+    }
+  }, [isFocused])
 
   const loadClub = async () => {
     const response = await axiosGetWithToken(`clubs/${clubId}/clubInformations`)
@@ -235,7 +236,11 @@ const ClubProfileScreen = ({ navigation, route }) => {
                 : club.name
             }
             colors={colors}
-            onPress={() => navigation.goBack()}
+            onPress={() =>
+              route.params?.create
+                ? navigation.navigate('Drawer')
+                : navigation.goBack()
+            }
           />
 
           {/* Icone en haut a droite qui permet de modifier son profil */}

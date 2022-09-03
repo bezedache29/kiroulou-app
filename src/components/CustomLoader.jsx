@@ -2,7 +2,7 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native'
 import React from 'react'
 import { useTheme } from 'react-native-paper'
 
-const CustomLoader = ({ color, backgroundColor }) => {
+const CustomLoader = ({ color, backgroundColor, style }) => {
   const { colors } = useTheme()
 
   return (
@@ -11,6 +11,7 @@ const CustomLoader = ({ color, backgroundColor }) => {
         styles.container,
         { backgroundColor: colors.background },
         backgroundColor,
+        style,
       ]}
     >
       <ActivityIndicator animating color={[colors.text, color]} size="large" />

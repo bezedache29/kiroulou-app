@@ -48,6 +48,7 @@ import CustomAlert from '../components/CustomAlert'
 
 import useAxios from '../hooks/useAxios'
 import useCustomToast from '../hooks/useCustomToast'
+import CustomLoader from '../components/CustomLoader'
 
 const SettingsScreen = ({ navigation }) => {
   const { colors } = useTheme()
@@ -64,6 +65,7 @@ const SettingsScreen = ({ navigation }) => {
   const [showCancelSub, setShowCancelSub] = useState(false)
   const [showDeleteUser, setShowDeleteUser] = useState(false)
   const [showNoDeleteUser, setShowNoDeleteUser] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const notifications = {
     push: user.is_push_notifications,
@@ -121,6 +123,7 @@ const SettingsScreen = ({ navigation }) => {
     setOverlay(false)
     bottomSheetRef?.current?.closeBottomSheet()
 
+    setLoading(true)
     const response = await axiosPostWithToken('subscriptions/cancel')
 
     if (response.status === 404) {
@@ -144,6 +147,9 @@ const SettingsScreen = ({ navigation }) => {
         title: 'Abonnement annulé !',
         message: `Vous pouvez profiter des bonus premium jusqu'à la date de fin de votre premium`,
       })
+
+      // Reload user
+      userActions.loadUser(response.data.user)
     }
 
     if (response.status === 500) {
@@ -155,6 +161,7 @@ const SettingsScreen = ({ navigation }) => {
     }
 
     console.log(response.data)
+    setLoading(false)
   }
 
   // Si le user n'a pas d'abonnements on le redirige vers la pages des abos
@@ -167,6 +174,10 @@ const SettingsScreen = ({ navigation }) => {
     }
 
     // navigation.navigate('Subs')
+  }
+
+  if (loading) {
+    return <CustomLoader />
   }
 
   return (

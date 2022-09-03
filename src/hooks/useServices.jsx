@@ -1,3 +1,9 @@
+import {
+  athleticColor,
+  beginnerColor,
+  darkPrimaryColor,
+  sportyColor,
+} from '../assets/styles/styles'
 import useAxios from './useAxios'
 
 const useServices = () => {
@@ -30,10 +36,27 @@ const useServices = () => {
     return newUrl
   }
 
+  const colorDifficulty = (value) => {
+    switch (value) {
+      case '1':
+        return darkPrimaryColor
+      case '2':
+        return beginnerColor
+      case '3':
+        return athleticColor
+      case '4':
+        return sportyColor
+
+      default:
+        return darkPrimaryColor
+    }
+  }
+
   return {
     checkIfAddressExist,
     createAddress,
     getValidUrl,
+    colorDifficulty,
   }
 }
 

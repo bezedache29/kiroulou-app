@@ -34,6 +34,7 @@ import CustomOverlay from '../../components/CustomOverlay'
 import useAxios from '../../hooks/useAxios'
 import CustomCommentCard from '../../components/Comments/CustomCommentCard'
 import useCustomToast from '../../hooks/useCustomToast'
+import CustomLoader from '../../components/CustomLoader'
 
 const CommentsScreen = ({ navigation, route }) => {
   const { colors } = useTheme()
@@ -54,6 +55,8 @@ const CommentsScreen = ({ navigation, route }) => {
   const [moreLoading, setMoreLoading] = useState(false)
   const [isListEnd, setIsListEnd] = useState(null)
   const [isFetching, setIsFetching] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [loader, setLoader] = useState(true)
 
   useEffect(() => {
     // console.log('item on comments', item)
@@ -136,6 +139,7 @@ const CommentsScreen = ({ navigation, route }) => {
       }
     }
 
+    setLoader(false)
     setMoreLoading(false)
   }
 
@@ -170,6 +174,7 @@ const CommentsScreen = ({ navigation, route }) => {
 
   const sendComment = async () => {
     if (comment !== '' && comment.length > 0) {
+      setLoading(true)
       let response
 
       if (postBelongUser) {
@@ -201,7 +206,10 @@ const CommentsScreen = ({ navigation, route }) => {
           title: 'Commentaire ajouté !',
           message: 'Ajout du commentaire avec succès',
         })
+
+        // TODO Notification
       }
+      setLoading(false)
     }
   }
 
@@ -249,37 +257,41 @@ const CommentsScreen = ({ navigation, route }) => {
           <View style={{ flex: 1, backgroundColor: colors.backgroundNav }}>
             {overlay && <CustomOverlay />}
 
-            <FlatList
-              ref={flatList}
-              style={styles.flatlist}
-              data={comments}
-              showsVerticalScrollIndicator={false}
-              ListEmptyComponent={() => (
-                <View style={{ flex: 1 }}>
-                  <Text
-                    style={[
-                      littleTitle,
-                      textAlignCenter,
-                      { color: colors.text },
-                    ]}
-                  >
-                    Pas de commentaires
-                  </Text>
-                </View>
-              )}
-              renderItem={({ item }) => (
-                <CustomCommentCard
-                  item={item}
-                  toggleBottomSheet={() => toggleBottomSheet(item)}
-                />
-              )}
-              keyExtractor={(item) => item.id}
-              onEndReachedThreshold={0.5} // Formule (20 - (1.6666 * 6)) - Se declenche au 10 eme post
-              onEndReached={fetchMoreComments}
-              ListFooterComponent={renderFooter}
-              onRefresh={onRefresh}
-              refreshing={isFetching}
-            />
+            {!loader ? (
+              <FlatList
+                ref={flatList}
+                style={styles.flatlist}
+                data={comments}
+                showsVerticalScrollIndicator={false}
+                ListEmptyComponent={() => (
+                  <View style={{ flex: 1 }}>
+                    <Text
+                      style={[
+                        littleTitle,
+                        textAlignCenter,
+                        { color: colors.text },
+                      ]}
+                    >
+                      Pas de commentaires
+                    </Text>
+                  </View>
+                )}
+                renderItem={({ item }) => (
+                  <CustomCommentCard
+                    item={item}
+                    toggleBottomSheet={() => toggleBottomSheet(item)}
+                  />
+                )}
+                keyExtractor={(item) => item.id}
+                onEndReachedThreshold={0.5} // Formule (20 - (1.6666 * 6)) - Se declenche au 10 eme post
+                onEndReached={fetchMoreComments}
+                ListFooterComponent={renderFooter}
+                onRefresh={onRefresh}
+                refreshing={isFetching}
+              />
+            ) : (
+              <CustomLoader />
+            )}
 
             {/* Input pour ajouter un commentaire */}
             <View style={styles.inputContainer}>
@@ -301,13 +313,20 @@ const CommentsScreen = ({ navigation, route }) => {
                 />
 
                 {/* IconSend Commentaire */}
-                <TouchableOpacity onPress={sendComment} style={styles.iconSend}>
-                  <MaterialCommunityIcons
-                    name="send"
-                    size={33}
-                    color={comment !== '' ? darkPrimaryColor : colors.text}
-                  />
-                </TouchableOpacity>
+                {loading ? (
+                  <CustomLoader style={styles.iconSend} />
+                ) : (
+                  <TouchableOpacity
+                    onPress={sendComment}
+                    style={styles.iconSend}
+                  >
+                    <MaterialCommunityIcons
+                      name="send"
+                      size={33}
+                      color={comment !== '' ? darkPrimaryColor : colors.text}
+                    />
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
           </View>

@@ -21,6 +21,7 @@ import { useStoreState } from 'easy-peasy'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
+import { useIsFocused } from '@react-navigation/native'
 import {
   defaultText,
   littleTitle,
@@ -37,8 +38,6 @@ import {
   whiteColor,
   mr10,
 } from '../../assets/styles/styles'
-
-import useFaker from '../../hooks/useFaker'
 
 import CustomContainer from '../../components/CustomContainer'
 import CustomDivider from '../../components/CustomDivider'
@@ -58,6 +57,8 @@ import CustomBSModal from '../../components/CustomBSModal'
 import ButtonBS from '../../components/ButtonBS'
 import CustomOverlay from '../../components/CustomOverlay'
 import CustomAlert from '../../components/CustomAlert'
+import useUtils from '../../hooks/useUtils'
+import useCustomToast from '../../hooks/useCustomToast'
 
 const { width, height } = Dimensions.get('window')
 const CARD_HEIGHT = 220
@@ -65,55 +66,45 @@ const CARD_WIDTH = width * 0.8
 
 const HikeScreen = ({ navigation, route }) => {
   const { colors } = useTheme()
-  const { createFakeAlbum, createFakeHike, createFakeUser } = useFaker()
-  const { axiosGetWithToken } = useAxios()
+  const { axiosGetWithToken, axiosPostWithToken, axiosDeleteWithToken } =
+    useAxios()
+  const { formatDate } = useUtils()
+  const { toastShow } = useCustomToast()
+
+  const isFocused = useIsFocused()
 
   const userStore = useStoreState((state) => state.user)
   const { user } = userStore
 
   const { hikeId } = route.params
 
-  const [hike, setHike] = useState(false) // Pour les tests
-  const [images, setImages] = useState([])
+  const [hike, setHike] = useState(false)
   const [isHype, setIsHype] = useState(false)
   const [showFlyer, setShowFlyer] = useState(false)
   const [showImages, setShowImages] = useState(false)
   const [index, setIndex] = useState(0)
   const [showHypes, setShowHypes] = useState(false)
-  const [peopleHype, setPeopleHype] = useState([])
   const [loading, setLoading] = useState(true)
   const [overlay, setOverlay] = useState(false)
   const [showAlertCancelHike, setShowAlertCancelHike] = useState(false)
+  const [imagesViewer, setImagesViewer] = useState([])
 
   const animation = new Animated.Value(0)
 
+  // Au chargement
   useEffect(() => {
-    closeBottomSheet()
-    loadHike()
-  }, [])
+    if (isFocused) {
+      closeBottomSheet()
+      loadHike()
+    }
+  }, [isFocused])
 
-  // useEffect(() => {
-  //   console.log('hike :', hike)
-  //   if (hike) {
-  //     const today = new Date()
-  //     console.log(today.getTime())
-  //     // Timestamp de la date de la rando
-  //     const { date } = hike
-  //     console.log(date.getTime())
-
-  //     for (let i = 0; i < 7; i++) {
-  //       setPeopleHype((oldData) => [...oldData, createFakeUser()])
-  //     }
-  //   }
-  // }, [hike])
-
-  // useEffect(() => {
-  //   for (let i = 0; i < 5; i++) {
-  //     setImages((oldData) => [...oldData, createFakeAlbum()])
-  //   }
-
-  //   setHike(createFakeHike())
-  // }, [])
+  // Permet de formater un tableau pour voir les images dans le viewer
+  useEffect(() => {
+    if (imagesViewer.length > 0) {
+      setShowImages(true)
+    }
+  }, [imagesViewer])
 
   // Ref pour la bottomSheet Type
   const optionsHike = useRef(null)
@@ -133,20 +124,91 @@ const HikeScreen = ({ navigation, route }) => {
     }
   }
 
+  // Charge la rando depuis l'api
   const loadHike = async () => {
     const response = await axiosGetWithToken(`hikes/vtt/${hikeId}`)
 
-    console.log(response.data)
-
     setHike(response.data)
+    if (response.data.hike_vtt_hypes.length > 0) {
+      setIsHype(checkIfUserHyped(response.data.hike_vtt_hypes))
+    }
     setLoading(false)
+  }
+
+  // Permet de voir si le user est hype
+  const checkIfUserHyped = (hypers) => {
+    let hyped = false
+    for (const hyper of hypers) {
+      if (user.id === hyper.user_id) {
+        hyped = true
+        return true
+      }
+    }
+    if (!hyped) {
+      return false
+    }
+
+    return false
   }
 
   const cancelHike = async () => {
     setShowAlertCancelHike(false)
     closeBottomSheet()
 
-    // Axios delete hike
+    const response = await axiosDeleteWithToken(`hikes/vtt/${hike.id}`)
+
+    if (response.status === 201) {
+      toastShow({
+        title: 'Rando annulée !',
+        message: 'La rando a bien été annulée 😭',
+      })
+
+      // TODO Notifications aux personnes hypes + membres du club
+
+      navigation.reset({
+        index: 0,
+        routes: [
+          {
+            name: 'Drawer',
+          },
+        ],
+      })
+    }
+  }
+
+  const createImagesArray = () => {
+    const images = []
+    for (const image of hike.hike_vtt_images) {
+      images.push({ url: `${URL_SERVER}/storage/${image.image}` })
+    }
+
+    setImagesViewer(images)
+  }
+
+  const hype = async () => {
+    setIsHype(!isHype)
+
+    const response = await axiosPostWithToken(
+      `hikes/vtt/${hike.id}/hypeOrUnhype`
+    )
+
+    if (response.status === 201) {
+      toastShow({
+        title: 'Hyped ! Super !',
+        message: 'On vous attends le jour de la rando 😉',
+      })
+      setHike(response.data.hike_vtt)
+
+      // TODO Notification a l'admin
+    }
+
+    if (response.status === 202) {
+      toastShow({
+        title: 'UnHyped !',
+        message: 'Zut ! Les organisateurs vous attendaient 😥',
+      })
+      setHike(response.data.hike_vtt)
+    }
   }
 
   if (loading) {
@@ -177,7 +239,7 @@ const HikeScreen = ({ navigation, route }) => {
                     style={styles.leftContainer}
                   >
                     <ImageBackground
-                      source={{ uri: hike?.flyer }}
+                      source={{ uri: `${URL_SERVER}/storage/${hike.flyer}` }}
                       style={styles.flyer}
                       resizeMode="stretch"
                     />
@@ -186,7 +248,7 @@ const HikeScreen = ({ navigation, route }) => {
                   <View style={{ marginTop: 'auto' }}>
                     <CustomIconButton
                       text={isHype ? 'Unhype' : 'Hype'}
-                      onPress={() => setIsHype(!isHype)}
+                      onPress={hype}
                       size="100%"
                       cancel={!!isHype}
                       icon={
@@ -202,16 +264,16 @@ const HikeScreen = ({ navigation, route }) => {
 
                 <CustomBox style={styles.rightBox}>
                   <Text style={[littleTitle, mb5, { color: colors.textBox }]}>
-                    Nom de la rando
+                    {hike.name}
                   </Text>
                   <Text style={[defaultText, mb5, { color: colors.textBox }]}>
-                    Nom du club
+                    {hike.club_name}
                   </Text>
 
                   <Text
                     style={[littleTitle, textAlignCenter, my10, styles.date]}
                   >
-                    11 juin 2022
+                    {formatDate(new Date(hike.date))}
                   </Text>
 
                   <View style={[rowCenter, my10]}>
@@ -227,10 +289,12 @@ const HikeScreen = ({ navigation, route }) => {
                     </View>
                     <View style={{ flex: 1 }}>
                       <Text style={[defaultText, { color: colors.textBox }]}>
-                        5 €
+                        {Math.trunc(hike.public_price)} €
                       </Text>
                       <Text style={[defaultText, { color: colors.textBox }]}>
-                        6 €
+                        {hike.private_price !== null
+                          ? `${Math.trunc(hike.private_price)} €`
+                          : '-'}
                       </Text>
                     </View>
                   </View>
@@ -241,10 +305,10 @@ const HikeScreen = ({ navigation, route }) => {
                     Adresse :
                   </Text>
                   <Text style={[defaultText, { color: colors.textBox }]}>
-                    Stade George Martin
+                    {hike.address.street_address}
                   </Text>
                   <Text style={[defaultText, { color: colors.textBox }]}>
-                    29260 Lesneven
+                    {hike.address.zipcode.code} {hike.address.city.name}
                   </Text>
                 </CustomBox>
               </View>
@@ -259,20 +323,25 @@ const HikeScreen = ({ navigation, route }) => {
                   </Text>
                   <View style={[rowCenter]}>
                     {/* On boucle sur les personnes hypes jusqu'a en avoir 5 */}
-                    {peopleHype &&
-                      peopleHype.map(
+                    {hike.hike_vtt_hypes.length > 0 &&
+                      hike.hike_vtt_hypes.map(
                         (user, index) =>
-                          index <= 4 && <AvatarHype key={user.id} user={user} />
+                          index <= 4 && (
+                            <AvatarHype
+                              key={user.user_id}
+                              userId={user.user_id}
+                            />
+                          )
                       )}
                     {/* Si 6 personnes hype on affiche le 6 ème */}
-                    {peopleHype && peopleHype.length === 6 && (
-                      <AvatarHype user={peopleHype[5]} />
+                    {hike.hike_vtt_hypes.length === 6 && (
+                      <AvatarHype userId={hike.hike_vtt_hypes[5]} />
                     )}
                     {/* Si plus de 6 personnes hype, on affiche le compteur des personnes restante sur le 6 eme */}
-                    {peopleHype && peopleHype.length > 6 && (
+                    {hike.hike_vtt_hypes.length > 6 && (
                       <AvatarHype
-                        user={peopleHype[5]}
-                        nbUsers={peopleHype.length - 6}
+                        userId={hike.hike_vtt_hypes[5]}
+                        nbUsers={hike.hike_vtt_hypes.length - 6}
                       />
                     )}
                   </View>
@@ -281,11 +350,11 @@ const HikeScreen = ({ navigation, route }) => {
 
               <CustomBox>
                 <Text style={[littleTitle, mb20, { color: colors.textBox }]}>
-                  X parcours :
+                  {hike.hike_vtt_trips.length} parcours :
                 </Text>
-                <RouteHike />
-                <RouteHike />
-                <RouteHike />
+                {hike.hike_vtt_trips.map((trip) => (
+                  <RouteHike key={trip.id} trip={trip} />
+                ))}
               </CustomBox>
 
               <CustomBox>
@@ -293,11 +362,7 @@ const HikeScreen = ({ navigation, route }) => {
                   Description :
                 </Text>
                 <Text style={[defaultText, { color: colors.textBox }]}>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi
-                  recusandae, quisquam maiores repellendus excepturi, quia
-                  molestiae voluptas illum cumque impedit ad reprehenderit
-                  beatae labore nobis placeat neque. Doloremque, inventore
-                  recusandae.
+                  {hike.description}
                 </Text>
               </CustomBox>
 
@@ -306,16 +371,16 @@ const HikeScreen = ({ navigation, route }) => {
                 <Text style={[littleTitle, { color: colors.textBox }]}>
                   Images / Photos :
                 </Text>
-                {images.length ? (
+                {hike.hike_vtt_images.length > 0 ? (
                   <CustomCarousel
                     snapToInterval={CARD_WIDTH}
                     animation={animation}
                   >
-                    {images.map((image, index) => (
+                    {hike.hike_vtt_images.map((image, index) => (
                       <TouchableOpacity
                         onPress={() => {
                           setIndex(index)
-                          setShowImages(true)
+                          createImagesArray()
                         }}
                         key={image.id}
                         style={[
@@ -324,7 +389,9 @@ const HikeScreen = ({ navigation, route }) => {
                         ]}
                       >
                         <ImageBackground
-                          source={{ uri: image.url }}
+                          source={{
+                            uri: `${URL_SERVER}/storage/${image.image}`,
+                          }}
                           style={{ width: '100%' }}
                           resizeMode="contain"
                         />
@@ -339,11 +406,7 @@ const HikeScreen = ({ navigation, route }) => {
               </CustomBox>
 
               {/* Météo */}
-              {/* <CustomBox>{hike && <Weather hike={hike} />}</CustomBox> */}
-
-              {
-                // TODO METEO
-              }
+              <CustomBox>{hike && <Weather hike={hike} />}</CustomBox>
 
               {/* Commentaires */}
               <CustomBox>
@@ -351,10 +414,11 @@ const HikeScreen = ({ navigation, route }) => {
                   Commentaires
                 </Text>
                 <CustomIconButton
-                  text="Voir les commentaires (5)"
+                  isText
+                  text={`Voir les commentaires (${hike.post.comments_count})`}
                   size="100%"
                   onPress={() =>
-                    navigation.navigate('Comments', { data: hike })
+                    navigation.navigate('Comments', { item: hike.post })
                   }
                   iconLeft={
                     <MaterialCommunityIcons
@@ -388,7 +452,7 @@ const HikeScreen = ({ navigation, route }) => {
             <CustomImageViewer
               showModal={showImages}
               setShowModal={setShowImages}
-              imageUrls={images}
+              imageUrls={imagesViewer}
               index={index}
               renderHeader={() => (
                 <View style={{ backgroundColor: colors.background }}>
@@ -406,7 +470,7 @@ const HikeScreen = ({ navigation, route }) => {
               showModal={showHypes}
               closeModal={() => setShowHypes(false)}
             >
-              <PoepleHypeModal peopleHype={peopleHype} />
+              <PoepleHypeModal peopleHype={hike.hike_vtt_hypes} />
             </CustomModal>
           </View>
 
@@ -455,7 +519,7 @@ const styles = StyleSheet.create({
     width: width / 2.5,
     margin: 10,
     marginRight: 5,
-    padding: 10,
+    padding: 2,
   },
   leftContainer: {
     paddingBottom: 5,

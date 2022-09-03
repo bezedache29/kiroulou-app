@@ -30,7 +30,7 @@ import {
 import CustomIconButton from '../../CustomIconButton'
 import useAxios from '../../../hooks/useAxios'
 
-const CustomCardClub = ({ onPress, item }) => {
+const CustomCardClub = ({ onPress, item, disabled = false }) => {
   const navigation = useNavigation()
   const { axiosPostWithToken, axiosGetWithToken } = useAxios()
 
@@ -83,18 +83,23 @@ const CustomCardClub = ({ onPress, item }) => {
 
   return (
     <View style={styles.container}>
-      {
-        // TODO Changer l'url de l'image par celle de item.hike_vtt.flyer
-      }
       <ImageBackground
         style={[{ width: '100%', height: '100%', flex: 1 }]}
         imageStyle={{ opacity: 0.2 }}
         resizeMode="cover"
-        source={{
-          uri: 'https://club-des-ecureuils.fr/wp-content/uploads/2018/11/Flyer-2019-VTT-1.jpg',
-        }}
+        source={
+          item.hike_vtt !== null || item.cancelled === 0
+            ? {
+                uri: `${URL_SERVER}/storage/${item.hike_vtt.flyer}`,
+              }
+            : require('../../../assets/images/png/cancelled.png')
+        }
       >
-        <TouchableOpacity onPress={onPress} style={{ padding: 10 }}>
+        <TouchableOpacity
+          onPress={onPress}
+          style={{ padding: 10 }}
+          disabled={disabled}
+        >
           <View style={styles.header}>
             <TouchableOpacity
               onPress={() =>

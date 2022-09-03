@@ -6,10 +6,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
 
+import { useNavigation } from '@react-navigation/native'
 import {
   defaultText,
   littleTitle,
@@ -20,9 +21,31 @@ import {
   textAlignCenter,
   TitleH3,
 } from '../../../assets/styles/styles'
+import useAxios from '../../../hooks/useAxios'
+import CustomLoader from '../../CustomLoader'
 
 const PoepleHypeModal = ({ peopleHype }) => {
   const { colors } = useTheme()
+  const { axiosGetWithToken } = useAxios()
+
+  const navigation = useNavigation()
+
+  const [hypers, setHypers] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadUsers()
+  }, [])
+
+  const loadUsers = async () => {
+    for (const hyper of peopleHype) {
+      const response = await axiosGetWithToken(`users/${hyper.user_id}`)
+
+      setHypers((oldHypers) => [...oldHypers, response.data])
+    }
+
+    setLoading(false)
+  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -30,10 +53,12 @@ const PoepleHypeModal = ({ peopleHype }) => {
         {peopleHype && peopleHype.length} Personnes hypes
       </Text>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {peopleHype &&
-          peopleHype.map((user) => (
+        <View style={{ flex: 1 }}>
+          {hypers.map((user) => (
             <TouchableOpacity
-              onPress={() => alert(`go to ${user.firstname}`)}
+              onPress={() =>
+                navigation.navigate('UserProfile', { userId: user.id })
+              }
               key={user.id}
               style={[
                 rowCenter,
@@ -47,23 +72,31 @@ const PoepleHypeModal = ({ peopleHype }) => {
             >
               <View style={styles.avatarContainer}>
                 <ImageBackground
-                  source={{
-                    uri: user.avatar,
-                  }}
+                  source={
+                    user.avatar !== null
+                      ? {
+                          uri: user.avatar,
+                        }
+                      : require('../../../assets/images/png/default-avatar.png')
+                  }
                   style={styles.avatar}
                   imageStyle={{ borderRadius: 25 }}
                 />
               </View>
               <View style={{ flex: 4 }}>
                 <Text style={[littleTitle, { color: colors.text }]}>
-                  {user.firstname} {user.lastname}
+                  {user.firstname
+                    ? `${user.firstname} ${user.lastname}`
+                    : user.email}
                 </Text>
                 <Text style={[defaultText, { color: colors.text }]}>
-                  {user.country}
+                  {user.club_name}
                 </Text>
               </View>
             </TouchableOpacity>
           ))}
+        </View>
+        {loading && <CustomLoader style={mt20} />}
       </ScrollView>
     </View>
   )

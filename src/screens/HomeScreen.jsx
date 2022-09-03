@@ -174,6 +174,7 @@ const HomeScreen = ({ navigation }) => {
                     return (
                       <CustomCardClub
                         item={item}
+                        disabled={item.cancelled === 1}
                         onPress={() =>
                           navigation.navigate('Hike', {
                             hikeId: item.hike_vtt.id,

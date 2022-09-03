@@ -383,8 +383,14 @@ const AddOrEditClubScreen = ({ navigation, route }) => {
             setChangeAddress(false)
             setType({ name: "Type d'organisation" })
             setImage(false)
-            navigation.navigate('ClubProfile', {
-              clubId: response.data.club.id,
+            navigation.reset({
+              index: 0,
+              routes: [
+                {
+                  name: 'ClubProfile',
+                  params: { clubId: response.data.club.id, create: true },
+                },
+              ],
             })
           }
         }

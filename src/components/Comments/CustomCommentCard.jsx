@@ -24,11 +24,13 @@ import {
   my10,
   rowCenter,
 } from '../../assets/styles/styles'
+import useCustomToast from '../../hooks/useCustomToast'
 
 const CustomCommentCard = ({ item, toggleBottomSheet }) => {
   const { colors } = useTheme()
   const { axiosGetWithToken, axiosPostWithToken } = useAxios()
   const { formatDate, convertDateSQL } = useUtils()
+  const { toastShow } = useCustomToast()
 
   const userStore = useStoreState((state) => state.user)
   const { user } = userStore
@@ -42,14 +44,23 @@ const CustomCommentCard = ({ item, toggleBottomSheet }) => {
 
   const follow = async () => {
     setFollowed(!followed)
-    // TODO Toast
 
     const response = await axiosPostWithToken(
       `users/${item.user_id}/followOrUnfollow`
     )
 
     if (response.status === 201) {
-      //
+      toastShow({
+        title: `${item.user_name} follow !`,
+        message: `Bravo ! ${item.user_name} a été ajouté à votre liste de follow`,
+      })
+    }
+
+    if (response.status === 202) {
+      toastShow({
+        title: `${item.user_name} unfollow !`,
+        message: `${item.user_name} n'est plus dans votre liste de follow`,
+      })
     }
   }
 
@@ -76,9 +87,13 @@ const CustomCommentCard = ({ item, toggleBottomSheet }) => {
       <View style={[rowCenter]}>
         <TouchableOpacity onPress={() => {}} style={styles.header}>
           <ImageBackground
-            source={{
-              uri: `${URL_SERVER}/storage/images/users/${item.user_id}/avatars/${item.user_avatar_name}`,
-            }}
+            source={
+              item.user_avatar_name !== null
+                ? {
+                    uri: `${URL_SERVER}/storage/${item.user_avatar_name}`,
+                  }
+                : require('../../assets/images/png/default-avatar.png')
+            }
             style={styles.avatar}
             imageStyle={styles.avatarStyle}
           />
@@ -143,5 +158,16 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     elevation: 5,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatar: {
+    width: 35,
+    height: 35,
+  },
+  avatarStyle: {
+    borderRadius: 25,
   },
 })

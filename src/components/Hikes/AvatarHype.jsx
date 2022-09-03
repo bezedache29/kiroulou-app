@@ -1,17 +1,46 @@
 import { ImageBackground, StyleSheet, Text } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
-import { darkColor, defaultText } from '../../assets/styles/styles'
 
-const AvatarHype = ({ user, nbUsers }) => {
+import { URL_SERVER } from 'react-native-dotenv'
+
+import { darkColor, defaultText } from '../../assets/styles/styles'
+import useAxios from '../../hooks/useAxios'
+import CustomLoader from '../CustomLoader'
+
+const AvatarHype = ({ userId, nbUsers }) => {
   const { colors } = useTheme()
+  const { axiosGetWithToken } = useAxios()
+
+  const [userHype, setUserHype] = useState(false)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    console.log('la')
+    loadUser()
+  }, [])
+
+  const loadUser = async () => {
+    const response = await axiosGetWithToken(`users/${userId}`)
+
+    setUserHype(response.data)
+    setLoading(false)
+  }
+
+  if (loading) {
+    return <CustomLoader />
+  }
 
   return (
     <ImageBackground
-      source={{
-        uri: user.avatar,
-      }}
+      source={
+        userHype.avatar !== null
+          ? {
+              uri: `${URL_SERVER}/storage/${userHype.avatar}`,
+            }
+          : require('../../assets/images/png/default-avatar.png')
+      }
       style={[styles.avatar, { borderColor: colors.borderAvatar }]}
       imageStyle={{ opacity: nbUsers ? 0.3 : 1 }}
     >
