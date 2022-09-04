@@ -1,5 +1,6 @@
-import { View, Text } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
+
+import Lottie from 'lottie-react-native'
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
@@ -18,6 +19,7 @@ const SplashScreen = ({ navigation }) => {
   const userActions = useStoreActions((actions) => actions.user)
 
   const [isFirstLaunch, setIsFirstLaunch] = useState(null)
+  const [loader, setLoader] = useState(true)
 
   /**
    * Permet de check si le user a dejà ouvert l'application et donc de skip ou non le Onboarding
@@ -90,32 +92,45 @@ const SplashScreen = ({ navigation }) => {
       setIsFirstLaunch(true)
       navigation.navigate('Onboarding')
     }
+
+    setLoader(false)
   }
 
   /**
    * Au chargement du screen
    */
   useEffect(() => {
-    checkIsFirstLauch()
-
+    setLoader(true)
     // AsyncStorage.removeItem('kro_auth_token')
-
     AsyncStorage.getItem('darkmode').then((value) => {
       if (value) {
         toggleTheme()
       }
     })
+
+    const timer = setTimeout(() => {
+      checkIsFirstLauch()
+    }, 2000)
+
+    return () => {
+      clearTimeout(timer)
+    }
   }, [])
 
-  if (isFirstLaunch == null) {
+  if (isFirstLaunch == null || loader) {
     // Ici sera le loader Lottie
-    return null
+    // return null
+    return (
+      <Lottie
+        source={require('../assets/lottie/loader-splash.json')}
+        autoPlay
+      />
+    )
   }
 
   return (
-    <View>
-      <Text>SplashScreen</Text>
-    </View>
+    // <Lottie source={require('../assets/lottie/10812-cycle.json')} autoPlay />
+    null
   )
 }
 

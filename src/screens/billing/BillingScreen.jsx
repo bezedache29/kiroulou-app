@@ -32,6 +32,7 @@ const BillingScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true)
   const [openInformation, setOpenInformation] = useState(false)
   const [overlay, setOverlay] = useState(false)
+  const [noCustomerOrSub, setNoCustomerOrSub] = useState(false)
 
   useEffect(() => {
     loadBilling()
@@ -42,9 +43,13 @@ const BillingScreen = ({ navigation }) => {
 
     if (response.status === 200) {
       setBilling(response.data)
+      setLoading(false)
     }
 
-    setLoading(false)
+    if (response.status === 404) {
+      setNoCustomerOrSub(true)
+      setLoading(false)
+    }
   }
 
   return (
@@ -58,100 +63,106 @@ const BillingScreen = ({ navigation }) => {
         setOpenInformation(true)
       }}
     >
-      {overlay && <CustomOverlay />}
-
       {loading ? (
         <CustomLoader />
       ) : (
         <View style={{ flex: 1, padding: 20 }}>
-          <ScrollView showsVerticalScrollIndicator={false}>
+          {overlay && <CustomOverlay />}
+          {noCustomerOrSub ? (
             <Text
               style={[TitleH4, textAlignCenter, mb10, { color: colors.text }]}
             >
-              Informations de paiement
+              Aucunes factures pour le moment.
             </Text>
+          ) : (
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <Text
+                style={[TitleH4, textAlignCenter, mb10, { color: colors.text }]}
+              >
+                Informations de paiement
+              </Text>
 
-            <Text style={[defaultText, mt10, { color: colors.text }]}>
-              {billing.payment_method.type === 'card' && 'Carte'}{' '}
-              {billing.payment_method.card.brand.toUpperCase()} |
-              {' **** **** **** '}
-              {billing.payment_method.card.last4}
-            </Text>
+              <Text style={[defaultText, mt10, { color: colors.text }]}>
+                {billing.payment_method.type === 'card' && 'Carte'}{' '}
+                {billing.payment_method.card.brand.toUpperCase()} |
+                {' **** **** **** '}
+                {billing.payment_method.card.last4}
+              </Text>
 
-            <Text style={[defaultText, mt10, { color: colors.text }]}>
-              prochaine date de facturation :
-            </Text>
-            <Text style={[defaultText, mb10, { color: darkPrimaryColor }]}>
-              le{' '}
-              {formatDate(
-                timestampToDate(billing.sub.current_period_end * 1000)
-              )}
-            </Text>
+              <Text style={[defaultText, mt10, { color: colors.text }]}>
+                prochaine date de facturation :
+              </Text>
+              <Text style={[defaultText, mb10, { color: darkPrimaryColor }]}>
+                le{' '}
+                {formatDate(
+                  timestampToDate(billing.sub.current_period_end * 1000)
+                )}
+              </Text>
 
-            <CustomDivider addStyle={my10} />
+              <CustomDivider addStyle={my10} />
 
-            <Text
-              style={[TitleH4, textAlignCenter, mb10, { color: colors.text }]}
-            >
-              Détails du forfait
-            </Text>
-            <Text style={[defaultText, mb10, { color: colors.text }]}>
-              Forfait : {billing.sub.plan.nickname}
-            </Text>
-            <Text style={[defaultText, mb10, { color: colors.text }]}>
-              Prix : {billing.sub.plan.amount / 100} € /{' '}
-              {billing.sub.plan.interval === 'month' && 'mois'}
-            </Text>
-            <Text style={[defaultText, mb10, { color: colors.text }]}>
-              Statut :{' '}
-              {billing.sub.cancel_at_period_end
-                ? 'Arrêt à la fin de la période'
-                : 'En cours'}
-            </Text>
+              <Text
+                style={[TitleH4, textAlignCenter, mb10, { color: colors.text }]}
+              >
+                Détails du forfait
+              </Text>
+              <Text style={[defaultText, mb10, { color: colors.text }]}>
+                Forfait : {billing.sub.plan.nickname}
+              </Text>
+              <Text style={[defaultText, mb10, { color: colors.text }]}>
+                Prix : {billing.sub.plan.amount / 100} € /{' '}
+                {billing.sub.plan.interval === 'month' && 'mois'}
+              </Text>
+              <Text style={[defaultText, mb10, { color: colors.text }]}>
+                Statut : {billing.sub.status}
+              </Text>
 
-            <CustomDivider addStyle={my10} />
+              <CustomDivider addStyle={my10} />
 
-            <Text
-              style={[TitleH4, textAlignCenter, mb10, { color: colors.text }]}
-            >
-              Période de service
-            </Text>
-            <Text style={[defaultText, mb10, { color: colors.text }]}>
-              Du{' '}
-              {formatDateHike(
-                timestampToDate(billing.sub.current_period_start * 1000)
-              )}{' '}
-              au{' '}
-              {formatDateHike(
-                timestampToDate(billing.sub.current_period_end * 1000)
-              )}
-            </Text>
+              <Text
+                style={[TitleH4, textAlignCenter, mb10, { color: colors.text }]}
+              >
+                Période de service
+              </Text>
+              <Text style={[defaultText, mb10, { color: colors.text }]}>
+                Du{' '}
+                {formatDateHike(
+                  timestampToDate(billing.sub.current_period_start * 1000)
+                )}{' '}
+                au{' '}
+                {formatDateHike(
+                  timestampToDate(billing.sub.current_period_end * 1000)
+                )}
+              </Text>
 
-            <CustomDivider addStyle={my10} />
+              <CustomDivider addStyle={my10} />
 
-            <Text
-              style={[TitleH4, textAlignCenter, mb10, { color: colors.text }]}
-            >
-              Dernière facture
-            </Text>
-            <CustomButtonInfo
-              title="Voir le reçu du dernier paiement"
-              onPress={() => Linking.openURL(billing.latest_charge.receipt_url)}
-              colors={colors}
-              style={[my10, styles.btn]}
-              backgroundColor={secondaryColor}
-            />
+              <Text
+                style={[TitleH4, textAlignCenter, mb10, { color: colors.text }]}
+              >
+                Dernière facture
+              </Text>
+              <CustomButtonInfo
+                title="Voir le reçu du dernier paiement"
+                onPress={() =>
+                  Linking.openURL(billing.latest_charge.receipt_url)
+                }
+                colors={colors}
+                style={[my10, styles.btn]}
+                backgroundColor={secondaryColor}
+              />
 
-            <CustomButtonInfo
-              title="Télécharger la dernière facture"
-              onPress={() =>
-                Linking.openURL(billing.latest_invoice.invoice_pdf)
-              }
-              colors={colors}
-              style={[my10, styles.btn]}
-              backgroundColor={secondaryColor}
-            />
-          </ScrollView>
+              <CustomButtonInfo
+                title="Télécharger la dernière facture"
+                onPress={() =>
+                  Linking.openURL(billing.latest_invoice.invoice_pdf)
+                }
+                colors={colors}
+                style={[my10, styles.btn]}
+                backgroundColor={secondaryColor}
+              />
+            </ScrollView>
+          )}
 
           <CustomModal
             showModal={openInformation}

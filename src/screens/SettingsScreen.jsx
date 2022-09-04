@@ -161,8 +161,6 @@ const SettingsScreen = ({ navigation }) => {
         type: 'toast_danger',
       })
     }
-
-    console.log(response.data)
     setLoading(false)
   }
 
@@ -224,6 +222,9 @@ const SettingsScreen = ({ navigation }) => {
                             ? colors.text
                             : darkPrimaryColor,
                         textAlign: 'right',
+                        textDecorationLine: user.premium_actif_cancel
+                          ? 'line-through'
+                          : 'none',
                       },
                     ]}
                   >

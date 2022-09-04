@@ -4,6 +4,8 @@ import { useTheme } from 'react-native-paper'
 
 import { useStripe } from '@stripe/stripe-react-native'
 
+import Lottie from 'lottie-react-native'
+
 import {
   defaultText,
   mt20,
@@ -16,7 +18,6 @@ import CustomContainer from '../../components/CustomContainer'
 import CustomBigButton from '../../components/CustomBigButton'
 import useAxios from '../../hooks/useAxios'
 import ReinsuranceElement from '../../components/Payment/ReinsuranceElement'
-import CustomLoader from '../../components/CustomLoader'
 import useCustomToast from '../../hooks/useCustomToast'
 
 const securityPNG = require('../../assets/images/png/payment/security.png')
@@ -170,7 +171,7 @@ const SubPaymentScreen = ({ navigation, route }) => {
   }
 
   if (loading) {
-    return <CustomLoader />
+    return <Lottie source={require('../../assets/lottie/card.json')} autoPlay />
   }
 
   return (

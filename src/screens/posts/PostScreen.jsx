@@ -190,7 +190,7 @@ const PostScreen = ({ navigation, route }) => {
       })
 
       closeBottomSheet()
-      navigation.navigate('Splash')
+      navigation.navigate('Drawer')
     } else {
       toastShow({
         title: 'Action impossible',
