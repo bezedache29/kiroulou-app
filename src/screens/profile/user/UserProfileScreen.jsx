@@ -95,9 +95,6 @@ const UserProfileScreen = ({ navigation, route }) => {
       )}
 
       {/* Layout qui ajoute une TabView vide */}
-      {
-        // TODO Possible de mettre un loader ici si trop long
-      }
       {userProfile && (
         <LayoutProfile
           renderScene={renderScene}

@@ -1,5 +1,5 @@
 import { ImageBackground, StyleSheet, Text, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
@@ -135,9 +135,6 @@ const ClubsCard = ({ club, refresh }) => {
 
       <View style={styles.buttons}>
         {/* Btn demande adhesion */}
-        {
-          // TODO Fonction ne plus adhérer. Alert quand c'est l'admin du club qui essaye de se desinscire
-        }
         {user.club_id !== null && user.club_id === club.id ? (
           <CustomButton
             onPress={checkIfAdmin}

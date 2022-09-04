@@ -45,6 +45,7 @@ import CustomAlert from '../../../components/CustomAlert'
 import useServices from '../../../hooks/useServices'
 import useCustomToast from '../../../hooks/useCustomToast'
 import CustomLoader from '../../../components/CustomLoader'
+import usePicker from '../../../hooks/usePicker'
 
 const { width, height } = Dimensions.get('window')
 const CARD_HEIGHT = 220
@@ -52,7 +53,7 @@ const CARD_WIDTH = width * 0.8
 
 const AddHikeStep3Screen = ({ navigation, route }) => {
   const { colors } = useTheme()
-  const { sendImageToServer, compressImage, checkExtension } = useImages()
+  const { sendImageToServer, compressImage } = useImages()
   const {
     axiosPostWithToken,
     axiosGetWithToken,
@@ -61,11 +62,12 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
   } = useAxios()
   const { checkIfAddressExist, createAddress } = useServices()
   const { toastShow } = useCustomToast()
+  const { openImagePicker } = usePicker()
 
   const { dataSteps } = route.params
   const { trips, address } = dataSteps
 
-  console.log('dataSteps on 3', dataSteps)
+  // console.log('dataSteps on 3', dataSteps)
 
   const userStore = useStoreState((state) => state.user)
   const { user } = userStore
@@ -88,7 +90,7 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
 
   useEffect(() => {
     if (route.params?.hikeEdit) {
-      console.log('hikeEdit', route.params.hikeEdit)
+      // console.log('hikeEdit', route.params.hikeEdit)
 
       setHikeEdit(true)
 
@@ -422,24 +424,11 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
     setLoading(false)
   }
 
-  // TODO Refacto
   const openPicker = async () => {
-    try {
-      const response = await MultipleImagePicker.openPicker({
-        mediaType: 'image',
-        singleSelectedMode: true,
-        doneTitle: 'Valider',
-        cancelTitle: 'Annuler',
-        selectedColor: darkPrimaryColor,
-      })
+    const image = await openImagePicker()
 
-      // On check que ce sont bien des images qui sont upload (jpeg / jpg / png only)
-      if (checkExtension(response.mime)) {
-        const compress = await compressImage(`file://${response.realPath}`)
-        setFlyer(compress)
-      }
-    } catch (e) {
-      console.log(e.code, e.message)
+    if (image !== null) {
+      setFlyer(image)
     }
   }
 
