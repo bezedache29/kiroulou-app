@@ -10,10 +10,13 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
 
+import { URL_SERVER } from 'react-native-dotenv'
+
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 import {
+  cancelColor,
   darkPrimaryColor,
   defaultText,
   defaultTextBold,
@@ -25,27 +28,31 @@ import {
 } from '../../../assets/styles/styles'
 
 import CustomContainer from '../../../components/CustomContainer'
-import useFaker from '../../../hooks/useFaker'
 import useUtils from '../../../hooks/useUtils'
 import CustomBSModal from '../../../components/CustomBSModal'
 import ButtonBS from '../../../components/ButtonBS'
 import CustomAlert from '../../../components/CustomAlert'
 import CustomOverlay from '../../../components/CustomOverlay'
+import useAxios from '../../../hooks/useAxios'
+import CustomLoader from '../../../components/CustomLoader'
+import useCustomToast from '../../../hooks/useCustomToast'
 
-const HikesClubScreen = ({ navigation }) => {
+const HikesClubScreen = ({ navigation, route }) => {
   const { colors } = useTheme()
-  const { dateToTimestamp, formatDate } = useUtils()
-  const { createFakeHike } = useFaker()
+  const { dateToTimestamp, formatDate, formatDateHike } = useUtils()
+  const { axiosGetWithToken, axiosDeleteWithToken } = useAxios()
+  const { toastShow } = useCustomToast()
+
+  const { club } = route.params
 
   const [hikes, setHikes] = useState([])
   const [hike, setHike] = useState(false)
   const [overlay, setOverlay] = useState(false)
   const [showDeleteHike, setShowDeleteHike] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    for (let i = 0; i < 4; i++) {
-      setHikes((oldData) => [...oldData, createFakeHike()])
-    }
+    loadHikes()
   }, [])
 
   useEffect(() => {
@@ -54,14 +61,25 @@ const HikesClubScreen = ({ navigation }) => {
     }
   }, [hikes])
 
+  const loadHikes = async () => {
+    setLoading(true)
+    const response = await axiosGetWithToken(`clubs/${club.id}/hikes`)
+
+    if (response.status === 200) {
+      setHikes(response.data)
+    }
+
+    setLoading(false)
+  }
+
   // Ref pour la bottomSheet
   const bottomSheetRef = useRef(null)
 
   // Permet d'ouvrir et fermer la bottomSheet pour afficher les options de l'article
   const toggleBottomSheet = (item) => {
     if (overlay) {
-      setOverlay(false)
       setHike(false)
+      setOverlay(false)
       bottomSheetRef?.current?.closeBottomSheet()
     } else {
       setOverlay(true)
@@ -71,12 +89,31 @@ const HikesClubScreen = ({ navigation }) => {
   }
 
   const optionsHike = (hike) => {
-    if (dateToTimestamp(hike.date) >= dateToTimestamp(new Date())) {
+    if (dateToTimestamp(new Date(hike.date)) >= dateToTimestamp(new Date())) {
       // Ouverture BottomSheet
       toggleBottomSheet(hike)
     } else {
       // Redirect vars HikeScreen
-      navigation.navigate('Hike')
+      navigation.navigate('Hike', { hikeId: hike.id })
+    }
+  }
+
+  const cancelHike = async () => {
+    setShowDeleteHike(false)
+    setOverlay(false)
+    bottomSheetRef?.current?.closeBottomSheet()
+
+    const response = await axiosDeleteWithToken(`hikes/vtt/${hike.id}`)
+
+    if (response.status === 201) {
+      toastShow({
+        title: 'Rando annulée !',
+        message: 'La rando a bien été annulée 😭',
+      })
+
+      // TODO Notifications aux personnes hypes + membres du club
+
+      loadHikes()
     }
   }
 
@@ -95,57 +132,63 @@ const HikesClubScreen = ({ navigation }) => {
               Liste de toutes les randos du club
             </Text>
 
-            <FlatList
-              data={hikes}
-              showsVerticalScrollIndicator={false}
-              keyExtractor={(item) => item.id}
-              ListEmptyComponent={() => (
-                <View style={{ flex: 1 }}>
-                  <Text
+            {loading ? (
+              <CustomLoader />
+            ) : (
+              <FlatList
+                data={hikes}
+                showsVerticalScrollIndicator={false}
+                keyExtractor={(item) => item.id}
+                ListEmptyComponent={() => (
+                  <View style={{ flex: 1 }}>
+                    <Text
+                      style={[
+                        littleTitle,
+                        mt30,
+                        textAlignCenter,
+                        { color: colors.text },
+                      ]}
+                    >
+                      Pas de randos
+                    </Text>
+                  </View>
+                )}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    onPress={() => optionsHike(item)}
                     style={[
-                      littleTitle,
-                      mt30,
-                      textAlignCenter,
-                      { color: colors.text },
+                      rowCenter,
+                      styles.container,
+                      {
+                        backgroundColor:
+                          item.deleted_at === null
+                            ? dateToTimestamp(new Date(item.date)) >=
+                              dateToTimestamp(new Date())
+                              ? darkPrimaryColor
+                              : colors.backgroundBox
+                            : cancelColor,
+                      },
                     ]}
                   >
-                    Pas de randos
-                  </Text>
-                </View>
-              )}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  onPress={() => optionsHike(item)}
-                  style={[
-                    rowCenter,
-                    styles.container,
-                    {
-                      backgroundColor:
-                        dateToTimestamp(item.date) >=
-                        dateToTimestamp(new Date())
-                          ? darkPrimaryColor
-                          : colors.backgroundBox,
-                    },
-                  ]}
-                >
-                  <View style={{ width: '20%' }}>
-                    <ImageBackground
-                      source={{ uri: item.flyer }}
-                      style={styles.flyer}
-                      resizeMode="contain"
-                    />
-                  </View>
-                  <View style={{ width: '80%', paddingLeft: 20 }}>
-                    <Text style={[defaultTextBold, { color: colors.text }]}>
-                      {item.name}
-                    </Text>
-                    <Text style={[defaultText, my5, { color: colors.text }]}>
-                      {formatDate(item.date)}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              )}
-            />
+                    <View style={{ width: '20%' }}>
+                      <ImageBackground
+                        source={{ uri: `${URL_SERVER}/storage/${item.flyer}` }}
+                        style={styles.flyer}
+                        resizeMode="contain"
+                      />
+                    </View>
+                    <View style={{ width: '80%', paddingLeft: 20 }}>
+                      <Text style={[defaultTextBold, { color: colors.text }]}>
+                        {item.name}
+                      </Text>
+                      <Text style={[defaultText, my5, { color: colors.text }]}>
+                        {formatDate(new Date(item.date))}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                )}
+              />
+            )}
           </View>
 
           {/* BottomSheet pour options de l'article */}
@@ -176,12 +219,12 @@ const HikesClubScreen = ({ navigation }) => {
           <CustomAlert
             showAlert={showDeleteHike}
             title="Attention !"
-            message={`Etes vous sur de vouloir supprimer la rando : ${
+            message={`Supprimer la rando :\n\n${
               hike?.name
-            } du ${() => formatDate(hike?.date)} ?`}
+            }\n\ndu ${formatDateHike(new Date(hike?.date))} ?`}
             onDismiss={() => setShowDeleteHike(false)}
             onCancelPressed={() => setShowDeleteHike(false)}
-            onConfirmPressed={() => setShowDeleteHike(false)}
+            onConfirmPressed={cancelHike}
           />
         </CustomContainer>
       </BottomSheetModalProvider>

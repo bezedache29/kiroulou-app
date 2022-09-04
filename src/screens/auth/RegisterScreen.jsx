@@ -121,35 +121,33 @@ const RegisterScreen = ({ navigation }) => {
             </View>
           </View>
 
-          <Text style={[authTitle, mb30, { color: colors.text }]}>
-            S'enregistrer
-          </Text>
+          <Text style={[authTitle, { color: colors.text }]}>S'enregistrer</Text>
         </View>
 
         <Animatable.View
           animation="fadeInUpBig"
           style={{ flex: 3, backgroundColor: colors.background }}
         >
-          <View style={styles.btnsContainer}>
-            {/* Bouton Google */}
-            <CustomSocialButton onPress={() => {}} color={colors.border}>
+          {/* <View style={styles.btnsContainer}> */}
+          {/* Bouton Google */}
+          {/* <CustomSocialButton onPress={() => {}} color={colors.border}>
               <GoogleSVG height={24} width={24} />
-            </CustomSocialButton>
+            </CustomSocialButton> */}
 
-            {/* Bouton Facebook */}
-            <CustomSocialButton onPress={() => {}} color={colors.border}>
+          {/* Bouton Facebook */}
+          {/* <CustomSocialButton onPress={() => {}} color={colors.border}>
               <FacebookSVG height={24} width={24} />
-            </CustomSocialButton>
+            </CustomSocialButton> */}
 
-            {/* Bouton Strava */}
-            <CustomSocialButton onPress={() => {}} color={colors.border}>
+          {/* Bouton Strava */}
+          {/* <CustomSocialButton onPress={() => {}} color={colors.border}>
               <StravaSVG height={24} width={24} />
-            </CustomSocialButton>
-          </View>
+            </CustomSocialButton> */}
+          {/* </View> */}
 
-          <Text style={[minText, textAlignCenter, { color: colors.text }]}>
+          {/* <Text style={[minText, textAlignCenter, { color: colors.text }]}>
             Ou, s'enregistrer avec une adresse e-mail ...
-          </Text>
+          </Text> */}
 
           <Formik
             validationSchema={registerSchema}
