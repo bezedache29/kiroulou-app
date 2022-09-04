@@ -251,6 +251,7 @@ const HikeScreen = ({ navigation, route }) => {
                       onPress={hype}
                       size="100%"
                       cancel={!!isHype}
+                      disabled={user.club_id === hike.club_id}
                       icon={
                         <MaterialCommunityIcons
                           name={isHype ? 'alarm-light' : 'alarm-light-outline'}
@@ -436,7 +437,7 @@ const HikeScreen = ({ navigation, route }) => {
             <CustomImageViewer
               showModal={showFlyer}
               setShowModal={setShowFlyer}
-              imageUrls={[{ url: hike.flyer }]}
+              imageUrls={[{ url: `${URL_SERVER}/storage/${hike.flyer}` }]}
               renderHeader={() => (
                 <View style={{ backgroundColor: colors.background }}>
                   <CustomLabelNavigation
