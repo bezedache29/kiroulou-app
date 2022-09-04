@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { useStoreActions } from 'easy-peasy'
 
+import { Alert } from 'react-native'
 import { AppContext } from '../context/Context'
 import useConnection from '../hooks/useConnection'
 import useAxios from '../hooks/useAxios'
@@ -78,8 +79,11 @@ const SplashScreen = ({ navigation }) => {
               routes: [{ name: 'Login' }],
             })
           } else {
-            // TODO Modal erreur
-            alert(`erreur ${response.status}`)
+            Alert.alert(
+              "L'application n'a pas pu démarrer",
+              "Relancez l'application, si l'erreur est persistante, contacter le support :\n\nbezedache29@gmail.com",
+              [{ text: 'Relancer', onPress: () => start() }]
+            )
           }
         } else {
           navigation.reset({
@@ -100,6 +104,10 @@ const SplashScreen = ({ navigation }) => {
    * Au chargement du screen
    */
   useEffect(() => {
+    start()
+  }, [])
+
+  const start = () => {
     setLoader(true)
     // AsyncStorage.removeItem('kro_auth_token')
     AsyncStorage.getItem('darkmode').then((value) => {
@@ -115,7 +123,7 @@ const SplashScreen = ({ navigation }) => {
     return () => {
       clearTimeout(timer)
     }
-  }, [])
+  }
 
   if (isFirstLaunch == null || loader) {
     // Ici sera le loader Lottie

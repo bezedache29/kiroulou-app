@@ -449,7 +449,6 @@ const SettingsScreen = ({ navigation }) => {
           >
             <ButtonBS
               onPress={() => {
-                // TODO Faire la page vers cancel sub
                 setShowCancelSub(true)
               }}
               cancel

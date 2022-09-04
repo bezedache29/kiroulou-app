@@ -118,7 +118,7 @@ const ClubProfileScreen = ({ navigation, route }) => {
     ) {
       return <ClubMembersScene item={club} />
     }
-    // TODO Srcreen informant qu'il faut etre premium et lien vers achat premium
+
     return (
       <View style={mx10}>
         <Text style={[TitleH3, mt20, textAlignCenter, { color: colors.text }]}>

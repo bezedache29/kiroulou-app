@@ -13,6 +13,8 @@ import { URL_SERVER } from 'react-native-dotenv'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
+import RNFetchBlob from 'rn-fetch-blob'
+
 import Share from 'react-native-share'
 
 import {
@@ -39,24 +41,30 @@ const CustomCardClub = ({ onPress, item, disabled = false }) => {
 
   const commentsCount = item.comments_count
 
-  const customShare = async () => {
-    const shareOptions = {
-      message: `${item.club.name} vous informe :\n${item.description}`,
-      // url: file.image1,
-      // TODO Ajouter le flyer si possible
-    }
-
-    try {
-      const shareResponse = await Share.open(shareOptions)
-      console.log(JSON.stringify(shareResponse))
-    } catch (err) {
-      console.log('error share => ', err)
-    }
+  const shareHike = () => {
+    let filePath = null
+    const configOptions = { fileCache: true }
+    const { fs } = RNFetchBlob
+    RNFetchBlob.config(configOptions)
+      .fetch('GET', `${URL_SERVER}/storage/${item.hike_vtt.flyer}`)
+      .then((resp) => {
+        filePath = resp.path()
+        return resp.readFile('base64')
+      })
+      .then(async (base64Data) => {
+        base64Data = `data:image/jpeg;base64,${base64Data}`
+        await Share.open({
+          message: `Je vous partage une rando vtt organisée par ${item.club_name}, trouvé sur KiRoulOu : ${item.description}`,
+          url: base64Data,
+        })
+        // remove the image or pdf from device's storage
+        await fs.unlink(filePath)
+      })
   }
 
   useEffect(() => {
     checkUserLike()
-    // console.log('itemCardClub', item)
+    console.log('itemCardClub', item)
   }, [])
 
   const like = async () => {
@@ -106,16 +114,13 @@ const CustomCardClub = ({ onPress, item, disabled = false }) => {
                 navigation.navigate('ClubProfile', { club: item.club })
               }
             >
-              {
-                // TODO enlver le check null avatar
-              }
               <ImageBackground
                 source={
                   item.club_avatar !== null
                     ? {
                         uri: `${URL_SERVER}/storage/${item.club_avatar}`,
                       }
-                    : require('../../../assets/images/png/default-avatar.png')
+                    : require('../../../assets/images/png/default-person.png')
                 }
                 style={styles.avatar}
                 imageStyle={styles.avatarStyle}
@@ -173,7 +178,7 @@ const CustomCardClub = ({ onPress, item, disabled = false }) => {
 
           {/* Bouton share */}
           <CustomIconButton
-            onPress={customShare}
+            onPress={shareHike}
             icon={
               <MaterialCommunityIcons
                 name="share-variant-outline"
