@@ -4,7 +4,7 @@ import {
   SafeAreaView,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
+  FlatList,
 } from 'react-native'
 import React, { useEffect, useState } from 'react'
 
@@ -16,6 +16,12 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import FadingEdge from 'react-native-fading-edge'
 
+import { GOELOCATION_KEY } from 'react-native-dotenv'
+
+import Geolocation from 'react-native-geolocation-service'
+
+import { useStoreState } from 'easy-peasy'
+
 import {
   defaultTextBold,
   littleTitle,
@@ -26,6 +32,8 @@ import {
   primaryColor,
   mt20,
   mr10,
+  TitleH3,
+  secondaryColor,
 } from '../assets/styles/styles'
 
 import TabContainer from '../components/Navigation/TabContainer'
@@ -35,154 +43,22 @@ import ModalSearchDepartment from '../components/Calendar/ModalSearchDepartment'
 import useUtils from '../hooks/useUtils'
 import CalendarCard from '../components/Calendar/CalendarCard'
 import ModalChoiceMonth from '../components/Calendar/ModalChoiceMonth'
+import useGeolocation from '../hooks/useGeolocation'
+import useCustomToast from '../hooks/useCustomToast'
+import useAxios from '../hooks/useAxios'
+import CustomLoader from '../components/CustomLoader'
 
 const URL_API_GEO = 'https://geo.api.gouv.fr/regions'
-
-const myHikes = [
-  {
-    id: '1',
-    date: new Date(),
-    position: { lat: 48.6049675528421, lng: -4.368736230974384 },
-    // icon: '📍',
-    icon: `
-    <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-      <path d="M11.9 1a8.6 8.6 0 00-8.6 8.6c0 4.35 7.2 12.05 8.42 13.33a.24.24 0 00.35 0c1.22-1.27 8.42-9 8.42-13.33A8.6 8.6 0 0011.9 1zm0 11.67A3.07 3.07 0 1115 9.6a3.07 3.07 0 01-3.1 3.07z"/>
-    </svg>
-    `,
-    size: [24, 24],
-    imgUrl: 'https://picsum.photos/id/11/200/300',
-    name: 'Randonnée 1',
-    flyer:
-      'https://www.ats-sport.com/admin/fichiers_epreuves/FLYER-RandoVTTdesVignes_2021_D_page-0001-2021-11-04-13-51-25.jpg',
-    price: '5 €',
-    description:
-      'Lorem ipsum dolor sit amet. Et debitis nihil nam distinctio exercitationem et voluptatem ipsam. In ullam iste est consequatur sequi et earum dolorem ut repellendus pariatur qui corporis suscipit aut adipisci dolorum At sunt consequatur?',
-  },
-  {
-    id: '2',
-    date: new Date('2022-08-05T03:24:00'),
-    // Sun Dec 17 1995 03:24:00 GMT...),
-    position: { lat: 48.6049675528421, lng: -4.368736230974384 },
-    // icon: '📍',
-    icon: `
-    <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-      <path d="M11.9 1a8.6 8.6 0 00-8.6 8.6c0 4.35 7.2 12.05 8.42 13.33a.24.24 0 00.35 0c1.22-1.27 8.42-9 8.42-13.33A8.6 8.6 0 0011.9 1zm0 11.67A3.07 3.07 0 1115 9.6a3.07 3.07 0 01-3.1 3.07z"/>
-    </svg>
-    `,
-    size: [24, 24],
-    imgUrl: 'https://picsum.photos/id/11/200/300',
-    name: 'Randonnée 2',
-    flyer:
-      'https://www.ats-sport.com/admin/fichiers_epreuves/FLYER-RandoVTTdesVignes_2021_D_page-0001-2021-11-04-13-51-25.jpg',
-    price: '5 €',
-    description:
-      'Lorem ipsum dolor sit amet. Et debitis nihil nam distinctio exercitationem et voluptatem ipsam. In ullam iste est consequatur sequi et earum dolorem ut repellendus pariatur qui corporis suscipit aut adipisci dolorum At sunt consequatur?',
-  },
-  {
-    id: '3',
-    date: new Date('2022-12-17T03:24:00'),
-    // Sun Dec 17 1995 03:24:00 GMT...),
-    position: { lat: 48.6049675528421, lng: -4.368736230974384 },
-    // icon: '📍',
-    icon: `
-    <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-      <path d="M11.9 1a8.6 8.6 0 00-8.6 8.6c0 4.35 7.2 12.05 8.42 13.33a.24.24 0 00.35 0c1.22-1.27 8.42-9 8.42-13.33A8.6 8.6 0 0011.9 1zm0 11.67A3.07 3.07 0 1115 9.6a3.07 3.07 0 01-3.1 3.07z"/>
-    </svg>
-    `,
-    size: [24, 24],
-    imgUrl: 'https://picsum.photos/id/11/200/300',
-    name: 'Randonnée 3',
-    flyer:
-      'https://www.ats-sport.com/admin/fichiers_epreuves/FLYER-RandoVTTdesVignes_2021_D_page-0001-2021-11-04-13-51-25.jpg',
-    price: '5 €',
-    description:
-      'Lorem ipsum dolor sit amet. Et debitis nihil nam distinctio exercitationem et voluptatem ipsam. In ullam iste est consequatur sequi et earum dolorem ut repellendus pariatur qui corporis suscipit aut adipisci dolorum At sunt consequatur?',
-  },
-  {
-    id: '4',
-    date: new Date('2022-12-17T03:30:00'),
-    // Sun Dec 17 1995 03:24:00 GMT...),
-    position: { lat: 48.6049675528421, lng: -4.368736230974384 },
-    // icon: '📍',
-    icon: `
-    <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-      <path d="M11.9 1a8.6 8.6 0 00-8.6 8.6c0 4.35 7.2 12.05 8.42 13.33a.24.24 0 00.35 0c1.22-1.27 8.42-9 8.42-13.33A8.6 8.6 0 0011.9 1zm0 11.67A3.07 3.07 0 1115 9.6a3.07 3.07 0 01-3.1 3.07z"/>
-    </svg>
-    `,
-    size: [24, 24],
-    imgUrl: 'https://picsum.photos/id/11/200/300',
-    name: 'Randonnée 4',
-    flyer:
-      'https://www.ats-sport.com/admin/fichiers_epreuves/FLYER-RandoVTTdesVignes_2021_D_page-0001-2021-11-04-13-51-25.jpg',
-    price: '5 €',
-    description:
-      'Lorem ipsum dolor sit amet. Et debitis nihil nam distinctio exercitationem et voluptatem ipsam. In ullam iste est consequatur sequi et earum dolorem ut repellendus pariatur qui corporis suscipit aut adipisci dolorum At sunt consequatur?',
-  },
-  {
-    id: '5',
-    date: new Date('2022-12-17T03:30:00'),
-    // Sun Dec 17 1995 03:24:00 GMT...),
-    position: { lat: 48.6049675528421, lng: -4.368736230974384 },
-    // icon: '📍',
-    icon: `
-    <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-      <path d="M11.9 1a8.6 8.6 0 00-8.6 8.6c0 4.35 7.2 12.05 8.42 13.33a.24.24 0 00.35 0c1.22-1.27 8.42-9 8.42-13.33A8.6 8.6 0 0011.9 1zm0 11.67A3.07 3.07 0 1115 9.6a3.07 3.07 0 01-3.1 3.07z"/>
-    </svg>
-    `,
-    size: [24, 24],
-    imgUrl: 'https://picsum.photos/id/11/200/300',
-    name: 'Randonnée 4',
-    flyer:
-      'https://www.ats-sport.com/admin/fichiers_epreuves/FLYER-RandoVTTdesVignes_2021_D_page-0001-2021-11-04-13-51-25.jpg',
-    price: '5 €',
-    description:
-      'Lorem ipsum dolor sit amet. Et debitis nihil nam distinctio exercitationem et voluptatem ipsam. In ullam iste est consequatur sequi et earum dolorem ut repellendus pariatur qui corporis suscipit aut adipisci dolorum At sunt consequatur?',
-  },
-  {
-    id: '6',
-    date: new Date('2022-12-17T03:30:00'),
-    // Sun Dec 17 1995 03:24:00 GMT...),
-    position: { lat: 48.6049675528421, lng: -4.368736230974384 },
-    // icon: '📍',
-    icon: `
-    <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-      <path d="M11.9 1a8.6 8.6 0 00-8.6 8.6c0 4.35 7.2 12.05 8.42 13.33a.24.24 0 00.35 0c1.22-1.27 8.42-9 8.42-13.33A8.6 8.6 0 0011.9 1zm0 11.67A3.07 3.07 0 1115 9.6a3.07 3.07 0 01-3.1 3.07z"/>
-    </svg>
-    `,
-    size: [24, 24],
-    imgUrl: 'https://picsum.photos/id/11/200/300',
-    name: 'Randonnée 4',
-    flyer:
-      'https://www.ats-sport.com/admin/fichiers_epreuves/FLYER-RandoVTTdesVignes_2021_D_page-0001-2021-11-04-13-51-25.jpg',
-    price: '5 €',
-    description:
-      'Lorem ipsum dolor sit amet. Et debitis nihil nam distinctio exercitationem et voluptatem ipsam. In ullam iste est consequatur sequi et earum dolorem ut repellendus pariatur qui corporis suscipit aut adipisci dolorum At sunt consequatur?',
-  },
-  {
-    id: '7',
-    date: new Date('2022-12-17T03:30:00'),
-    // Sun Dec 17 1995 03:24:00 GMT...),
-    position: { lat: 48.6049675528421, lng: -4.368736230974384 },
-    // icon: '📍',
-    icon: `
-    <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-      <path d="M11.9 1a8.6 8.6 0 00-8.6 8.6c0 4.35 7.2 12.05 8.42 13.33a.24.24 0 00.35 0c1.22-1.27 8.42-9 8.42-13.33A8.6 8.6 0 0011.9 1zm0 11.67A3.07 3.07 0 1115 9.6a3.07 3.07 0 01-3.1 3.07z"/>
-    </svg>
-    `,
-    size: [24, 24],
-    imgUrl: 'https://picsum.photos/id/11/200/300',
-    name: 'Randonnée 4',
-    flyer:
-      'https://www.ats-sport.com/admin/fichiers_epreuves/FLYER-RandoVTTdesVignes_2021_D_page-0001-2021-11-04-13-51-25.jpg',
-    price: '5 €',
-    description:
-      'Lorem ipsum dolor sit amet. Et debitis nihil nam distinctio exercitationem et voluptatem ipsam. In ullam iste est consequatur sequi et earum dolorem ut repellendus pariatur qui corporis suscipit aut adipisci dolorum At sunt consequatur?',
-  },
-]
 
 const CalendarScreen = ({ navigation }) => {
   const { colors } = useTheme()
   const { formatCompleteDate, getOneYear, formatMonthText } = useUtils()
+  const { requestLocationPermission } = useGeolocation()
+  const { toastShow } = useCustomToast()
+  const { axiosPostWithToken } = useAxios()
+
+  const userStore = useStoreState((state) => state.user)
+  const { user } = userStore
 
   const [regions, setRegions] = useState([])
   const [region, setRegion] = useState(false)
@@ -194,6 +70,11 @@ const CalendarScreen = ({ navigation }) => {
   const [search, setSearch] = useState(false)
   const [showModalMonth, setShowModalMonth] = useState(false)
   const [choiceMonth, setChoiceMonth] = useState(false)
+  const [hasLocationPermission, setHasLocationPermission] = useState(false)
+  const [isLocationLoad, setIsLocationLoad] = useState(false)
+  const [loadHikes, setLoadHikes] = useState(false)
+  const [hikes, setHikes] = useState([])
+  const [loading, setLoading] = useState(false)
 
   const [monthYear, setMonthYear] = useState([])
 
@@ -201,15 +82,20 @@ const CalendarScreen = ({ navigation }) => {
 
   const dateDay = new Date()
 
-  // Département du user (ou position actuel ?)
   const [choiceDepartment, setChoiceDepartment] = useState('Finistère')
 
   // Demande a récupérer les régions
   useEffect(() => {
-    // Ici on charge les randos de base depuis l'api
-
+    // On demande autorisation geoloc
+    loadLocation()
     loadRegions()
   }, [])
+
+  useEffect(() => {
+    if (isLocationLoad) {
+      setIsLocationLoad(false)
+    }
+  }, [isLocationLoad])
 
   // Demande a récupérer les départements
   useEffect(() => {
@@ -218,20 +104,23 @@ const CalendarScreen = ({ navigation }) => {
     }
   }, [region])
 
+  useEffect(() => {
+    if (loadHikes) {
+      searchHikes()
+      setLoadHikes(false)
+    }
+  }, [loadHikes])
+
   // Lorsque le user a choisi sa region et son département
   useEffect(() => {
     if (search) {
       // On ferme la modal
       setShowModalDepartment(false)
 
-      console.log(
-        "recherche sur API les randos de se départementCode à partir de la date d'ajourd'hui"
-      )
-      console.log(departmentCode)
-
       setChoiceDepartment(department)
 
       // Ici on recharge les nouvelles randos venant de l'api
+      searchHikes()
     }
   }, [search])
 
@@ -241,19 +130,89 @@ const CalendarScreen = ({ navigation }) => {
       const month = formatMonthText(str[0]) + 1
       const year = str[1]
 
-      console.log(departmentCode)
+      const data = {
+        year,
+        month,
+        department_code: departmentCode,
+      }
 
       // Request API avec le mois "month", l'année "year" et le departmentCode
+      searchHikes(data)
 
+      setChoiceMonth(false)
       setShowModalMonth(false)
     }
   }, [choiceMonth])
 
+  useEffect(() => {
+    if (hasLocationPermission) {
+      Geolocation.getCurrentPosition(
+        (position) => {
+          // console.log('position', position)
+          const options = {
+            method: 'GET',
+            url: `https://us1.locationiq.com/v1/reverse.php?key=${GOELOCATION_KEY}&lat=${position.coords.latitude}&lon=${position.coords.longitude}&format=json`,
+          }
+          axios
+            .request(options)
+            .then((response) => {
+              // console.log('axios', response.data)
+              // setCoordonate({ lat: response.data.lat, lng: response.data.lon })
+
+              setChoiceDepartment(response.data.address.county)
+              setDepartment(response.data.address.country)
+              setDepartmentCode(response.data.address.postcode.substr(0, 2))
+              setLoadHikes(true)
+            })
+            .catch((error) => {
+              // console.error('error', error.message)
+              if (error.response.status === 401) {
+                toastShow({
+                  title: 'Oops !',
+                  message: `Cette écran est temporairement indisponible (${error.response.status})`,
+                  type: 'toast_danger',
+                })
+
+                navigation.goBack()
+              }
+            })
+        },
+        (error) => {
+          // See error code charts below.
+          console.log(error.code, error.message)
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+      )
+    }
+  }, [hasLocationPermission])
+
+  const loadLocation = () => {
+    if (user.address !== null) {
+      setChoiceDepartment(user.address.department)
+      setDepartment(user.address.department)
+      setRegion(user.address.region)
+      setDepartmentCode(user.address.department_code)
+      setLoadHikes(true)
+    } else {
+      requestLocationPermission().then((res) => {
+        if (res) {
+          setHasLocationPermission(true)
+        } else {
+          setChoiceDepartment('Finistère')
+          setDepartment('Finistère')
+          setDepartmentCode('29')
+          setRegion('Bretagne')
+          setLoadHikes(true)
+        }
+      })
+    }
+
+    setIsLocationLoad(true)
+  }
+
   // Permet de rechercher les Regions sur l'api geo
   const loadRegions = async () => {
     const response = await axios.get(URL_API_GEO)
-
-    console.log('regions', response.data)
 
     setRegions(response.data)
   }
@@ -264,9 +223,29 @@ const CalendarScreen = ({ navigation }) => {
       `${URL_API_GEO}/${regionCode}/departements`
     )
 
-    console.log('departments', response.data)
-
     setDepartments(response.data)
+  }
+
+  const searchHikes = async (month = false) => {
+    setLoading(true)
+    let data
+    if (month) {
+      data = month
+    } else {
+      data = {
+        department_code: Number(departmentCode),
+      }
+    }
+    const response = await axiosPostWithToken(
+      `hikes/vtt/${month ? 'searchInMonth' : 'searchInDepartment'}`,
+      data
+    )
+
+    if (response.status === 200) {
+      setHikes(response.data)
+    }
+
+    setLoading(false)
   }
 
   // Quand le user ferme la modal
@@ -329,42 +308,70 @@ const CalendarScreen = ({ navigation }) => {
             </View>
 
             <View style={{ flex: 1 }}>
-              <ScrollView>
-                <View style={styles.containerList}>
-                  {myHikes.length > 0 &&
-                    myHikes.map((hike) => {
-                      if (formatCompleteDate(hike.date) === enterDate) {
+              <View style={styles.containerList}>
+                {loading ? (
+                  <CustomLoader
+                    backgroundColor={{ backgroundColor: secondaryColor }}
+                  />
+                ) : (
+                  <FlatList
+                    data={hikes}
+                    ListEmptyComponent={() => (
+                      <View style={{ flex: 1 }}>
+                        <Text
+                          style={[
+                            TitleH3,
+                            textAlignCenter,
+                            mt20,
+                            { color: colors.text },
+                          ]}
+                        >
+                          Pas de randonnées dans le départements pour le moment.
+                        </Text>
+                      </View>
+                    )}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => {
+                      if (
+                        formatCompleteDate(new Date(item.date)) === enterDate
+                      ) {
                         return (
                           <CalendarCard
-                            key={hike.id}
-                            hike={hike}
-                            onPress={() => alert(hike.id)}
+                            key={item.id}
+                            hike={item}
+                            onPress={() =>
+                              navigation.navigate('Hike', { hikeId: item.id })
+                            }
                           />
                         )
                       }
-                      if (formatCompleteDate(hike.date) !== enterDate) {
-                        enterDate = formatCompleteDate(hike.date)
+                      if (
+                        formatCompleteDate(new Date(item.date)) !== enterDate
+                      ) {
+                        enterDate = formatCompleteDate(new Date(item.date))
                         return (
-                          <View key={hike.id}>
+                          <View key={item.id}>
                             <Text style={[littleTitle, styles.title]}>
                               {enterDate === formatCompleteDate(dateDay)
-                                ? "Ajourd'hui - "
+                                ? "Aujourd'hui - "
                                 : ''}
-                              {formatCompleteDate(hike.date)}
+                              {formatCompleteDate(new Date(item.date))}
                             </Text>
 
                             <CalendarCard
-                              hike={hike}
-                              onPress={() => alert(hike.id)}
+                              hike={item}
+                              onPress={() =>
+                                navigation.navigate('Hike', { hikeId: item.id })
+                              }
                             />
                           </View>
                         )
                       }
-
-                      return null
-                    })}
-                </View>
-              </ScrollView>
+                      return <View />
+                    }}
+                  />
+                )}
+              </View>
             </View>
           </View>
 

@@ -9,6 +9,8 @@ import React from 'react'
 
 import { useTheme } from 'react-native-paper'
 
+import { URL_SERVER } from 'react-native-dotenv'
+
 import {
   defaultText,
   defaultTextBold,
@@ -18,6 +20,8 @@ import {
 
 const CalendarCard = ({ hike, onPress }) => {
   const { colors } = useTheme()
+
+  // console.log('hike', hike)
 
   return (
     <TouchableOpacity
@@ -30,18 +34,18 @@ const CalendarCard = ({ hike, onPress }) => {
     >
       <View style={{ width: '80%' }}>
         <Text style={[defaultTextBold, { color: colors.text }]}>
-          Lesneven (29)
+          {hike.address.city.name} ({hike.address.department_code})
         </Text>
         <Text style={[defaultText, my5, { color: colors.text }]}>
           {hike.name}
         </Text>
         <Text style={[defaultText, { color: colors.text, fontSize: 16 }]}>
-          Côte des Légendes VTT
+          {hike.club_name}
         </Text>
       </View>
       <View style={{ width: '20%' }}>
         <ImageBackground
-          source={{ uri: hike.flyer }}
+          source={{ uri: `${URL_SERVER}/storage/${hike.flyer}` }}
           style={styles.flyer}
           resizeMode="contain"
         />
