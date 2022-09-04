@@ -13,6 +13,8 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
 
+import Lottie from 'lottie-react-native'
+
 import { URL_SERVER } from 'react-native-dotenv'
 
 import MultipleImagePicker from '@baronha/react-native-multiple-image-picker'
@@ -76,6 +78,7 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
   const [showDeleteImages, setShowDeleteImages] = useState(false)
   const [loading, setLoading] = useState(false)
   const [imagesEditHike, setImagesEditHike] = useState(false)
+  const [loader, setLoader] = useState(false)
   const [showDeleteImagesEditHike, setShowDeleteImagesEditHike] =
     useState(false)
 
@@ -107,7 +110,7 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
   const formik = useFormik({
     initialValues: {},
     onSubmit: async () => {
-      setLoading(true)
+      setLoader(true)
 
       let hikeData = dataSteps
       let addressToDBError = false
@@ -144,7 +147,7 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
           })
 
           addressToDBError = true
-          setLoading(false)
+          setLoader(false)
         }
       } else if (isExist.status === 201) {
         hikeData = {
@@ -160,7 +163,7 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
         })
 
         addressToDBError = true
-        setLoading(false)
+        setLoader(false)
       }
 
       // 2 - Hike
@@ -362,7 +365,7 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
           })
         }
       }
-      setLoading(false)
+      setLoader(false)
     },
   })
 
@@ -459,6 +462,15 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
 
   if (loading) {
     return <CustomLoader />
+  }
+
+  if (loader) {
+    return (
+      <Lottie
+        source={require('../../../assets/lottie/create-hike.json')}
+        autoPlay
+      />
+    )
   }
 
   return (
