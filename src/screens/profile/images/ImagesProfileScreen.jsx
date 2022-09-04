@@ -30,10 +30,12 @@ import CustomAlert from '../../../components/CustomAlert'
 import CustomImageViewer from '../../../components/CustomImageViewer'
 import useAxios from '../../../hooks/useAxios'
 import useCustomToast from '../../../hooks/useCustomToast'
+import useImages from '../../../hooks/useImages'
 
 const ImagesProfileScreen = ({ navigation, route }) => {
   const { axiosGetWithToken, axiosDeleteWithToken } = useAxios()
   const { toastShow } = useCustomToast()
+  const { imagesForViewer } = useImages()
 
   const { profile, data } = route.params
 
@@ -42,7 +44,6 @@ const ImagesProfileScreen = ({ navigation, route }) => {
   const [images, setImages] = useState([])
   const [image, setImage] = useState('')
   // Permet d'ouvrir la modal pour afficher l'image en fullscreen
-  const [imageViewer, setImageViewer] = useState(false)
   const [selectedItems, setSelectedItems] = useState([])
   const [deleteBtn, setDeleteBtn] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
@@ -51,6 +52,9 @@ const ImagesProfileScreen = ({ navigation, route }) => {
   const [loading, setLoading] = useState(false)
   const [moreLoading, setMoreLoading] = useState(false)
   const [isListEnd, setIsListEnd] = useState(null)
+  const [imagesViewer, setImagesViewer] = useState([])
+  const [showImages, setShowImages] = useState(false)
+  const [index, setIndex] = useState(0)
 
   useEffect(() => {
     setPage(1)
@@ -72,6 +76,12 @@ const ImagesProfileScreen = ({ navigation, route }) => {
     }
   }, [loading])
 
+  useEffect(() => {
+    if (imagesViewer.length > 0) {
+      setShowImages(true)
+    }
+  }, [imagesViewer])
+
   const moveToTop = () => {
     if (images.length - 1 > 0) {
       flatListImages.current.scrollToIndex({ index: 0 })
@@ -82,8 +92,6 @@ const ImagesProfileScreen = ({ navigation, route }) => {
     const response = await axiosGetWithToken(
       `${profile}/${data.id}/allImages?page=${page}`
     )
-
-    console.log('responses images', response.data)
 
     if (refresh) {
       setImages(response.data)
@@ -99,10 +107,6 @@ const ImagesProfileScreen = ({ navigation, route }) => {
   }
 
   useEffect(() => {
-    console.log('data', data)
-  }, [data])
-
-  useEffect(() => {
     if (selectedItems.length) {
       setDeleteBtn(true)
     } else {
@@ -116,12 +120,14 @@ const ImagesProfileScreen = ({ navigation, route }) => {
   }
 
   // Fonction quand on press normalement sur l'image
-  const handleOnPress = (image) => {
+  const handleOnPress = (image, index) => {
     if (selectedItems.length) {
       selectItems(image)
     } else {
       setImage(image)
-      setImageViewer(true)
+      setShowImages(true)
+      setIndex(index)
+      setImagesViewer(imagesForViewer(images))
     }
   }
 
@@ -161,7 +167,7 @@ const ImagesProfileScreen = ({ navigation, route }) => {
         setPage(1)
       }
 
-      setImageViewer(false)
+      setShowImages(false)
     } else {
       toastShow({
         title: 'Action impossible !',
@@ -169,8 +175,6 @@ const ImagesProfileScreen = ({ navigation, route }) => {
         type: 'toast_danger',
       })
     }
-
-    console.log('response delete', response.data)
   }
 
   // Au refresh en bas de screen
@@ -210,9 +214,9 @@ const ImagesProfileScreen = ({ navigation, route }) => {
               keyExtractor={(item, index) => index}
               showsVerticalScrollIndicator={false}
               numColumns={3}
-              renderItem={({ item }) => (
+              renderItem={({ item, index }) => (
                 <RenderItemImages
-                  onPress={() => handleOnPress(item)}
+                  onPress={() => handleOnPress(item, index)}
                   onLongPress={() => handleLongPress(item)}
                   selected={getSelected(item)}
                   uri={`${URL_SERVER}/storage/${item.image}`}
@@ -228,12 +232,13 @@ const ImagesProfileScreen = ({ navigation, route }) => {
 
       {/* Permet de voir l'image en fullScreen */}
       <CustomImageViewer
-        showModal={imageViewer}
-        setShowModal={setImageViewer}
-        imageUrls={[{ url: `${URL_SERVER}/storage/${image.image}` }]}
+        showModal={showImages}
+        setShowModal={setShowImages}
+        imageUrls={imagesViewer}
+        index={index}
         renderHeader={() => (
           <RenderHeaderImageViewer
-            setImageViewer={setImageViewer}
+            setShowImages={setShowImages}
             onDelete={() => setShowDelete(true)}
           />
         )}

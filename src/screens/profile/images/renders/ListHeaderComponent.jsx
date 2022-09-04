@@ -23,17 +23,25 @@ const ListHeaderComponent = ({ data, profile }) => {
         <View style={styles.imageContainer}>
           <Image
             style={styles.image}
-            source={{ uri: `${URL_SERVER}/storage/${data.avatar}` }}
+            source={
+              data.avatar
+                ? { uri: `${URL_SERVER}/storage/${data.avatar}` }
+                : require('../../../../assets/images/png/default-avatar.png')
+            }
           />
         </View>
       </View>
       <Text style={[littleTitle, textAlignCenter, { color: colors.text }]}>
-        {profile === 'club' ? data.name : `${data.firstname} ${data.lastname}`}
+        {profile === 'clubs'
+          ? data.name
+          : `${
+              data.firstname ? `${data.firstname} ${data.lastname}` : data.email
+            }`}
       </Text>
       <Text
         style={[defaultText, textAlignCenter, mb20, { color: colors.text }]}
       >
-        {profile === 'club' && data.name}
+        {profile === 'users' && data.club_name}
       </Text>
     </>
   )

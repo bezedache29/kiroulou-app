@@ -7,7 +7,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import CustomLabelNavigation from '../../../../components/CustomLabelNavigation'
 
-const RenderHeaderImageViewer = ({ setImageViewer, onDelete }) => {
+const RenderHeaderImageViewer = ({ setShowImages, onDelete }) => {
   const { colors } = useTheme()
 
   return (
@@ -15,7 +15,7 @@ const RenderHeaderImageViewer = ({ setImageViewer, onDelete }) => {
       <CustomLabelNavigation
         label="Image"
         colors={colors}
-        onPress={() => setImageViewer(false)}
+        onPress={() => setShowImages(false)}
       />
 
       {/* Icone en haut a droite qui permet de modifier son profil */}
