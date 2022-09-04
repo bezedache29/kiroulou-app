@@ -1,5 +1,5 @@
 import RNFetchBlob from 'rn-fetch-blob'
-import { URL_API } from 'react-native-dotenv'
+import { URL_API, URL_SERVER } from 'react-native-dotenv'
 
 import { Image as ImageCompressor } from 'react-native-compressor'
 
@@ -50,10 +50,20 @@ const useImages = () => {
     return false
   }
 
+  const imagesForViewer = (imagesParams) => {
+    const images = []
+    for (const image of imagesParams) {
+      images.push({ url: `${URL_SERVER}/storage/${image.image}` })
+    }
+
+    return images
+  }
+
   return {
     sendImageToServer,
     compressImage,
     checkExtension,
+    imagesForViewer,
   }
 }
 

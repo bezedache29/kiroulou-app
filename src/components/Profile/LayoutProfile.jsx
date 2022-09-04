@@ -146,32 +146,55 @@ const LayoutProfile = ({
     <View style={{ flex: 1 }}>
       {/* Les 4 dernière images du user/club. La denière est un bouton pour voir toutes les autres images */}
       {images.length > 0 || !loading ? (
-        <View style={styles.imagesContainer}>
+        <View
+          style={[
+            styles.imagesContainer,
+            {
+              justifyContent: images.length >= 4 ? 'space-around' : 'flex-end',
+            },
+          ]}
+        >
           {images.length > 0 &&
             images.map((image, index) =>
               images.length !== index + 1 ? (
                 <ImageBackground
                   // eslint-disable-next-line react/no-array-index-key
                   key={index}
-                  style={styles.imageContainer}
+                  style={[
+                    styles.imageContainer,
+                    { marginHorizontal: images.length >= 4 ? 0 : 5 },
+                  ]}
                   source={{ uri: `${URL_SERVER}/storage/${image.image}` }}
                 />
               ) : (
                 <TouchableOpacity
                   // eslint-disable-next-line react/no-array-index-key
                   key={index}
-                  style={styles.imageContainer}
+                  style={[
+                    styles.imageContainer,
+                    { marginHorizontal: images.length >= 4 ? 0 : 5 },
+                  ]}
                   onPress={() => {
                     navigation.navigate('ImagesProfile', { profile, data })
                   }}
                 >
                   <ImageBackground
-                    imageStyle={{ opacity: 0.5 }}
+                    imageStyle={{ opacity: imagesNb > 4 ? 0.5 : 1 }}
                     source={{ uri: `${URL_SERVER}/storage/${image.image}` }}
                   >
-                    <View style={styles.darkness}>
+                    <View
+                      style={[
+                        styles.darkness,
+                        {
+                          backgroundColor:
+                            imagesNb > 4
+                              ? 'rgba(124,182,109,0.5)'
+                              : 'transparent',
+                        },
+                      ]}
+                    >
                       <Text style={[defaultText, { color: darkColor }]}>
-                        +{imagesNb}
+                        {imagesNb > 4 ? `+${imagesNb}` : ''}
                       </Text>
                     </View>
                   </ImageBackground>
@@ -238,7 +261,6 @@ export default LayoutProfile
 const styles = StyleSheet.create({
   imagesContainer: {
     flex: 1,
-    justifyContent: 'space-around',
     alignItems: 'center',
     flexDirection: 'row',
   },
@@ -247,7 +269,6 @@ const styles = StyleSheet.create({
     height: 90,
   },
   darkness: {
-    backgroundColor: 'rgba(124,182,109,0.5)',
     width: '100%',
     height: '100%',
     alignItems: 'center',

@@ -34,6 +34,10 @@ import {
   mr10,
   TitleH3,
   secondaryColor,
+  defaultText,
+  mb10,
+  mt40,
+  mb30,
 } from '../assets/styles/styles'
 
 import TabContainer from '../components/Navigation/TabContainer'
@@ -47,6 +51,7 @@ import useGeolocation from '../hooks/useGeolocation'
 import useCustomToast from '../hooks/useCustomToast'
 import useAxios from '../hooks/useAxios'
 import CustomLoader from '../components/CustomLoader'
+import CustomBigButton from '../components/CustomBigButton'
 
 const URL_API_GEO = 'https://geo.api.gouv.fr/regions'
 
@@ -75,6 +80,7 @@ const CalendarScreen = ({ navigation }) => {
   const [loadHikes, setLoadHikes] = useState(false)
   const [hikes, setHikes] = useState([])
   const [loading, setLoading] = useState(false)
+  const [access, setAccess] = useState(false)
 
   const [monthYear, setMonthYear] = useState([])
 
@@ -84,12 +90,23 @@ const CalendarScreen = ({ navigation }) => {
 
   const [choiceDepartment, setChoiceDepartment] = useState('Finistère')
 
+  useEffect(() => {
+    if (user.premium !== 'active') {
+      setAccess(false)
+    } else {
+      setAccess(true)
+    }
+  }, [])
+
   // Demande a récupérer les régions
   useEffect(() => {
-    // On demande autorisation geoloc
-    loadLocation()
-    loadRegions()
-  }, [])
+    if (access) {
+      // On demande autorisation geoloc
+      loadLocation()
+      loadRegions()
+      setAccess(false)
+    }
+  }, [access])
 
   useEffect(() => {
     if (isLocationLoad) {
@@ -261,6 +278,44 @@ const CalendarScreen = ({ navigation }) => {
     setMonthYear(getOneYear())
 
     setShowModalMonth(true)
+  }
+
+  if (!access) {
+    return (
+      <View style={{ flex: 1 }}>
+        {/* Header avec avatar */}
+        <View>
+          <HeaderDrawer
+            title="Non autorisé"
+            onPress={() => navigation.openDrawer()}
+          />
+        </View>
+        <View
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            marginTop: 50,
+            paddingHorizontal: 10,
+          }}
+        >
+          <Text style={[TitleH3, { color: colors.text }]}>
+            Accès premiums uniquement
+          </Text>
+          <Text style={[defaultText, mb10, mt40, { color: colors.text }]}>
+            Cette page est reservée aux utilisateurs ayant un compte premium de
+            niveau 1 minimum
+          </Text>
+          <Text style={[defaultText, mb30, { color: colors.text }]}>
+            Vous pouvez mettre à niveau votre compte en cliquant sur le bouton
+            ci-dessous
+          </Text>
+          <CustomBigButton
+            label="Voir les premiums"
+            onPress={() => navigation.navigate('Subs')}
+          />
+        </View>
+      </View>
+    )
   }
 
   return (

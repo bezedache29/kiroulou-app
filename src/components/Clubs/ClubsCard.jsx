@@ -37,19 +37,29 @@ const ClubsCard = ({ club, refresh }) => {
   const [showLeaveClub, setShowLeaveClub] = useState(false)
 
   const requestToJoin = async () => {
-    const response = await axiosPostWithToken(`clubs/${club.id}/requestToJoin`)
+    if (user.club_id === null) {
+      const response = await axiosPostWithToken(
+        `clubs/${club.id}/requestToJoin`
+      )
 
-    if (response.status === 201) {
-      toastShow({
-        title: 'Demande effectuée !',
-        message: `${club.name} a bien reçu ta demande d'adhésion`,
-      })
-    }
+      if (response.status === 201) {
+        toastShow({
+          title: 'Demande effectuée !',
+          message: `${club.name} a bien reçu ta demande d'adhésion`,
+        })
+      }
 
-    if (response.status === 403) {
+      if (response.status === 403) {
+        toastShow({
+          title: 'Demande dejà effectué !',
+          message: response.data.message,
+          type: 'toast_danger',
+        })
+      }
+    } else {
       toastShow({
-        title: 'Demande dejà effectué !',
-        message: response.data.message,
+        title: 'Action impossible !',
+        message: "Vous faites déjà partie d'un club",
         type: 'toast_danger',
       })
     }

@@ -59,6 +59,7 @@ import CustomOverlay from '../../components/CustomOverlay'
 import CustomAlert from '../../components/CustomAlert'
 import useUtils from '../../hooks/useUtils'
 import useCustomToast from '../../hooks/useCustomToast'
+import useImages from '../../hooks/useImages'
 
 const { width, height } = Dimensions.get('window')
 const CARD_HEIGHT = 220
@@ -70,6 +71,7 @@ const HikeScreen = ({ navigation, route }) => {
     useAxios()
   const { formatDate } = useUtils()
   const { toastShow } = useCustomToast()
+  const { imagesForViewer } = useImages()
 
   const isFocused = useIsFocused()
 
@@ -174,15 +176,6 @@ const HikeScreen = ({ navigation, route }) => {
         ],
       })
     }
-  }
-
-  const createImagesArray = () => {
-    const images = []
-    for (const image of hike.hike_vtt_images) {
-      images.push({ url: `${URL_SERVER}/storage/${image.image}` })
-    }
-
-    setImagesViewer(images)
   }
 
   const hype = async () => {
@@ -381,7 +374,7 @@ const HikeScreen = ({ navigation, route }) => {
                       <TouchableOpacity
                         onPress={() => {
                           setIndex(index)
-                          createImagesArray()
+                          setImagesViewer(imagesForViewer(hike.hike_vtt_images))
                         }}
                         key={image.id}
                         style={[
