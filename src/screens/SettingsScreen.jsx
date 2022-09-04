@@ -22,6 +22,8 @@ import { useStoreState, useStoreActions } from 'easy-peasy'
 import {
   darkPrimaryColor,
   defaultText,
+  dullPrimaryColor,
+  grayColor,
   littleText,
   mb10,
   ml10,
@@ -231,14 +233,14 @@ const SettingsScreen = ({ navigation }) => {
 
                 <TouchableRipple
                   onPress={() => {
-                    navigation.navigate('Invoices')
+                    navigation.navigate('Billing')
                   }}
                   style={mt20}
                 >
                   <Text
                     style={[defaultText, my10, ml20, { color: colors.text }]}
                   >
-                    Mes factures
+                    Facturation
                   </Text>
                 </TouchableRipple>
 
@@ -276,7 +278,14 @@ const SettingsScreen = ({ navigation }) => {
                       Thème Sombre
                     </Text>
                     <View pointerEvents="none" style={[mlAuto, mr10]}>
-                      <Switch value={paperTheme.dark} />
+                      <Switch
+                        value={paperTheme.dark}
+                        trackColor={{
+                          true: dullPrimaryColor,
+                          false: grayColor,
+                        }}
+                        thumbColor={darkPrimaryColor}
+                      />
                     </View>
                   </View>
                 </TouchableRipple>
@@ -288,7 +297,9 @@ const SettingsScreen = ({ navigation }) => {
                   </Text>
                   <View style={[rowCenter, mlAuto, mr20]}>
                     {/* PUSH */}
-                    <TouchableOpacity onPress={() => {}}>
+                    <TouchableOpacity
+                      onPress={() => alert('Bienôt disponible')}
+                    >
                       <MaterialCommunityIcons
                         name={
                           notifications.push
@@ -302,7 +313,9 @@ const SettingsScreen = ({ navigation }) => {
                     </TouchableOpacity>
 
                     {/* EMAIL */}
-                    <TouchableOpacity onPress={() => {}}>
+                    <TouchableOpacity
+                      onPress={() => alert('Bienôt disponible')}
+                    >
                       <MaterialCommunityIcons
                         name={notifications.email ? 'email' : 'email-off'}
                         size={30}
