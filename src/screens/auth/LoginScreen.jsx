@@ -224,29 +224,29 @@ const LoginScreen = ({ navigation }) => {
           </Formik>
           {/* Fin Formulaire de connexion */}
 
-          <Text
+          {/* <Text
             style={[minText, textAlignCenter, mb30, { color: colors.text }]}
           >
             Ou, se connecter avec une adresse e-mail ...
-          </Text>
+          </Text> */}
 
           {/* Début Icones pour connexion réseaux sociaux */}
-          <View style={styles.btnsContainer}>
-            {/* Bouton Google */}
-            <CustomSocialButton onPress={() => {}} color={colors.border}>
+          {/* <View style={styles.btnsContainer}> */}
+          {/* Bouton Google */}
+          {/* <CustomSocialButton onPress={() => {}} color={colors.border}>
               <GoogleSVG height={24} width={24} />
-            </CustomSocialButton>
+            </CustomSocialButton> */}
 
-            {/* Bouton Facebook */}
-            <CustomSocialButton onPress={() => {}} color={colors.border}>
+          {/* Bouton Facebook */}
+          {/* <CustomSocialButton onPress={() => {}} color={colors.border}>
               <FacebookSVG height={24} width={24} />
-            </CustomSocialButton>
+            </CustomSocialButton> */}
 
-            {/* Bouton Strava */}
-            <CustomSocialButton onPress={() => {}} color={colors.border}>
+          {/* Bouton Strava */}
+          {/* <CustomSocialButton onPress={() => {}} color={colors.border}>
               <StravaSVG height={24} width={24} />
-            </CustomSocialButton>
-          </View>
+            </CustomSocialButton> */}
+          {/* </View> */}
           {/* Fin Icones pour connexion réseaux sociaux */}
 
           <View style={styles.footer}>
@@ -281,7 +281,8 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginBottom: 30,
+    marginVertical: 30,
+    // marginBottom: 30,
   },
 })
 

@@ -68,7 +68,7 @@ const ClubInformationsScene = ({ club }) => {
 
   const goToHikesClub = () => {
     if (user.premium === 'active') {
-      navigation.navigate('HikesClub')
+      navigation.navigate('HikesClub', { club })
     } else {
       setShowAlertPremium(true)
     }
