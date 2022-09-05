@@ -10,6 +10,8 @@ import React, { useEffect, useState } from 'react'
 
 import { useTheme } from 'react-native-paper'
 
+import { URL_SERVER } from 'react-native-dotenv'
+
 import { useNavigation } from '@react-navigation/native'
 import {
   defaultText,
@@ -75,7 +77,7 @@ const PoepleHypeModal = ({ peopleHype }) => {
                   source={
                     user.avatar !== null
                       ? {
-                          uri: user.avatar,
+                          uri: `${URL_SERVER}/storage/${user.avatar}`,
                         }
                       : require('../../../assets/images/png/default-avatar.png')
                   }

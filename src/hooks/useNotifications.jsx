@@ -41,8 +41,13 @@ export default function useNotifications() {
     })
   }
 
+  const cancelNotification = (id) => {
+    PushNotification.cancelLocalNotification(id)
+  }
+
   return {
     createChannels,
     scheduleNotif,
+    cancelNotification,
   }
 }
