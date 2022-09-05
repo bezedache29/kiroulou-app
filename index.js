@@ -1,7 +1,8 @@
 /**
  * @format
  */
-import { AppRegistry, LogBox } from 'react-native'
+import { AppRegistry, LogBox, Platform } from 'react-native'
+import PushNotification from 'react-native-push-notification'
 import App from './App'
 import { name as appName } from './app.json'
 import 'react-native-gesture-handler'
@@ -16,5 +17,19 @@ LogBox.ignoreLogs([
 if (__DEV__) {
   import('./ReactotronConfig').then(() => console.log('Reactotron Configured'))
 }
+
+PushNotification.configure({
+  largeIcon: 'ic_launcher',
+  smallIcon: 'ic_notification',
+  onNotification(notification) {
+    console.log('NOTIFICATION:', notification)
+
+    // if (notification.userinteraction) {
+    //   navigation.navigate("Details")
+    // }
+  },
+  requestPermissions: Platform.OS === 'ios',
+  //  requestPermissions: true,
+})
 
 AppRegistry.registerComponent(appName, () => App)
