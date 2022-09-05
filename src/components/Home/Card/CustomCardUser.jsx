@@ -78,9 +78,13 @@ const CustomCardUser = ({ onPress, item }) => {
             }
           >
             <ImageBackground
-              source={{
-                uri: `${URL_SERVER}/storage/${item.user.avatar}`,
-              }}
+              source={
+                item.user.avatar !== null
+                  ? {
+                      uri: `${URL_SERVER}/storage/${item.user.avatar}`,
+                    }
+                  : require('../../../assets/images/png/default-avatar.png')
+              }
               style={styles.avatar}
               imageStyle={styles.avatarStyle}
             />
