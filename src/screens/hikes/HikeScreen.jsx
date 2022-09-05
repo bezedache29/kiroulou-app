@@ -60,6 +60,7 @@ import CustomAlert from '../../components/CustomAlert'
 import useUtils from '../../hooks/useUtils'
 import useCustomToast from '../../hooks/useCustomToast'
 import useImages from '../../hooks/useImages'
+import useNotifications from '../../hooks/useNotifications'
 
 const { width, height } = Dimensions.get('window')
 const CARD_HEIGHT = 220
@@ -72,6 +73,8 @@ const HikeScreen = ({ navigation, route }) => {
   const { formatDate } = useUtils()
   const { toastShow } = useCustomToast()
   const { imagesForViewer } = useImages()
+  const { scheduleNotif, createChannels, cancelNotification } =
+    useNotifications()
 
   const isFocused = useIsFocused()
 
@@ -96,6 +99,7 @@ const HikeScreen = ({ navigation, route }) => {
   // Au chargement
   useEffect(() => {
     if (isFocused) {
+      createChannels()
       closeBottomSheet()
       loadHike()
     }
@@ -193,6 +197,7 @@ const HikeScreen = ({ navigation, route }) => {
       setHike(response.data.hike_vtt)
 
       // TODO Notification a l'admin
+      scheduleNotif({ id: user.id + hike.id })
     }
 
     if (response.status === 202) {
@@ -201,6 +206,7 @@ const HikeScreen = ({ navigation, route }) => {
         message: 'Zut ! Les organisateurs vous attendaient 😥',
       })
       setHike(response.data.hike_vtt)
+      cancelNotification(user.id + hike.id)
     }
   }
 
