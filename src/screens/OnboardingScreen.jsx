@@ -77,7 +77,7 @@ const OnboardingScreen = ({ navigation }) => {
           backgroundColor: primaryColor,
           image: (
             <Image
-              source={require('../assets/ressources/logo-sans-fond-380.png')}
+              source={require('../assets/images/png/logo/logo-sans-fond-380.png')}
             />
           ),
           title: <Text />,
@@ -91,9 +91,7 @@ const OnboardingScreen = ({ navigation }) => {
         {
           backgroundColor: beigeColor,
           image: (
-            <Image
-              source={require('../assets/images/png/guide/guide1-380-removebg-preview.png')}
-            />
+            <Image source={require('../assets/images/png/guide/guide1.png')} />
           ),
           title: (
             <Text style={[defaultSubTitle, { color: darkColor }]}>
@@ -111,9 +109,7 @@ const OnboardingScreen = ({ navigation }) => {
         {
           backgroundColor: ivoryColor,
           image: (
-            <Image
-              source={require('../assets/images/png/guide/guide2-380-removebg-preview.png')}
-            />
+            <Image source={require('../assets/images/png/guide/guide2.png')} />
           ),
           title: (
             <Text style={[defaultSubTitle, { color: darkColor }]}>
@@ -130,9 +126,7 @@ const OnboardingScreen = ({ navigation }) => {
         {
           backgroundColor: secondaryColor,
           image: (
-            <Image
-              source={require('../assets/images/png/guide/Sans_titre_13-380-removebg-preview.png')}
-            />
+            <Image source={require('../assets/images/png/guide/guide11.png')} />
           ),
           title: (
             <Text style={[defaultSubTitle, { color: darkColor }]}>
