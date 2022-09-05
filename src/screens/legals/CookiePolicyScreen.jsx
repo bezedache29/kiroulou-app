@@ -16,6 +16,8 @@ const CookiePolicyScreen = ({ navigation }) => {
     if (cookies) {
       setCookies(false)
       // Change les cookies en back
+
+      alert('Bientôt disponible')
     }
   }
 
@@ -23,6 +25,8 @@ const CookiePolicyScreen = ({ navigation }) => {
     if (!cookies) {
       setCookies(true)
       // Change les cookies en back
+
+      alert('Bientôt disponible')
     }
   }
 
