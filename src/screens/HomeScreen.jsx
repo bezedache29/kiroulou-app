@@ -27,7 +27,7 @@ import CustomBigButton from '../components/CustomBigButton'
 import CustomCardUser from '../components/Home/Card/CustomCardUser'
 import CustomCardClub from '../components/Home/Card/CustomCardClub'
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({ navigation, route }) => {
   const { colors } = useTheme()
   const { axiosGetWithToken } = useAxios()
 
@@ -48,6 +48,7 @@ const HomeScreen = ({ navigation }) => {
 
   useEffect(() => {
     if (isFocused) {
+      console.log('route name', route)
       if (page !== null) {
         setLoading(true)
         if (page !== 1) {
