@@ -10,17 +10,24 @@ import { Alert } from 'react-native'
 import { AppContext } from '../context/Context'
 import useConnection from '../hooks/useConnection'
 import useAxios from '../hooks/useAxios'
+import useNotifications from '../hooks/useNotifications'
 
 const SplashScreen = ({ navigation }) => {
   const { toggleTheme } = useContext(AppContext)
 
   const { haveItemStorage } = useConnection()
-  const { axiosPostWithToken } = useAxios()
+  const { axiosPostWithToken, axiosPutWithToken } = useAxios()
+  const { scheduleNotif, createChannels } = useNotifications()
 
   const userActions = useStoreActions((actions) => actions.user)
 
   const [isFirstLaunch, setIsFirstLaunch] = useState(null)
   const [loader, setLoader] = useState(true)
+
+  // Création chanels pour localnotification
+  useEffect(() => {
+    createChannels()
+  }, [])
 
   /**
    * Permet de check si le user a dejà ouvert l'application et donc de skip ou non le Onboarding
@@ -53,6 +60,10 @@ const SplashScreen = ({ navigation }) => {
             {},
             JSON.parse(authToken)
           )
+
+          // Met à jour la dernière date de connexion du user
+          await axiosPutWithToken('lastConnexion', {}, JSON.parse(authToken))
+
           // On recherche le user depuis l'api
           const response = await axiosPostWithToken(
             'me',
@@ -64,6 +75,7 @@ const SplashScreen = ({ navigation }) => {
 
           // On met le user et son authToken dans le store
           if (response.status === 200) {
+            scheduleNotif({ id: response.data.id }) // Notification dans 5 jours
             userActions.loadUser(response.data)
             userActions.loadAuthToken(JSON.parse(authToken))
             // Redirect sur la HomeScreen piloté par Drawer

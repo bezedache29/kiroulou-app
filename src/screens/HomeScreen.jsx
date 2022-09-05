@@ -7,8 +7,6 @@ import {
 } from 'react-native'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
-import { useTheme } from 'react-native-paper'
-
 import FadingEdge from 'react-native-fading-edge'
 
 import { useIsFocused } from '@react-navigation/native'
@@ -28,7 +26,6 @@ import CustomCardUser from '../components/Home/Card/CustomCardUser'
 import CustomCardClub from '../components/Home/Card/CustomCardClub'
 
 const HomeScreen = ({ navigation, route }) => {
-  const { colors } = useTheme()
   const { axiosGetWithToken } = useAxios()
 
   const isFocused = useIsFocused()
@@ -86,6 +83,7 @@ const HomeScreen = ({ navigation, route }) => {
     const response = await axiosGetWithToken(`posts?page=${page}`)
 
     console.log('posts', response.data.posts)
+    console.log('length', response.data.posts.length)
 
     if (refresh) {
       setPosts(response.data.posts)
@@ -158,7 +156,7 @@ const HomeScreen = ({ navigation, route }) => {
                 data={posts}
                 ListEmptyComponent={() => (
                   <View style={styles.containerNoFeed}>
-                    <Text style={[defaultText, mb30, { color: colors.text }]}>
+                    <Text style={[defaultText, mb30, { color: darkColor }]}>
                       Vous n'avez pas de fil d'acutalités. Suivez des clubs et
                       des utilisateurs pour être aux courtant de leur dernières
                       nouvelles !
