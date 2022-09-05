@@ -215,7 +215,9 @@ const HikeScreen = ({ navigation, route }) => {
           pressBack={() =>
             route.params?.create
               ? navigation.navigate('Drawer')
-              : navigation.goBack()
+              : navigation.canGoBack()
+              ? navigation.goBack()
+              : navigation.navigate('Drawer')
           }
           label="Détails de la rando"
           iconName="file-edit"

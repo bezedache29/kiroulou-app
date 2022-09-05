@@ -128,11 +128,6 @@ const SubPaymentScreen = ({ navigation, route }) => {
     const { error } = await presentPaymentSheet()
 
     if (error) {
-      toastShow({
-        title: `Error code: ${error.code}`,
-        message: error.message,
-        type: 'Toast_danger',
-      })
       // console.log(`Error code: ${error.code}`, error.message)
       // console.log('subId', subscriptionId)
       // On delete l'intention de paiement créé a l'instant

@@ -178,7 +178,7 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
       setTrips(newTrips)
 
       // Update en DB
-      if (route.params?.hikeEdit) {
+      if (route.params?.hikeEdit && tripUpdated.trip.id) {
         updateTrip()
       }
     }

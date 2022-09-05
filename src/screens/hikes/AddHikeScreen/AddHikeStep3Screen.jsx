@@ -314,7 +314,7 @@ const AddHikeStep3Screen = ({ navigation, route }) => {
             `hikes/vtt/${hike.data.hike_vtt_id}`
           )
 
-          if (hikeVtt.status === 200) {
+          if (hikeVtt.status === 200 && !hikeEdit) {
             const data = {
               title: hikeVtt.data.name,
               description: hikeVtt.data.description,

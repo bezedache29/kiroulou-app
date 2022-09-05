@@ -8,16 +8,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import Onboarding from 'react-native-onboarding-swiper'
 import {
-  blueColor,
-  pinkColor,
   primaryColor,
   defaultText,
-  defaultTitle,
-  whiteColor,
   defaultSubTitle,
   mt10,
   darkColor,
+  beigeColor,
+  secondaryColor,
+  ivoryColor,
 } from '../assets/styles/styles'
+import useConnection from '../hooks/useConnection'
 
 /**
  * Permet de créer un bouton Next personnalisé
@@ -50,10 +50,14 @@ const DotsComponent = ({ selected }) => {
 }
 
 const OnboardingScreen = ({ navigation }) => {
+  const { haveItemStorage } = useConnection()
   // A la fin du Onboarding, On met une cle en storage et on redirect vers SplashScreen
   const goToSplash = async () => {
-    await AsyncStorage.setItem('kro_alreadyLaunched', 'true')
-    await AsyncStorage.setItem('kro_firstLaunched', 'true')
+    const token = await haveItemStorage('kro_auth_token')
+    if (!token) {
+      await AsyncStorage.setItem('kro_alreadyLaunched', 'true')
+      await AsyncStorage.setItem('kro_firstLaunched', 'true')
+    }
     navigation.reset({
       index: 0,
       routes: [{ name: 'Splash' }],
@@ -71,42 +75,113 @@ const OnboardingScreen = ({ navigation }) => {
       pages={[
         {
           backgroundColor: primaryColor,
-          image: <Image source={require('../assets/onboarding.jpg')} />,
-          title: (
-            <Text style={[defaultTitle, { color: whiteColor }]}>KiRoulOu</Text>
+          image: (
+            <Image
+              source={require('../assets/ressources/logo-sans-fond-380.png')}
+            />
           ),
+          title: <Text />,
           subtitle: (
             <Text style={[defaultText, { paddingHorizontal: 10 }]}>
-              Permet de trouver une randonnée référencée par les clubs et
-              associations
+              Permet de trouver une randonnée VTT référencée par les clubs,
+              associations et toutes autres personnes oragnisant une randonnée.
             </Text>
           ),
         },
         {
-          backgroundColor: pinkColor,
-          image: <Image source={require('../assets/onboarding.jpg')} />,
+          backgroundColor: beigeColor,
+          image: (
+            <Image
+              source={require('../assets/images/png/guide/guide1-380-removebg-preview.png')}
+            />
+          ),
           title: (
-            <Text style={[defaultSubTitle, { color: whiteColor }]}>
-              Simple et rapide !
+            <Text style={[defaultSubTitle, { color: darkColor }]}>
+              Article & Club !
             </Text>
           ),
           subtitle: (
             <Text style={[defaultText, mt10, { paddingHorizontal: 10 }]}>
-              Recherchez une randonnée en quelques clics.
+              Créez votre club et devenez administrateur de celui ci. Créez vos
+              articles et partagez les à la communauté simplement en quelques
+              clics.
             </Text>
           ),
         },
         {
-          backgroundColor: blueColor,
-          image: <Image source={require('../assets/onboarding.jpg')} />,
+          backgroundColor: ivoryColor,
+          image: (
+            <Image
+              source={require('../assets/images/png/guide/guide2-380-removebg-preview.png')}
+            />
+          ),
           title: (
-            <Text style={[defaultSubTitle, { color: whiteColor }]}>
-              Hype & Share !
+            <Text style={[defaultSubTitle, { color: darkColor }]}>
+              Article & Rando !
             </Text>
           ),
           subtitle: (
             <Text style={[defaultText, mt10, { paddingHorizontal: 10 }]}>
-              Suivez les avancées des randonnées et partagez les.
+              Créez vos articles et vos randos vtt. Cette dernière action est
+              réservé aux créateur de club.
+            </Text>
+          ),
+        },
+        {
+          backgroundColor: secondaryColor,
+          image: (
+            <Image
+              source={require('../assets/images/png/guide/Sans_titre_13-380-removebg-preview.png')}
+            />
+          ),
+          title: (
+            <Text style={[defaultSubTitle, { color: darkColor }]}>
+              Calendrier
+            </Text>
+          ),
+          subtitle: (
+            <Text style={[defaultText, mt10, { paddingHorizontal: 10 }]}>
+              Réservé aux membres premium. Vous pouvez rechercher et afficher
+              des randonnées VTT dans un département sélectionné, les ou le mois
+              souhaité
+            </Text>
+          ),
+        },
+        {
+          backgroundColor: primaryColor,
+          image: (
+            <Image source={require('../assets/images/png/guide/guide14.png')} />
+          ),
+          title: (
+            <Text
+              style={[defaultSubTitle, { color: darkColor, marginTop: -40 }]}
+            >
+              Randonnées
+            </Text>
+          ),
+          subtitle: (
+            <Text style={[defaultText, mt10, { paddingHorizontal: 10 }]}>
+              Recherchez & trouvez des randos vtt autour de vous, et swipez les
+              cartes en bas pour voir le lieu de la randonnée.
+            </Text>
+          ),
+        },
+        {
+          backgroundColor: secondaryColor,
+          image: (
+            <Image source={require('../assets/images/png/guide/guide15.png')} />
+          ),
+          title: (
+            <Text
+              style={[defaultSubTitle, { color: darkColor, marginTop: -20 }]}
+            >
+              Hype & Notifs !
+            </Text>
+          ),
+          subtitle: (
+            <Text style={[defaultText, mt10, { paddingHorizontal: 10 }]}>
+              Hype des randos pour être rappelé par notifications lorsque la
+              date approche.
             </Text>
           ),
         },

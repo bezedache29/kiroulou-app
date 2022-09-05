@@ -69,7 +69,7 @@ const CalendarScreen = ({ navigation }) => {
   const [region, setRegion] = useState(false)
   const [regionCode, setRegionCode] = useState(false)
   const [departments, setDepartments] = useState([])
-  const [department, setDepartment] = useState(false)
+  const [department, setDepartment] = useState('Finistère')
   const [departmentCode, setDepartmentCode] = useState('29')
   const [showModalDepartment, setShowModalDepartment] = useState(true)
   const [search, setSearch] = useState(false)
@@ -80,7 +80,6 @@ const CalendarScreen = ({ navigation }) => {
   const [loadHikes, setLoadHikes] = useState(false)
   const [hikes, setHikes] = useState([])
   const [loading, setLoading] = useState(false)
-  const [access, setAccess] = useState(false)
 
   const [monthYear, setMonthYear] = useState([])
 
@@ -91,22 +90,11 @@ const CalendarScreen = ({ navigation }) => {
   const [choiceDepartment, setChoiceDepartment] = useState('Finistère')
 
   useEffect(() => {
-    if (user.premium !== 'active') {
-      setAccess(false)
-    } else {
-      setAccess(true)
-    }
-  }, [])
-
-  // Demande a récupérer les régions
-  useEffect(() => {
-    if (access) {
-      // On demande autorisation geoloc
+    if (user.premium === 'active') {
       loadLocation()
       loadRegions()
-      setAccess(false)
     }
-  }, [access])
+  }, [])
 
   useEffect(() => {
     if (isLocationLoad) {
@@ -180,6 +168,7 @@ const CalendarScreen = ({ navigation }) => {
               setDepartment(response.data.address.country)
               setDepartmentCode(response.data.address.postcode.substr(0, 2))
               setLoadHikes(true)
+              setIsLocationLoad(true)
             })
             .catch((error) => {
               // console.error('error', error.message)
@@ -207,9 +196,9 @@ const CalendarScreen = ({ navigation }) => {
     if (user.address !== null) {
       setChoiceDepartment(user.address.department)
       setDepartment(user.address.department)
-      setRegion(user.address.region)
       setDepartmentCode(user.address.department_code)
       setLoadHikes(true)
+      setIsLocationLoad(true)
     } else {
       requestLocationPermission().then((res) => {
         if (res) {
@@ -218,13 +207,11 @@ const CalendarScreen = ({ navigation }) => {
           setChoiceDepartment('Finistère')
           setDepartment('Finistère')
           setDepartmentCode('29')
-          setRegion('Bretagne')
           setLoadHikes(true)
+          setIsLocationLoad(true)
         }
       })
     }
-
-    setIsLocationLoad(true)
   }
 
   // Permet de rechercher les Regions sur l'api geo
@@ -280,7 +267,7 @@ const CalendarScreen = ({ navigation }) => {
     setShowModalMonth(true)
   }
 
-  if (!access) {
+  if (user.premium !== 'active') {
     return (
       <View style={{ flex: 1 }}>
         {/* Header avec avatar */}

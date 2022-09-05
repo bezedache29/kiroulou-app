@@ -160,24 +160,15 @@ const HikesScreen = ({ navigation }) => {
     hike: false,
   })
   const [loader, setLoader] = useState(false)
-
-  // Les coordonées initial (Lesneven)
-  const [coordonate, setCoordonate] = useState({
-    lat: 48.57307365781657,
-    lng: -4.333331497869044,
-  })
+  const [coordonate, setCoordonate] = useState(false)
 
   let mapIndex = 0
   const mapAnimation = new Animated.Value(0)
 
   useEffect(() => {
-    console.log('user', user)
+    // console.log('user', user)
     loadLocation()
   }, [])
-
-  useEffect(() => {
-    console.log('coordonate', coordonate)
-  }, [coordonate])
 
   useEffect(() => {
     if (isLocationLoad) {
@@ -201,6 +192,7 @@ const HikesScreen = ({ navigation }) => {
               console.log('axios', response.data)
               setCoordonate({ lat: response.data.lat, lng: response.data.lon })
               setLoading(false)
+              setIsLocationLoad(true)
             })
             .catch((error) => {
               console.error('error', error.message)
@@ -228,27 +220,29 @@ const HikesScreen = ({ navigation }) => {
 
   // On écoute quand le user fait une action sur la scrollview en bas
   useEffect(() => {
-    mapAnimation.addListener(({ value }) => {
-      let index = Math.floor(value / CARD_WIDTH + 0.3)
+    if (!loading) {
+      mapAnimation.addListener(({ value }) => {
+        let index = Math.floor(value / CARD_WIDTH + 0.3)
 
-      if (index >= mapMarkers.length) {
-        index = mapMarkers.length - 1
-      }
-      if (index <= 0) {
-        index = 0
-      }
-
-      // eslint-disable-next-line no-use-before-define
-      clearTimeout(regionTimeout)
-
-      const regionTimeout = setTimeout(() => {
-        if (mapIndex !== index) {
-          mapIndex = index
-          const { position } = mapMarkers[index]
-          setCoordonate(position)
+        if (index >= mapMarkers.length) {
+          index = mapMarkers.length - 1
         }
-      }, 10)
-    })
+        if (index <= 0) {
+          index = 0
+        }
+
+        // eslint-disable-next-line no-use-before-define
+        clearTimeout(regionTimeout)
+
+        const regionTimeout = setTimeout(() => {
+          if (mapIndex !== index) {
+            mapIndex = index
+            const { position } = mapMarkers[index]
+            setCoordonate(position)
+          }
+        }, 10)
+      })
+    }
   })
 
   const loadLocation = () => {
@@ -256,6 +250,7 @@ const HikesScreen = ({ navigation }) => {
       setCoordonate({ lat: user.address.lat, lng: user.address.lng })
       setZoom(12)
       setLoading(false)
+      setIsLocationLoad(true)
     } else {
       requestLocationPermission().then((res) => {
         if (res) {
@@ -266,11 +261,10 @@ const HikesScreen = ({ navigation }) => {
             lng: -4.333331497869044,
           })
           setLoading(false)
+          setIsLocationLoad(true)
         }
       })
     }
-
-    setIsLocationLoad(true)
   }
 
   const loadHikes = async (atPoint = false) => {
