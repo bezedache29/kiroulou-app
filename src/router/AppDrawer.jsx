@@ -19,10 +19,10 @@ import {
 import CustomDrawer from '../components/Navigation/CustomDrawer'
 
 import AppTabs from './AppTabs'
-import PricesScreen from '../screens/prices/PricesScreen'
 import OnboardingScreen from '../screens/OnboardingScreen'
 import UserProfileScreen from '../screens/profile/user/UserProfileScreen'
 import ClubProfileScreen from '../screens/profile/club/ClubProfileScreen'
+import SubsScreen from '../screens/subs/SubsScreen'
 
 const Drawer = createDrawerNavigator()
 
@@ -106,7 +106,7 @@ const AppDrawer = () => {
 
       <Drawer.Screen
         name="Tarifs"
-        component={PricesScreen}
+        component={SubsScreen}
         options={{
           drawerIcon: ({ color }) => (
             <MaterialIcons name="euro" size={22} color={color} />
