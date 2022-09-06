@@ -283,7 +283,7 @@ const AddHikeStep2Screen = ({ navigation, route }) => {
   }
 
   const checkOpenModalTrip = () => {
-    if (trips.length > 3 && user.premium !== 'active') {
+    if (trips.length > 3 && user.premium_actif !== 'Premium 2') {
       setOpenAlertToContinue(false)
       setShowAlertPremium(true)
     } else {

@@ -140,38 +140,42 @@ const CustomTabBarButton = ({ children, opened, toggleOpened }) => {
           </TouchableOpacity>
         )}
 
-        {user.is_club_admin === 1 && user.club_id !== null && (
-          <TouchableOpacity onPress={() => goToScreen('AddHikeStep1')}>
-            <Animated.View
-              style={[
-                styles.item,
-                opacity,
-                {
-                  transform: [
-                    {
-                      translateX: animation.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [0, 60],
-                      }),
-                    },
-                    {
-                      translateY: animation.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [0, -50],
-                      }),
-                    },
-                  ],
-                },
-              ]}
-            >
-              <MaterialCommunityIcons
-                name="map-plus"
-                color={whiteColor}
-                size={24}
-              />
-            </Animated.View>
-          </TouchableOpacity>
-        )}
+        {user.is_club_admin === 1 &&
+          user.club_id !== null &&
+          ((user.premium_actif !== 'Premium 2' &&
+            user.club.next_hike === null) ||
+            user.premium_actif === 'Premium 2') && (
+            <TouchableOpacity onPress={() => goToScreen('AddHikeStep1')}>
+              <Animated.View
+                style={[
+                  styles.item,
+                  opacity,
+                  {
+                    transform: [
+                      {
+                        translateX: animation.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [0, 60],
+                        }),
+                      },
+                      {
+                        translateY: animation.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [0, -50],
+                        }),
+                      },
+                    ],
+                  },
+                ]}
+              >
+                <MaterialCommunityIcons
+                  name="map-plus"
+                  color={whiteColor}
+                  size={24}
+                />
+              </Animated.View>
+            </TouchableOpacity>
+          )}
 
         {/* Gros Bouton + au milieu */}
         <TouchableWithoutFeedback

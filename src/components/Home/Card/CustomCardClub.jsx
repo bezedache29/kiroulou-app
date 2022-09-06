@@ -111,7 +111,7 @@ const CustomCardClub = ({ onPress, item, disabled = false }) => {
           <View style={styles.header}>
             <TouchableOpacity
               onPress={() =>
-                navigation.navigate('ClubProfile', { club: item.club })
+                navigation.navigate('ClubProfile', { clubId: item.club.id })
               }
             >
               <ImageBackground

@@ -190,7 +190,9 @@ const LayoutPosts = ({ data, profile = 'users' }) => {
                 return (
                   <CustomCardClub
                     item={item}
-                    onPress={() => navigation.navigate('Hike', { hike: item })}
+                    onPress={() =>
+                      navigation.navigate('Hike', { hikeId: item.id })
+                    }
                   />
                 )
               }
