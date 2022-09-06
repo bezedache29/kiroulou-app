@@ -323,30 +323,38 @@ const HikeScreen = ({ navigation, route }) => {
                   <Text style={[mr20, defaultText, { color: colors.textBox }]}>
                     Personnes Hypes :
                   </Text>
-                  <View style={[rowCenter]}>
-                    {/* On boucle sur les personnes hypes jusqu'a en avoir 5 */}
-                    {hike.hike_vtt_hypes.length > 0 &&
-                      hike.hike_vtt_hypes.map(
-                        (user, index) =>
-                          index <= 4 && (
-                            <AvatarHype
-                              key={user.user_id}
-                              userId={user.user_id}
-                            />
-                          )
+                  {user.premium === 'active' ? (
+                    <View style={[rowCenter]}>
+                      {/* On boucle sur les personnes hypes jusqu'a en avoir 5 */}
+                      {hike.hike_vtt_hypes.length > 0 &&
+                        hike.hike_vtt_hypes.map(
+                          (user, index) =>
+                            index <= 4 && (
+                              <AvatarHype
+                                key={user.user_id}
+                                userId={user.user_id}
+                              />
+                            )
+                        )}
+                      {/* Si 6 personnes hype on affiche le 6 ème */}
+                      {hike.hike_vtt_hypes.length === 6 && (
+                        <AvatarHype userId={hike.hike_vtt_hypes[5]} />
                       )}
-                    {/* Si 6 personnes hype on affiche le 6 ème */}
-                    {hike.hike_vtt_hypes.length === 6 && (
-                      <AvatarHype userId={hike.hike_vtt_hypes[5]} />
-                    )}
-                    {/* Si plus de 6 personnes hype, on affiche le compteur des personnes restante sur le 6 eme */}
-                    {hike.hike_vtt_hypes.length > 6 && (
-                      <AvatarHype
-                        userId={hike.hike_vtt_hypes[5]}
-                        nbUsers={hike.hike_vtt_hypes.length - 6}
-                      />
-                    )}
-                  </View>
+                      {/* Si plus de 6 personnes hype, on affiche le compteur des personnes restante sur le 6 eme */}
+                      {hike.hike_vtt_hypes.length > 6 && (
+                        <AvatarHype
+                          userId={hike.hike_vtt_hypes[5]}
+                          nbUsers={hike.hike_vtt_hypes.length - 6}
+                        />
+                      )}
+                    </View>
+                  ) : (
+                    <View>
+                      <Text style={[defaultText, { color: colors.text }]}>
+                        Premiums uniquement
+                      </Text>
+                    </View>
+                  )}
                 </TouchableOpacity>
               </CustomBox>
 
@@ -373,7 +381,8 @@ const HikeScreen = ({ navigation, route }) => {
                 <Text style={[littleTitle, { color: colors.textBox }]}>
                   Images / Photos :
                 </Text>
-                {hike.hike_vtt_images.length > 0 ? (
+                {user.premium === 'active' &&
+                hike.hike_vtt_images.length > 0 ? (
                   <CustomCarousel
                     snapToInterval={CARD_WIDTH}
                     animation={animation}
@@ -400,10 +409,21 @@ const HikeScreen = ({ navigation, route }) => {
                       </TouchableOpacity>
                     ))}
                   </CustomCarousel>
-                ) : (
+                ) : user.premium === 'active' &&
+                  hike.hike_vtt_images.length === 0 ? (
                   <Text style={[defaultText, mt10, { color: colors.textBox }]}>
                     Pas d'images ou de photos a montrer
                   </Text>
+                ) : (
+                  user.premium !== 'active' && (
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate('Subs')}
+                    >
+                      <Text style={[defaultText, { color: colors.text }]}>
+                        Réservé pour membres premiums
+                      </Text>
+                    </TouchableOpacity>
+                  )
                 )}
               </CustomBox>
 

@@ -5,6 +5,8 @@ import axios from 'axios'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
+import { useStoreState } from 'easy-peasy'
+
 import { useTheme } from 'react-native-paper'
 import { OWM_KEY } from 'react-native-dotenv'
 
@@ -17,6 +19,9 @@ import CustomLoader from '../CustomLoader'
 const Weather = ({ hike }) => {
   const { colors } = useTheme()
   const { weatherIcon } = useWeather()
+
+  const userStore = useStoreState((state) => state.user)
+  const { user } = userStore
 
   const [weather, setWeather] = useState(false)
   const [detailsWeather, setDetailsWeather] = useState(false)
@@ -46,6 +51,7 @@ const Weather = ({ hike }) => {
       <TouchableOpacity
         onPress={() => setDetailsWeather(true)}
         style={[rowCenter]}
+        disabled={user.premium !== 'active'}
       >
         <View style={styles.semiCard}>
           <Image
@@ -62,12 +68,14 @@ const Weather = ({ hike }) => {
           </Text>
         </View>
 
-        <MaterialCommunityIcons
-          name="arrow-right"
-          size={28}
-          color={colors.text}
-          style={styles.arrow}
-        />
+        {user.premium === 'active' && (
+          <MaterialCommunityIcons
+            name="arrow-right"
+            size={28}
+            color={colors.text}
+            style={styles.arrow}
+          />
+        )}
       </TouchableOpacity>
 
       <CustomModal
